@@ -14,3 +14,4 @@ use Core\App;
 
 // Initialisation de la classe App (Routeur)
 $app = new App();
+
