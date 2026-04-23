@@ -1,0 +1,25 @@
+<?php
+namespace Module\Main\Controller;
+
+use Core\Controller;
+
+class Main extends Controller {
+    public function __construct() {
+        // Optionnel : charger des modèles si besoin
+    }
+
+    public function index() {
+        $txt = $this->loadLanguage('system');
+        
+        $data = [
+            'txt' => $txt,
+            'title' => ($txt['HOME'] ?? 'HOME') . ' - ' . SITENAME,
+            'description' => $txt['HOME'] ?? 'HOME'
+        ];
+
+        $this->view('system/header', $data);
+        $this->view('system/sidebar', $data);
+        $this->view('main/index', $data);
+        $this->view('system/footer', $data);
+    }
+}

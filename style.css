@@ -1,0 +1,84 @@
+/* style.css */
+/* Disposition globale */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 
+   L'app-bar et le sidebar ont tous les deux "pos-absolute" dans Metro UI.
+   On ajoute une marge en haut du contenu principal pour de ne pas être caché 
+   sous l'app-bar qui fait généralement 52px de haut.
+*/
+main {
+    flex-grow: 1;
+    padding: 2rem 5%;
+    background-color: white;
+    margin: 5rem auto 2rem; /* 5rem en haut = place pour l'app-bar absolue */
+    width: 90%;
+    max-width: 1200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+main h1 {
+    margin-bottom: 1.5rem;
+    color: #1a202c;
+}
+
+main p {
+    font-size: 1.1rem;
+}
+
+/* La sidebar utilisera maintenant son thème clair par défaut (fond blanc, texte gris foncé) qui est très lisible ! */
+
+/* Responsive Table Cards (Global) */
+@media screen and (max-width: 768px) {
+    .table-responsive-cards thead {
+        display: none !important;
+    }
+    .table-responsive-cards tbody,
+    .table-responsive-cards tr,
+    .table-responsive-cards td {
+        display: block !important;
+        width: 100% !important;
+    }
+    /* Masquer absolument toutes les cellules générées par Metro UI qui n'ont pas de label */
+    .table-responsive-cards td:not([data-label]),
+    .table-responsive-cards th.check-cell,
+    .table-responsive-cards td.check-cell,
+    .table-responsive-cards th.rownum-cell,
+    .table-responsive-cards td.rownum-cell {
+        display: none !important;
+    }
+    .table-responsive-cards tr {
+        margin-bottom: 1.5rem !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 5px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .table-responsive-cards td {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        text-align: right !important;
+        border: none !important;
+        border-bottom: 1px solid #eee !important;
+        padding: 10px 15px !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
+    .table-responsive-cards td:last-child {
+        border-bottom: none !important;
+    }
+    .table-responsive-cards td::before {
+        content: attr(data-label);
+        font-weight: bold !important;
+        text-align: left !important;
+        flex-basis: 40% !important;
+        flex-shrink: 0 !important;
+        padding-right: 10px;
+        color: #555;
+    }
+}

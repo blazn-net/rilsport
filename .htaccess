@@ -1,0 +1,9 @@
+Options -MultiViews
+RewriteEngine On
+
+# Si la requête n'est pas un fichier existant ou un répertoire
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Rediriger toutes les autres requêtes vers index.php
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
