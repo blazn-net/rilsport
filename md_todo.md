@@ -14,8 +14,8 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 - [ ] Créer un module *module* avec les tables :
     - [ ] *t_module_module*
     - [ ] *t_module_page*
-    - [ ] *t_module_[module_name]_table*
-    - [ ] *t_module_[module_name]_column*
+    - [ ] *t_module_table*
+    - [ ] *t_module_column*
     - [ ] *module* sera le seul module qui contiendra des données des autres modules (à l'insertion/suppression d'un module, il faudra mettre à jour les tables du module *module*)
 
 ### P2
