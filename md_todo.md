@@ -13,8 +13,9 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 - [ ] BDD : remplacer les codes par des ids
 - [ ] Créer un module *module* avec les tables :
     - [ ] *t_module_module*
-    - [ ] t-module_page
-    - [ ] *t_[module_name]_table*, *t_module_[module_name]_column*
+    - [ ] *t_module_page*
+    - [ ] *t_module_[module_name]_table*
+    - [ ] *t_module_[module_name]_column*
     - [ ] *module* sera le seul module qui contiendra des données des autres modules (à l'insertion/suppression d'un module, il faudra mettre à jour les tables du module *module*)
 
 ### P2
