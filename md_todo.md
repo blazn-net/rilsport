@@ -5,7 +5,8 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
-- [ ] Regrouper lang, user, zone dans le module main
+- [ ] Modules obligatoires : main, user,lang, 
+..
 - [ ] Revoir les tables des langues : en cours
 - [ ] Dans la BDD, *lang* est dans *main* et *system* ? Le mettre dans *system*
     - [ ] Le module *main* ne contient pour l'instant que la page *home*
