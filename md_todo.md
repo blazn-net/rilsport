@@ -8,7 +8,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 - [ ] Modules obligatoires : main, user,lang, zone,module
 ..
 - [ ] Revoir les tables des langues : en cours
-- [ ] Dans la BDD, *lang* est dans *main* et *system* ? Le mettre dans *system*/*lang*
+- [ ] Dans la BDD, *lang* est dans *main* et *system* ? Le mettre dans *system* ou *lang*
     - [ ] Le module *main* ne contient pour l'instant que la page *home*
 - [ ] BDD : remplacer les codes par des ids
 - [ ] Créer un module *module* avec les tables :
