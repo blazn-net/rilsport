@@ -5,7 +5,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
-- [ ] Modules obligatoires : 
+- [ ] Modules obligatoires OU fonctionnel VS applicatif : 
     - system 
     - main
     - user
