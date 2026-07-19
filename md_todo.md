@@ -7,9 +7,17 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ### P1 (Haute priorité)
 - [ ] Modules obligatoires : 
     - main
-    - user,lang, zone,module, role
-..
-- [ ] Type de tables : system, status, text, etc
+    - user
+    - lang
+    - zone
+    - module
+    - role
+    - ...
+- [ ] Type de tables :
+   - system
+   - status
+   - text
+   - ...
 - [ ] Revoir les tables des langues : en cours
 - [ ] Dans la BDD, *lang* est dans *main* et *system* ? Le mettre dans *system* ou *lang*
     - [ ] Le module *main* ne contient pour l'instant que la page *home*
