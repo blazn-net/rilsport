@@ -1,5 +1,5 @@
 <?php
-namespace Module\User\Controller;
+namespace Module\Main\Controller;
 
 use Core\Controller;
 
@@ -13,7 +13,7 @@ class Users extends Controller
             $txt = $this->loadLanguage('user');
             die($txt['ERR_UNAUTHORIZED'] ?? 'ERR_UNAUTHORIZED');
         }
-        $this->userModel = $this->model('user/User');
+        $this->userModel = $this->model('main/User');
     }
 
     public function index()
@@ -48,7 +48,7 @@ class Users extends Controller
 
         $this->view('system/header', $data);
         $this->view('system/sidebar', $data);
-        $this->view('user/users', $data);
+        $this->view('main/user/users', $data);
         $this->view('system/footer', $data);
     }
 }

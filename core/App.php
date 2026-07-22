@@ -28,14 +28,19 @@ class App
 
             // 2. Load module controller
             if (isset($url[0])) {
-                // Système d'alias pour des URLs propres (ex: /user/login -> Module User, Controller Auth, Method login)
+                // Alias : mappe les pages nommées vers leur controller
+                // Ex: /main/login → Controller Auth, méthode login()
                 $aliases = [
-                    'user' => ['login' => 'Auth', 'register' => 'Auth', 'logout' => 'Auth']
+                    'main' => [
+                        'login'    => 'Auth',
+                        'register' => 'Auth',
+                        'logout'   => 'Auth',
+                    ]
                 ];
 
                 if (isset($aliases[$this->currentModule][$url[0]])) {
+                    // On garde $url[0] intact : il sera récupéré comme méthode juste après
                     $this->currentController = $aliases[$this->currentModule][$url[0]];
-                    // On ne supprime pas $url[0], car on veut qu'il soit récupéré comme "méthode" juste après.
                 } else {
                     $this->currentController = ucwords($url[0]);
                     unset($url[0]);

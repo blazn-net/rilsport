@@ -1,5 +1,5 @@
 <?php
-namespace Module\User\Model;
+namespace Module\Main\Model;
 
 use Core\Database;
 use PDOException;
@@ -141,8 +141,6 @@ class User
 
         try {
             if ($this->db->execute()) {
-                // To get the inserted ID, some PDOs support lastInsertId, but Postgres requires RETURNING id or currval
-                // Let's just find the user to get ID safely.
                 $user = $this->findUserByEmailOrUsername($data['email']);
                 if ($user) {
                     $userId = is_array($user) ? $user['id'] : $user->id;

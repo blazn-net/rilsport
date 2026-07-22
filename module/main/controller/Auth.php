@@ -1,5 +1,5 @@
 <?php
-namespace Module\User\Controller;
+namespace Module\Main\Controller;
 
 use Core\Controller;
 
@@ -7,11 +7,11 @@ class Auth extends Controller {
     private $userModel;
 
     public function __construct() {
-        $this->userModel = $this->model('user/User');
+        $this->userModel = $this->model('main/User');
     }
 
     public function index() {
-        $this->redirect('user/login');
+        $this->redirect('main/login');
     }
 
     public function login() {
@@ -52,7 +52,7 @@ class Auth extends Controller {
 
         $this->view('system/header', $data);
         $this->view('system/sidebar', $data);
-        $this->view('user/login', $data);
+        $this->view('main/user/login', $data);
         $this->view('system/footer', $data);
     }
 
@@ -101,13 +101,13 @@ class Auth extends Controller {
 
         $this->view('system/header', $data);
         $this->view('system/sidebar', $data);
-        $this->view('user/register', $data);
+        $this->view('main/user/register', $data);
         $this->view('system/footer', $data);
     }
 
     public function logout() {
         session_unset();
         session_destroy();
-        $this->redirect('user/login');
+        $this->redirect('main/login');
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Module\User\Controller;
+namespace Module\Main\Controller;
 
 use Core\Controller;
 
@@ -13,7 +13,7 @@ class User extends Controller
             $txt = $this->loadLanguage('user');
             die($txt['ERR_UNAUTHORIZED'] ?? 'ERR_UNAUTHORIZED');
         }
-        $this->userModel = $this->model('user/User');
+        $this->userModel = $this->model('main/User');
     }
 
     public function index($id = null)
@@ -50,7 +50,7 @@ class User extends Controller
             $data['user'] = $userData ? (object) $userData : null;
             if (!$data['user']) {
                 if ($isAdmin) {
-                    $this->redirect('user/users');
+                    $this->redirect('main/users');
                 } else {
                     $this->redirect('main');
                 }
@@ -86,14 +86,14 @@ class User extends Controller
                         $_SESSION['username'] = $postData['username'];
                     }
                     $_SESSION['flash_message'] = $txt['SUCCESS_UPDATE_USER'] ?? 'SUCCESS_UPDATE_USER';
-                    $this->redirect('user/user/' . urlencode($id));
+                    $this->redirect('main/user/' . urlencode($id));
                 } else {
                     $data['error'] = $txt['ERR_UPDATE_FAIL'] ?? 'ERR_UPDATE_FAIL';
                 }
             } else {
                 $postData['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 if ($this->userModel->addUser($postData)) {
-                    $this->redirect('user/users');
+                    $this->redirect('main/users');
                 } else {
                     $data['error'] = $txt['ERR_ADD_USER_EXISTS'] ?? 'ERR_ADD_USER_EXISTS';
                 }
@@ -107,7 +107,7 @@ class User extends Controller
 
         $this->view('system/header', $data);
         $this->view('system/sidebar', $data);
-        $this->view('user/user', $data);
+        $this->view('main/user/user', $data);
         $this->view('system/footer', $data);
     }
 }

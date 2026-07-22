@@ -10,11 +10,11 @@
         <?php if (!empty($data['success'])): ?>
             <div class="remark success">
                 <?php echo htmlspecialchars($data['success']); ?><br>
-                <a href="<?php echo URLROOT; ?>/user/login"><strong><?php echo $data['txt']['LOGIN'] ?? 'LOGIN'; ?></strong></a>
+                <a href="<?php echo URLROOT; ?>/main/login"><strong><?php echo $data['txt']['LOGIN'] ?? 'LOGIN'; ?></strong></a>
             </div>
         <?php else: ?>
 
-            <form method="POST" action="<?php echo URLROOT; ?>/user/register">
+            <form method="POST" action="<?php echo URLROOT; ?>/main/register">
                 <div class="form-group">
                     <label><?php echo $data['txt']['USERNAME'] ?? 'USERNAME'; ?></label>
                     <input type="text" name="username" data-role="input" required value="<?php echo htmlspecialchars($data['username']); ?>">
@@ -40,7 +40,7 @@
                 </div>
                 
                 <div class="text-center mt-3">
-                    <small><?php echo $data['txt']['ALREADY_ACCOUNT'] ?? 'ALREADY_ACCOUNT'; ?> <a href="<?php echo URLROOT; ?>/user/login"><?php echo $data['txt']['LOGIN'] ?? 'LOGIN'; ?></a></small>
+                    <small><?php echo $data['txt']['ALREADY_ACCOUNT'] ?? 'ALREADY_ACCOUNT'; ?> <a href="<?php echo URLROOT; ?>/main/login"><?php echo $data['txt']['LOGIN'] ?? 'LOGIN'; ?></a></small>
                 </div>
                 <div class="text-center mt-2">
                     <small><a href="<?php echo URLROOT; ?>"><?php echo $data['txt']['MAIN'] ?? 'MAIN'; ?></a></small>

@@ -1,7 +1,7 @@
     <main class="p-4" style="margin-top: 60px;">
         <div class="d-flex flex-justify-between flex-align-center mb-4">
             <h2><?php echo $data['mode'] === 'edit' ? ($data['txt']['EDIT_USER_TITLE'] ?? 'EDIT_USER_TITLE') : ($data['txt']['ADD_USER_BTN'] ?? 'ADD_USER_BTN'); ?></h2>
-            <a href="<?php echo URLROOT; ?>/<?php echo $data['is_admin'] ? 'user/users' : 'main'; ?>" class="button" title="<?php echo htmlspecialchars($data['txt']['BTN_BACK'] ?? 'BTN_BACK'); ?>">
+            <a href="<?php echo URLROOT; ?>/<?php echo $data['is_admin'] ? 'main/users' : 'main'; ?>" class="button" title="<?php echo htmlspecialchars($data['txt']['BTN_BACK'] ?? 'BTN_BACK'); ?>">
                 <span class="mif-arrow-left"></span> <?php echo $data['txt']['BTN_BACK'] ?? 'BTN_BACK'; ?>
             </a>
         </div>
@@ -14,7 +14,7 @@
             <div class="remark alert"><?php echo htmlspecialchars($data['error']); ?></div>
         <?php endif; ?>
 
-        <form method="POST" action="<?php echo URLROOT; ?>/user/user/<?php echo $data['id'] ? $data['id'] : ''; ?>">
+        <form method="POST" action="<?php echo URLROOT; ?>/main/user/<?php echo $data['id'] ? $data['id'] : ''; ?>">
             <div class="form-group">
                 <label><?php echo $data['txt']['USERNAME'] ?? 'USERNAME'; ?></label>
                 <input type="text" name="username" data-role="input" value="<?php echo isset($data['user']->username) ? htmlspecialchars($data['user']->username) : ''; ?>" required>

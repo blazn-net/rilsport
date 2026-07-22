@@ -5,23 +5,14 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
-- [ ] #1 Modules obligatoires OU fonctionnel VS applicatif : 
-    - system 
-    - main
-    - user
-    - lang
-    - zone
-    - module
-    - role
-    - ...
 - [ ] #2 Type de tables :
     - system
     - status
     - text
     - ...
-- [ ] #3 Revoir les tables des langues : en cours
-- [ ] #4 Dans la BDD, *lang* est dans *main* et *system* ? Le mettre dans *system* ou *lang*
-    - [ ] #4.1 Le module *main* ne contient pour l'instant que la page *home*
+- [ ] #3 Fichiers .sql :
+    - [ ] #3.1 Faire un fichier pour la structure et un pour les données. Comment les nommer ?
+    - [ ] #3.2 Faire un .sql par module ou par objet ?  
 - [ ] #5 BDD : remplacer les codes par des ids
 - [ ] #6 Créer un module *module* avec les tables :
     - [ ] #6.1 *t_module_module*

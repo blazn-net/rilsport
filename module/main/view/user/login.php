@@ -7,7 +7,7 @@
             <div class="remark warning"><?php echo htmlspecialchars($data['error']); ?></div>
         <?php endif; ?>
 
-        <form method="POST" action="<?php echo URLROOT; ?>/user/login">
+        <form method="POST" action="<?php echo URLROOT; ?>/main/login">
             <div class="form-group">
                 <label><?php echo $data['txt']['USERNAME'] ?? 'USERNAME'; ?></label>
                 <input type="text" name="login" data-role="input" required value="<?php echo htmlspecialchars($data['login']); ?>">
@@ -23,7 +23,7 @@
             </div>
             
             <div class="text-center mt-3">
-                <small><?php echo $data['txt']['NO_ACCOUNT'] ?? 'NO_ACCOUNT'; ?> <a href="<?php echo URLROOT; ?>/user/register"><?php echo $data['txt']['REGISTER'] ?? 'REGISTER'; ?></a></small>
+                <small><?php echo $data['txt']['NO_ACCOUNT'] ?? 'NO_ACCOUNT'; ?> <a href="<?php echo URLROOT; ?>/main/register"><?php echo $data['txt']['REGISTER'] ?? 'REGISTER'; ?></a></small>
             </div>
             <div class="text-center mt-2">
                 <small><a href="<?php echo URLROOT; ?>"><?php echo $data['txt']['MAIN'] ?? 'MAIN'; ?></a></small>
