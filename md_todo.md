@@ -5,7 +5,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
-- [ ] Modules obligatoires OU fonctionnel VS applicatif : 
+- [ ] #1 Modules obligatoires OU fonctionnel VS applicatif : 
     - system 
     - main
     - user
@@ -14,62 +14,53 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - module
     - role
     - ...
-- [ ] Type de tables :
+- [ ] #2 Type de tables :
     - system
     - status
     - text
     - ...
-- [ ] Revoir les tables des langues : en cours
-- [ ] Dans la BDD, *lang* est dans *main* et *system* ? Le mettre dans *system* ou *lang*
-    - [ ] Le module *main* ne contient pour l'instant que la page *home*
-- [ ] BDD : remplacer les codes par des ids
-- [ ] Créer un module *module* avec les tables :
-    - [ ] *t_module_module*
-    - [ ] *t_module_page*
-    - [ ] *t_module_table*
-    - [ ] *t_module_column*
-    - [ ] *module* sera le seul module qui contiendra des données des autres modules (à l'insertion/suppression d'un module, il faudra mettre à jour les tables du module *module*)
-
-### P2
-- [x] Lang : Problème d'encodage : Langue modifiée avec succès, Infos, Bouton, etc...
-- [x] User : pas de message après MAJ
-
-### P3
-- [x] après mise à jour, rester sur la page Form
+- [ ] #3 Revoir les tables des langues : en cours
+- [ ] #4 Dans la BDD, *lang* est dans *main* et *system* ? Le mettre dans *system* ou *lang*
+    - [ ] #4.1 Le module *main* ne contient pour l'instant que la page *home*
+- [ ] #5 BDD : remplacer les codes par des ids
+- [ ] #6 Créer un module *module* avec les tables :
+    - [ ] #6.1 *t_module_module*
+    - [ ] #6.2 *t_module_page*
+    - [ ] #6.3 *t_module_table*
+    - [ ] #6.4 *t_module_column*
+    - [ ] #6.5 *module* sera le seul module qui contiendra des données des autres modules (à l'insertion/suppression d'un module, il faudra mettre à jour les tables du module *module*)
 
 ### P4 (Basse priorité)
-- [ ] 
+- [ ] #7 
 
 ## Évolution
 
 ### P1 (Haute priorité)
-- [ ] Gestion des permissions/rôles (rôle fonctionnel, applicatif, global, local)
-- [ ] gestion du menu
-    - [ ] Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
+- [ ] #8 Gestion des permissions/rôles (rôle fonctionnel, applicatif, global, local)
+- [ ] #9 Gestion du menu
+    - [ ] #9.1 Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
 
 ### P2
-- [ ] Module blog/news/forum
-    - [ ] Forum = Discord ?
-    - [ ] Blog/News = Facebook/Instagram
-    
+- [ ] #10 Module blog/news/forum
+    - [ ] #10.1 Forum = Discord ?
+    - [ ] #10.2 Blog/News = Facebook/Instagram
 
 ### P3
-- [x] Infobulle sur les boutons
-- [ ] Couleur des rôles, status, ...
+- [ ] #11 Couleur des rôles, status, ...
 
 ### P4 (Basse priorité)
-- [ ] Créer un installateur (code + sql)
+- [ ] #12 Créer un installateur (code + sql)
 
 ## Question / Idées
 
 ### P1 (Haute priorité)
-- [ ] 
+- [ ] #13 
 
 ### P2
-- [ ] 
+- [ ] #14 
 
 ### P3
-- [ ] 
+- [ ] #15 
 
 ### P4 (Basse priorité)
-- [ ] 
+- [ ] #16 

@@ -29,3 +29,107 @@ Lorsque l'on veut définir une règle technique ou un changement d'interface qui
 
 *   **Les pages "Form" (ou les Formulaires)** : Terme générique pour désigner toutes les pages au singulier confondues.
     *Exemple : "Faisons en sorte qu'après une mise à jour, on reste sur la page Form."*
+
+---
+
+## Architecture des Modules
+
+### Principe général
+
+> **1 module = N objets**
+
+Un module regroupe plusieurs objets métier liés entre eux. Chaque objet dispose de ses propres fichiers `controller`, `model` et `view` au sein du même module.
+
+### Répertoire racine
+
+Tous les modules sont placés sous `module/` :
+
+```
+module/
+├── main/     ← module obligatoire (objets système)
+├── system/   ← module technique interne
+└── [xxx]/    ← modules optionnels/métier
+```
+
+### Types de modules
+
+| Type | Répertoire | Description |
+|------|-----------|-------------|
+| **Obligatoire** | `module/main/` | Contient tous les objets indispensables au fonctionnement du système (`user`, `lang`, `zone`, `module`, `role`, ...) |
+| **Technique** | `module/system/` | Gestion interne bas niveau (logs, config système, ...) |
+| **Optionnel** | `module/[nom]/` | Tout module métier ajouté selon les besoins (`blog`, `shop`, `forum`, ...) |
+
+### Structure interne d'un module
+
+Chaque module suit la même organisation, quel que soit le nombre d'objets :
+
+```
+module/[nom]/
+├── controller/
+│   ├── ObjetA.php
+│   └── ObjetB.php
+├── model/
+│   ├── ObjetA.php
+│   └── ObjetB.php
+├── view/
+│   ├── objeta/
+│   │   ├── list.php
+│   │   └── form.php
+│   └── objetb/
+│       ├── list.php
+│       └── form.php
+└── database/
+```
+
+*Exemple concret — module `blog` avec 2 objets :*
+
+```
+module/blog/
+├── controller/
+│   ├── Article.php
+│   └── Comment.php
+├── model/
+│   ├── Article.php
+│   └── Comment.php
+├── view/
+│   ├── article/
+│   └── comment/
+└── database/
+```
+
+---
+
+## Convention d'URL
+
+### Format
+
+```
+/[module]/[objet_ou_page]/[méthode]/[id]
+```
+
+| Segment | Description | Exemple |
+|---------|------------|---------|
+| `[module]` | Nom du module (répertoire sous `module/`) | `main`, `blog` |
+| `[objet_ou_page]` | Nom de l'objet (singulier = Form, pluriel = List) ou nom de page | `user`, `users`, `login` |
+| `[méthode]` | Action optionnelle du contrôleur | `index`, `edit` |
+| `[id]` | Identifiant optionnel de la ressource | `1`, `42` |
+
+### Exemples
+
+| URL | Module | Objet | Page |
+|-----|--------|-------|------|
+| `/main/users` | `main` | `user` | Liste des utilisateurs |
+| `/main/user` | `main` | `user` | Formulaire (ajout) |
+| `/main/user/1` | `main` | `user` | Formulaire (modification id=1) |
+| `/main/login` | `main` | — | Page de connexion |
+| `/main/langs` | `main` | `lang` | Liste des langues |
+| `/blog/articles` | `blog` | `article` | Liste des articles |
+| `/blog/article/5` | `blog` | `article` | Formulaire (modification id=5) |
+
+### Règle Singulier / Pluriel dans l'URL
+
+La convention Singulier/Pluriel des pages **List** et **Form** (voir section ci-dessus) s'applique directement dans l'URL :
+
+*   **`/main/users`** ➔ page List (tableau de tous les utilisateurs)
+*   **`/main/user`** ➔ page Form en mode Ajout
+*   **`/main/user/1`** ➔ page Form en mode Modification

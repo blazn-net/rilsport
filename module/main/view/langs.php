@@ -16,11 +16,12 @@
     <?php endif; ?>
 
     <table class="table striped table-border mt-4 w-100 table-responsive-cards" data-role="table"
-        data-show-search="true" data-show-rows-steps="false" data-check="false" data-rownum="false">
+        data-show-search="true" data-show-rows-steps="false" data-check="false" data-rownum="false"
+        data-search-fields="lang_code,lang_name">
         <thead>
             <tr>
-                <th><?php echo $data['txt']['LANG_CODE'] ?? 'LANG_CODE'; ?></th>
-                <th><?php echo $data['txt']['LANG_NAME'] ?? 'LANG_NAME'; ?></th>
+                <th data-name="lang_code"><?php echo $data['txt']['LANG_CODE'] ?? 'LANG_CODE'; ?></th>
+                <th data-name="lang_name"><?php echo $data['txt']['LANG_NAME'] ?? 'LANG_NAME'; ?></th>
                 <th><?php echo $data['txt']['LANG_FLAG'] ?? 'LANG_FLAG'; ?></th>
                 <th><?php echo $data['txt']['STATUS'] ?? 'STATUS'; ?></th>
                 <th><?php echo $data['txt']['ACTIONS'] ?? 'ACTIONS'; ?></th>

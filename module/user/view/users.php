@@ -16,12 +16,13 @@
 
 
     <table class="table striped table-border mt-4 w-100 table-responsive-cards" data-role="table"
-        data-show-search="true" data-show-rows-steps="false" data-check="false" data-rownum="false">
+        data-show-search="true" data-show-rows-steps="false" data-check="false" data-rownum="false"
+        data-search-fields="username,email">
         <thead>
             <tr>
                 <th>ID</th>
-                <th><?php echo $data['txt']['USERNAME'] ?? 'USERNAME'; ?></th>
-                <th><?php echo $data['txt']['EMAIL'] ?? 'EMAIL'; ?></th>
+                <th data-name="username"><?php echo $data['txt']['USERNAME'] ?? 'USERNAME'; ?></th>
+                <th data-name="email"><?php echo $data['txt']['EMAIL'] ?? 'EMAIL'; ?></th>
                 <th><?php echo $data['txt']['ROLE'] ?? 'ROLE'; ?></th>
                 <th><?php echo $data['txt']['DATE_REG'] ?? 'DATE_REG'; ?></th>
                 <th><?php echo $data['txt']['STATUS'] ?? 'STATUS'; ?></th>

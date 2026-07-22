@@ -22,7 +22,8 @@
                     $btnClass = $isActive ? 'primary' : 'light';
                     ?>
                     <a href="?lang=<?php echo htmlspecialchars($lang['lang_code']); ?>"
-                        class="button flex-1 <?php echo $btnClass; ?>" style="min-width: 60px;" title="<?php echo htmlspecialchars($lang['lang_name'] ?? strtoupper($lang['lang_code'])); ?>">
+                        class="button flex-1 <?php echo $btnClass; ?>" style="min-width: 60px;"
+                        title="<?php echo htmlspecialchars($lang['lang_name'] ?? strtoupper($lang['lang_code'])); ?>">
                         <span
                             class="<?php echo !empty($lang['lang_flag']) ? 'fi ' . htmlspecialchars($lang['lang_flag']) : 'mif-earth'; ?>"></span>
                         <?php echo htmlspecialchars(strtoupper($lang['lang_code'])); ?>
