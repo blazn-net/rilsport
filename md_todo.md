@@ -11,10 +11,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - text
     - ...
 - [ ] #3 Fichiers .sql :
-    - [x] #3.1 Faire un fichier pour la structure et un pour les données. Comment les nommer ?
-    - [x] #3.2 Faire un .sql par module ou par objet ? 
-    - [ ] #3.3 Renommer text.schema.sql en main.text_schema.sql
-    - [ ] #3.4 Séparer le texte des données : user.text.sql (insert key + text)
+    - [x] #3.1 Faire un fichier sql par module. Il contient le schema, les données et les textes
     - [ ] #3.5 t_main_text avec préfixe obligatoire {OBJET}_ dans text_code.
     - [ ] #3.6 Ajouter un IF EXISTS dans tous les inserts de données.
         - [ ] #3.6.1 Utiliser "ON CONFLICT (...) DO UPDATE" ?
