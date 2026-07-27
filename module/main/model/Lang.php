@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Module\Main\Model;
 
 use Core\Database;
@@ -21,8 +21,8 @@ class Lang {
                    u_c.username AS created_by_name, 
                    u_m.username AS modified_by_name 
             FROM t_main_lang l
-            LEFT JOIN t_user_user u_c ON l.created_by = u_c.id
-            LEFT JOIN t_user_user u_m ON l.modified_by = u_m.id
+            LEFT JOIN t_main_user u_c ON l.created_by = u_c.id
+            LEFT JOIN t_main_user u_m ON l.modified_by = u_m.id
             WHERE l.lang_code = :code
         ");
         $this->db->bind(':code', $code);
