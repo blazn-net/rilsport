@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Module\Main\Controller;
 
 use Core\Controller;
@@ -11,7 +11,7 @@ class User extends Controller
     {
         if (!isset($_SESSION['user_id'])) {
             $txt = $this->loadLanguage('user');
-            die($txt['ERR_UNAUTHORIZED'] ?? 'ERR_UNAUTHORIZED');
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
         }
         $this->userModel = $this->model('main/User');
     }
@@ -23,7 +23,7 @@ class User extends Controller
         if (!$isAdmin) {
             if ($id === null || $id != $_SESSION['user_id']) {
                 $txt = $this->loadLanguage('user');
-                die($txt['ERR_UNAUTHORIZED'] ?? 'ERR_UNAUTHORIZED');
+                die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
             }
         }
 
@@ -31,7 +31,7 @@ class User extends Controller
 
         $data = [
             'txt' => $txt,
-            'title' => ($id ? ($txt['EDIT_USER_TITLE'] ?? 'EDIT_USER_TITLE') : ($txt['ADD_USER_BTN'] ?? 'ADD_USER_BTN')) . ' - ' . SITENAME,
+            'title' => ($id ? ($txt['USER_EDIT_USER_TITLE'] ?? 'USER_EDIT_USER_TITLE') : ($txt['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN')) . ' - ' . SITENAME,
             'user' => null,
             'message' => $_SESSION['flash_message'] ?? '',
             'error' => $_SESSION['flash_error'] ?? '',
@@ -85,17 +85,17 @@ class User extends Controller
                     if ($id == $_SESSION['user_id']) {
                         $_SESSION['username'] = $postData['username'];
                     }
-                    $_SESSION['flash_message'] = $txt['SUCCESS_UPDATE_USER'] ?? 'SUCCESS_UPDATE_USER';
+                    $_SESSION['flash_message'] = $txt['USER_SUCCESS_UPDATE_USER'] ?? 'USER_SUCCESS_UPDATE_USER';
                     $this->redirect('main/user/' . urlencode($id));
                 } else {
-                    $data['error'] = $txt['ERR_UPDATE_FAIL'] ?? 'ERR_UPDATE_FAIL';
+                    $data['error'] = $txt['USER_ERR_UPDATE_FAIL'] ?? 'USER_ERR_UPDATE_FAIL';
                 }
             } else {
                 $postData['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 if ($this->userModel->addUser($postData)) {
                     $this->redirect('main/users');
                 } else {
-                    $data['error'] = $txt['ERR_ADD_USER_EXISTS'] ?? 'ERR_ADD_USER_EXISTS';
+                    $data['error'] = $txt['USER_ERR_ADD_USER_EXISTS'] ?? 'USER_ERR_ADD_USER_EXISTS';
                 }
             }
 

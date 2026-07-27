@@ -1,9 +1,9 @@
-<!-- Contenu principal -->
+﻿<!-- Contenu principal -->
 <main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
-        <h2><?php echo $data['txt']['USERS_LIST'] ?? 'USERS_LIST'; ?></h2>
-        <a href="<?php echo URLROOT; ?>/main/user" class="button success mt-2 mt-md-0" title="<?php echo htmlspecialchars($data['txt']['ADD_USER_BTN'] ?? 'ADD_USER_BTN'); ?>">
-            <span class="mif-plus"></span> <?php echo $data['txt']['ADD_USER_BTN'] ?? 'ADD_USER_BTN'; ?>
+        <h2><?php echo $data['txt']['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></h2>
+        <a href="<?php echo URLROOT; ?>/main/user" class="button success mt-2 mt-md-0" title="<?php echo htmlspecialchars($data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'); ?>">
+            <span class="mif-plus"></span> <?php echo $data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'; ?>
         </a>
     </div>
 
@@ -21,23 +21,23 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th data-name="username"><?php echo $data['txt']['USERNAME'] ?? 'USERNAME'; ?></th>
-                <th data-name="email"><?php echo $data['txt']['EMAIL'] ?? 'EMAIL'; ?></th>
-                <th><?php echo $data['txt']['ROLE'] ?? 'ROLE'; ?></th>
-                <th><?php echo $data['txt']['DATE_REG'] ?? 'DATE_REG'; ?></th>
+                <th data-name="username"><?php echo $data['txt']['USER_USERNAME'] ?? 'USER_USERNAME'; ?></th>
+                <th data-name="email"><?php echo $data['txt']['USER_EMAIL'] ?? 'USER_EMAIL'; ?></th>
+                <th><?php echo $data['txt']['USER_ROLE'] ?? 'USER_ROLE'; ?></th>
+                <th><?php echo $data['txt']['USER_DATE_REG'] ?? 'USER_DATE_REG'; ?></th>
                 <th><?php echo $data['txt']['STATUS'] ?? 'STATUS'; ?></th>
-                <th><?php echo $data['txt']['ACTIONS'] ?? 'ACTIONS'; ?></th>
+                <th><?php echo $data['txt']['USER_ACTIONS'] ?? 'USER_ACTIONS'; ?></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($data['users'] as $u): ?>
                 <tr>
                     <td data-label="ID"><?php echo $u['id']; ?></td>
-                    <td data-label="<?php echo $data['txt']['USERNAME'] ?? 'USERNAME'; ?>">
+                    <td data-label="<?php echo $data['txt']['USER_USERNAME'] ?? 'USER_USERNAME'; ?>">
                         <?php echo htmlspecialchars($u['username']); ?></td>
-                    <td data-label="<?php echo $data['txt']['EMAIL'] ?? 'EMAIL'; ?>">
+                    <td data-label="<?php echo $data['txt']['USER_EMAIL'] ?? 'USER_EMAIL'; ?>">
                         <?php echo htmlspecialchars($u['email']); ?></td>
-                    <td data-label="<?php echo $data['txt']['ROLE'] ?? 'ROLE'; ?>">
+                    <td data-label="<?php echo $data['txt']['USER_ROLE'] ?? 'USER_ROLE'; ?>">
                         <?php if (isset($u['roles']) && is_array($u['roles'])): ?>
                             <div class="d-flex flex-wrap" style="gap: 5px; justify-content: flex-begin;">
                                 <?php foreach ($u['roles'] as $roleId): ?>
@@ -54,7 +54,7 @@
                             <span class="badge primary">none</span>
                         <?php endif; ?>
                     </td>
-                    <td data-label="<?php echo $data['txt']['DATE_REG'] ?? 'DATE_REG'; ?>">
+                    <td data-label="<?php echo $data['txt']['USER_DATE_REG'] ?? 'USER_DATE_REG'; ?>">
                         <?php echo date('d/m/Y H:i', strtotime($u['created_at'])); ?></td>
                     <td data-label="<?php echo $data['txt']['STATUS'] ?? 'STATUS'; ?>">
                         <?php
@@ -64,13 +64,13 @@
                         ?>
                         <span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($statusLabel); ?></span>
                     </td>
-                    <td data-label="<?php echo $data['txt']['ACTIONS'] ?? 'ACTIONS'; ?>">
+                    <td data-label="<?php echo $data['txt']['USER_ACTIONS'] ?? 'USER_ACTIONS'; ?>">
                         <div class="d-flex flex-row flex-wrap" style="gap: 5px;">
                             <a href="<?php echo URLROOT; ?>/main/user/<?php echo $u['id']; ?>"
-                                class="button small info" title="<?php echo htmlspecialchars($data['txt']['BTN_EDIT'] ?? 'BTN_EDIT'); ?>"><span class="mif-pencil"></span></a>
+                                class="button small info" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'SYS_BTN_EDIT'); ?>"><span class="mif-pencil"></span></a>
                             <a href="<?php echo URLROOT; ?>/main/users?action=delete&id=<?php echo $u['id']; ?>"
-                                class="button small alert" title="<?php echo htmlspecialchars($data['txt']['BTN_DELETE'] ?? 'BTN_DELETE'); ?>"
-                                onclick="return confirm('<?php echo addslashes($data['txt']['DELETE_USER_CONFIRM'] ?? 'DELETE_USER_CONFIRM'); ?>');"><span
+                                class="button small alert" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_DELETE'] ?? 'SYS_BTN_DELETE'); ?>"
+                                onclick="return confirm('<?php echo addslashes($data['txt']['USER_DELETE_USER_CONFIRM'] ?? 'USER_DELETE_USER_CONFIRM'); ?>');"><span
                                     class="mif-bin"></span></a>
                         </div>
                     </td>

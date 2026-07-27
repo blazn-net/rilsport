@@ -1,8 +1,8 @@
-<main class="p-4" style="margin-top: 60px;">
+﻿<main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center mb-4">
         <h2><?php echo ($data['mode'] === 'edit') ? ($data['txt']['EDIT_LANG_TITLE'] ?? 'EDIT_LANG_TITLE') : ($data['txt']['ADD_LANG_TITLE'] ?? 'ADD_LANG_TITLE'); ?></h2>
-        <a href="<?php echo URLROOT; ?>/main/langs" class="button" title="<?php echo htmlspecialchars($data['txt']['BTN_BACK'] ?? 'BTN_BACK'); ?>">
-            <span class="mif-arrow-left"></span> <?php echo $data['txt']['BTN_BACK'] ?? 'BTN_BACK'; ?>
+        <a href="<?php echo URLROOT; ?>/main/langs" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'); ?>">
+            <span class="mif-arrow-left"></span> <?php echo $data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'; ?>
         </a>
     </div>
 
@@ -69,7 +69,7 @@
         <?php endif; ?>
 
         <div class="form-group mt-4">
-            <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['BTN_UPDATE'] ?? 'BTN_UPDATE') : ($data['txt']['BTN_SAVE'] ?? 'BTN_SAVE')); ?>"><?php echo ($data['mode'] === 'edit') ? ($data['txt']['BTN_UPDATE'] ?? 'BTN_UPDATE') : ($data['txt']['BTN_SAVE'] ?? 'BTN_SAVE'); ?></button>
+            <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'USER_BTN_UPDATE') : ($data['txt']['USER_BTN_SAVE'] ?? 'USER_BTN_SAVE')); ?>"><?php echo ($data['mode'] === 'edit') ? ($data['txt']['USER_BTN_UPDATE'] ?? 'USER_BTN_UPDATE') : ($data['txt']['USER_BTN_SAVE'] ?? 'USER_BTN_SAVE'); ?></button>
         </div>
     </form>
 </main>

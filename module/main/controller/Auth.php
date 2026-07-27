@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Module\Main\Controller;
 
 use Core\Controller;
@@ -23,7 +23,7 @@ class Auth extends Controller {
         
         $data = [
             'txt' => $txt,
-            'title' => ($txt['LOGIN'] ?? 'LOGIN') . ' - ' . SITENAME,
+            'title' => ($txt['SYS_LOGIN'] ?? 'SYS_LOGIN') . ' - ' . SITENAME,
             'login' => '',
             'password' => '',
             'error' => ''
@@ -46,7 +46,7 @@ class Auth extends Controller {
                     $data['error'] = $txt['ERR_ACCOUNT_NOT_VALIDATED'] ?? 'Le compte n\'est pas validé.';
                 }
             } else {
-                $data['error'] = $txt['ERR_INVALID_CREDS'] ?? 'ERR_INVALID_CREDS';
+                $data['error'] = $txt['USER_ERR_INVALID_CREDS'] ?? 'USER_ERR_INVALID_CREDS';
             }
         }
 
@@ -65,7 +65,7 @@ class Auth extends Controller {
 
         $data = [
             'txt' => $txt,
-            'title' => ($txt['REGISTER'] ?? 'REGISTER') . ' - ' . SITENAME,
+            'title' => ($txt['SYS_REGISTER'] ?? 'SYS_REGISTER') . ' - ' . SITENAME,
             'username' => '',
             'email' => '',
             'password' => '',
@@ -81,19 +81,19 @@ class Auth extends Controller {
             $data['password_confirm'] = $_POST['password_confirm'];
 
             if ($data['password'] !== $data['password_confirm']) {
-                $data['error'] = $txt['ERR_PASSWORDS_MISMATCH'] ?? 'ERR_PASSWORDS_MISMATCH';
+                $data['error'] = $txt['USER_ERR_PASSWORDS_MISMATCH'] ?? 'USER_ERR_PASSWORDS_MISMATCH';
             } elseif (strlen($data['password']) < 6) {
-                $data['error'] = $txt['ERR_PASSWORD_LENGTH'] ?? 'ERR_PASSWORD_LENGTH';
+                $data['error'] = $txt['USER_ERR_PASSWORD_LENGTH'] ?? 'USER_ERR_PASSWORD_LENGTH';
             } else {
                 // Vérifier existence
                 if ($this->userModel->findUserByEmailOrUsername($data['email']) || $this->userModel->findUserByEmailOrUsername($data['username'])) {
-                    $data['error'] = $txt['ERR_USER_EXISTS'] ?? 'ERR_USER_EXISTS';
+                    $data['error'] = $txt['USER_ERR_USER_EXISTS'] ?? 'USER_ERR_USER_EXISTS';
                 } else {
                     $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
                     if ($this->userModel->register($data)) {
-                        $data['success'] = $txt['SUCCESS_REGISTER'] ?? 'SUCCESS_REGISTER';
+                        $data['success'] = $txt['USER_SUCCESS_REGISTER'] ?? 'USER_SUCCESS_REGISTER';
                     } else {
-                        $data['error'] = $txt['ERR_REGISTER_FAIL'] ?? 'ERR_REGISTER_FAIL';
+                        $data['error'] = $txt['USER_ERR_REGISTER_FAIL'] ?? 'USER_ERR_REGISTER_FAIL';
                     }
                 }
             }

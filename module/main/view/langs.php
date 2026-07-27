@@ -1,4 +1,4 @@
-<!-- Contenu principal -->
+﻿<!-- Contenu principal -->
 <main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
         <h2><?php echo $data['txt']['LANGS_MGT'] ?? 'LANGS_MGT'; ?></h2>
@@ -24,7 +24,7 @@
                 <th data-name="lang_name"><?php echo $data['txt']['LANG_NAME'] ?? 'LANG_NAME'; ?></th>
                 <th><?php echo $data['txt']['LANG_FLAG'] ?? 'LANG_FLAG'; ?></th>
                 <th><?php echo $data['txt']['STATUS'] ?? 'STATUS'; ?></th>
-                <th><?php echo $data['txt']['ACTIONS'] ?? 'ACTIONS'; ?></th>
+                <th><?php echo $data['txt']['USER_ACTIONS'] ?? 'USER_ACTIONS'; ?></th>
             </tr>
         </thead>
         <tbody>
@@ -43,18 +43,18 @@
                         <td data-label="<?php echo htmlspecialchars($data['txt']['STATUS'] ?? 'STATUS'); ?>">
                             <span class="badge <?php echo $badgeClass; ?>"><?php echo $statusCode; ?></span>
                         </td>
-                        <td data-label="<?php echo htmlspecialchars($data['txt']['ACTIONS'] ?? 'ACTIONS'); ?>">
+                        <td data-label="<?php echo htmlspecialchars($data['txt']['USER_ACTIONS'] ?? 'USER_ACTIONS'); ?>">
                             <div class="d-flex flex-row flex-wrap" style="gap: 5px;">
                                 <!-- Modifier -->
-                                <a href="<?php echo URLROOT; ?>/main/lang/<?php echo htmlspecialchars($lang['lang_code']); ?>" class="button small info" title="<?php echo htmlspecialchars($data['txt']['BTN_EDIT'] ?? 'BTN_EDIT'); ?>"><span class="mif-pencil"></span></a>
+                                <a href="<?php echo URLROOT; ?>/main/lang/<?php echo htmlspecialchars($lang['lang_code']); ?>" class="button small info" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'SYS_BTN_EDIT'); ?>"><span class="mif-pencil"></span></a>
 
                                 <!-- Action Désactiver (Draft) -->
                                 <?php if (intval($lang['status_id']) === 1): ?>
-                                <button onclick="if(confirm('<?php echo addslashes($data['txt']['DELETE_LANG_CONFIRM'] ?? 'DELETE_LANG_CONFIRM'); ?>')) location.href='<?php echo URLROOT; ?>/main/lang/delete/<?php echo htmlspecialchars($lang['lang_code']); ?>';" class="button small warning" title="<?php echo htmlspecialchars($data['txt']['BTN_DISABLE'] ?? 'BTN_DISABLE'); ?>"><span class="mif-cancel"></span></button>
+                                <button onclick="if(confirm('<?php echo addslashes($data['txt']['DELETE_LANG_CONFIRM'] ?? 'DELETE_LANG_CONFIRM'); ?>')) location.href='<?php echo URLROOT; ?>/main/lang/delete/<?php echo htmlspecialchars($lang['lang_code']); ?>';" class="button small warning" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_DISABLE'] ?? 'SYS_BTN_DISABLE'); ?>"><span class="mif-cancel"></span></button>
                                 <?php endif; ?>
 
                                 <!-- Action Supprimer Définitivement -->
-                                <button onclick="if(confirm('<?php echo addslashes($data['txt']['FORCE_DELETE_LANG_CONFIRM'] ?? 'FORCE_DELETE_LANG_CONFIRM'); ?>')) location.href='<?php echo URLROOT; ?>/main/lang/forcedelete/<?php echo htmlspecialchars($lang['lang_code']); ?>';" class="button small alert" title="<?php echo htmlspecialchars($data['txt']['BTN_DELETE'] ?? 'BTN_DELETE'); ?>"><span class="mif-bin"></span></button>
+                                <button onclick="if(confirm('<?php echo addslashes($data['txt']['FORCE_DELETE_LANG_CONFIRM'] ?? 'FORCE_DELETE_LANG_CONFIRM'); ?>')) location.href='<?php echo URLROOT; ?>/main/lang/forcedelete/<?php echo htmlspecialchars($lang['lang_code']); ?>';" class="button small alert" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_DELETE'] ?? 'SYS_BTN_DELETE'); ?>"><span class="mif-bin"></span></button>
                             </div>
                         </td>
                     </tr>

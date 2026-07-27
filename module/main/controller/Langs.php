@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Module\Main\Controller;
 
 use Core\Controller;
@@ -10,7 +10,7 @@ class Langs extends Controller {
     public function __construct() {
         if (!isset($_SESSION['user_id']) || !isset($_SESSION['roles']) || !in_array('admin', $_SESSION['roles'])) {
             $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('main'));
-            die($txt['ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
         }
 
         $this->langModel = $this->model('main/Lang');

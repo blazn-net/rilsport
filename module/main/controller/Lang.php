@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Module\Main\Controller;
 
 use Core\Controller;
@@ -9,7 +9,7 @@ class Lang extends Controller {
     public function __construct() {
         if (!isset($_SESSION['user_id']) || !isset($_SESSION['roles']) || !in_array('admin', $_SESSION['roles'])) {
             $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('main'));
-            die($txt['ERR_UNAUTHORIZED'] ?? 'ERR_UNAUTHORIZED');
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
         }
 
         $this->langModel = $this->model('main/Lang');
@@ -67,7 +67,7 @@ class Lang extends Controller {
                         return $this->redirect('main/langs');
                     }
                 } catch (\Exception $e) {
-                    $data['error'] = ($txt['ERR_UPDATE_FAIL'] ?? 'ERR_UPDATE_FAIL : ') . $e->getMessage();
+                    $data['error'] = ($txt['USER_ERR_UPDATE_FAIL'] ?? 'ERR_UPDATE_FAIL : ') . $e->getMessage();
                     $data['lang'] = (object) $_POST;
                 }
             }

@@ -1,8 +1,8 @@
-    <main class="p-4" style="margin-top: 60px;">
+﻿    <main class="p-4" style="margin-top: 60px;">
         <div class="d-flex flex-justify-between flex-align-center mb-4">
-            <h2><?php echo $data['mode'] === 'edit' ? ($data['txt']['EDIT_USER_TITLE'] ?? 'EDIT_USER_TITLE') : ($data['txt']['ADD_USER_BTN'] ?? 'ADD_USER_BTN'); ?></h2>
-            <a href="<?php echo URLROOT; ?>/<?php echo $data['is_admin'] ? 'main/users' : 'main'; ?>" class="button" title="<?php echo htmlspecialchars($data['txt']['BTN_BACK'] ?? 'BTN_BACK'); ?>">
-                <span class="mif-arrow-left"></span> <?php echo $data['txt']['BTN_BACK'] ?? 'BTN_BACK'; ?>
+            <h2><?php echo $data['mode'] === 'edit' ? ($data['txt']['USER_EDIT_USER_TITLE'] ?? 'USER_EDIT_USER_TITLE') : ($data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'); ?></h2>
+            <a href="<?php echo URLROOT; ?>/<?php echo $data['is_admin'] ? 'main/users' : 'main'; ?>" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'); ?>">
+                <span class="mif-arrow-left"></span> <?php echo $data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'; ?>
             </a>
         </div>
 
@@ -16,20 +16,20 @@
 
         <form method="POST" action="<?php echo URLROOT; ?>/main/user/<?php echo $data['id'] ? $data['id'] : ''; ?>">
             <div class="form-group">
-                <label><?php echo $data['txt']['USERNAME'] ?? 'USERNAME'; ?></label>
+                <label><?php echo $data['txt']['USER_USERNAME'] ?? 'USER_USERNAME'; ?></label>
                 <input type="text" name="username" data-role="input" value="<?php echo isset($data['user']->username) ? htmlspecialchars($data['user']->username) : ''; ?>" required>
             </div>
             <div class="form-group mt-2">
-                <label><?php echo $data['txt']['EMAIL'] ?? 'EMAIL'; ?></label>
+                <label><?php echo $data['txt']['USER_EMAIL'] ?? 'USER_EMAIL'; ?></label>
                 <input type="email" name="email" data-role="input" value="<?php echo isset($data['user']->email) ? htmlspecialchars($data['user']->email) : ''; ?>" required>
             </div>
             <div class="form-group mt-2">
-                <label><?php echo $data['txt']['PASSWORD'] ?? 'PASSWORD'; ?> <?php echo $data['mode'] === 'edit' ? ($data['txt']['LEAVE_BLANK_NO_CHANGE'] ?? 'LEAVE_BLANK_NO_CHANGE') : ''; ?></label>
+                <label><?php echo $data['txt']['USER_PASSWORD'] ?? 'USER_PASSWORD'; ?> <?php echo $data['mode'] === 'edit' ? ($data['txt']['USER_LEAVE_BLANK_NO_CHANGE'] ?? 'USER_LEAVE_BLANK_NO_CHANGE') : ''; ?></label>
                 <input type="password" name="password" data-role="input" <?php echo $data['mode'] === 'add' ? 'required' : ''; ?>>
             </div>
             <?php if ($data['is_admin']): ?>
             <div class="form-group mt-2">
-                <label><?php echo $data['txt']['ROLE'] ?? 'ROLE'; ?></label>
+                <label><?php echo $data['txt']['USER_ROLE'] ?? 'USER_ROLE'; ?></label>
                 <select name="roles[]" multiple data-role="select">
                     <?php foreach ($data['available_roles'] as $role_id => $role_info): ?>
                         <?php $selected = (isset($data['user']->roles) && is_array($data['user']->roles) && in_array($role_id, $data['user']->roles)) ? 'selected' : ''; ?>
@@ -74,7 +74,7 @@
             <?php endif; ?>
 
             <div class="form-group mt-4">
-                <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['BTN_UPDATE'] ?? 'BTN_UPDATE') : ($data['txt']['BTN_SAVE'] ?? 'BTN_SAVE')); ?>"><?php echo $data['mode'] === 'edit' ? ($data['txt']['BTN_UPDATE'] ?? 'BTN_UPDATE') : ($data['txt']['BTN_SAVE'] ?? 'BTN_SAVE'); ?></button>
+                <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'USER_BTN_UPDATE') : ($data['txt']['USER_BTN_SAVE'] ?? 'USER_BTN_SAVE')); ?>"><?php echo $data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'USER_BTN_UPDATE') : ($data['txt']['USER_BTN_SAVE'] ?? 'USER_BTN_SAVE'); ?></button>
             </div>
         </form>
     </main>

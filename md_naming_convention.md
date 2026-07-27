@@ -133,3 +133,84 @@ La convention Singulier/Pluriel des pages **List** et **Form** (voir section ci-
 *   **`/main/users`** ➔ page List (tableau de tous les utilisateurs)
 *   **`/main/user`** ➔ page Form en mode Ajout
 *   **`/main/user/1`** ➔ page Form en mode Modification
+
+---
+
+## Base de données
+
+### Fichiers SQL
+
+Un seul fichier `.sql` par module, nommé `[module].sql`, placé dans `module/[module]/database/` :
+
+```
+module/main/database/main.sql
+module/system/database/system.sql
+module/blog/database/blog.sql
+```
+
+Chaque fichier contient dans l'ordre :
+1. **Schémas** (`CREATE TABLE IF NOT EXISTS`) — dans l'ordre des dépendances FK
+2. **Données** (`INSERT ... ON CONFLICT`) — dans l'ordre des dépendances FK
+
+---
+
+### Nommage des tables
+
+Convention : **`t_[MODULE]_[OBJET]`**
+
+| Exemple | Module | Objet |
+|---|---|---|
+| `t_main_lang` | `main` | `lang` |
+| `t_main_user` | `main` | `user` |
+| `t_main_role` | `main` | `role` |
+| `t_main_user_role` | `main` | `user_role` (table de liaison) |
+| `t_main_user_status` | `main` | `user_status` |
+| `t_main_text_key` | `main` | registre des clés de traduction |
+| `t_main_text` | `main` | traductions |
+| `t_system_text_key` | `system` | registre des clés de traduction |
+| `t_system_text` | `system` | traductions |
+
+---
+
+### Tables de traduction
+
+Chaque module dispose d'**une seule paire de tables de traduction**, partagée par tous ses objets :
+
+| Table | Rôle |
+|---|---|
+| `t_[MODULE]_text_key` | Registre de toutes les clés de traduction du module |
+| `t_[MODULE]_text` | Traductions : `(text_code, lang_code)` → `text_label` |
+
+**Préfixe obligatoire dans `text_code` : `{OBJET}_`**
+
+Chaque clé doit être préfixée par le nom de l'objet métier auquel elle appartient, en majuscules :
+
+```
+USER_USERNAME           → objet user, libellé champ nom d'utilisateur
+USER_ERR_UNAUTHORIZED   → objet user, message erreur accès refusé
+SYS_HOME                → module system, lien accueil
+SYS_BTN_EDIT            → module system, bouton modifier
+```
+
+---
+
+### Politique d'insertion (`ON CONFLICT`)
+
+| Type de données | Clause | Raison |
+|---|---|---|
+| Données de référence (langues, rôles, statuts, utilisateurs par défaut) | `ON CONFLICT (...) DO NOTHING` | Ne pas écraser des données potentiellement modifiées en production |
+| Traductions (`t_[MODULE]_text`) | `ON CONFLICT (...) DO UPDATE SET text_label = EXCLUDED.text_label` | Permet de corriger une traduction en relançant simplement le script |
+
+> Les colonnes de conflit doivent **toujours être explicites** — ne jamais omettre `(...)`.
+
+---
+
+### Ordre d'exécution dans un fichier `.sql`
+
+Pour chaque module, respecter cet ordre :
+
+1. `CREATE TABLE` sans dépendances FK (ex: `t_main_lang`)
+2. `CREATE TABLE` des tables de traduction (ex: `t_main_text_key`, `t_main_text`)
+3. `CREATE TABLE` des tables métier avec FK (ex: `t_main_user`, `t_main_role`, ...)
+4. `INSERT` données de référence (dans le même ordre que les schémas)
+5. `INSERT` traductions (`t_[MODULE]_text_key` puis `t_[MODULE]_text`)

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="<?php echo $_SESSION['lang'] ?? 'fr'; ?>">
 <head>
     <meta charset="UTF-8">
@@ -16,7 +16,7 @@
 <body class="bg-light">
 
     <div class="app-bar pos-absolute bg-dark z-1" data-role="appbar" id="app-bar-1">
-        <button class="app-bar-item c-pointer" id="sidebar-toggle" title="<?php echo htmlspecialchars($data['txt']['MENU'] ?? 'Menu'); ?>">
+        <button class="app-bar-item c-pointer" id="sidebar-toggle" title="<?php echo htmlspecialchars($data['txt']['SYS_MENU'] ?? 'Menu'); ?>">
             <span class="mif-menu mif-2x fg-white"></span>
         </button>
         <h1 class="m-0" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none;">

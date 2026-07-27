@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Module\Main\Controller;
 
 use Core\Controller;
@@ -13,8 +13,8 @@ class Main extends Controller {
         
         $data = [
             'txt' => $txt,
-            'title' => ($txt['HOME'] ?? 'HOME') . ' - ' . SITENAME,
-            'description' => $txt['HOME'] ?? 'HOME'
+            'title' => ($txt['SYS_HOME'] ?? 'SYS_HOME') . ' - ' . SITENAME,
+            'description' => $txt['SYS_HOME'] ?? 'SYS_HOME'
         ];
 
         $this->view('system/header', $data);
