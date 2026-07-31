@@ -48,7 +48,7 @@ class Language {
         }
 
         try {
-            self::$db->query("SELECT lang_code, lang_name, lang_flag FROM t_main_lang WHERE status_id = 1 ORDER BY lang_code ASC");
+            self::$db->query("SELECT lang_code, lang_name, lang_flag FROM t_lang_lang WHERE status_id = 1 ORDER BY lang_code ASC");
             $results = self::$db->resultSet();
             if ($results) {
                 // Ensure array shape if resultSet returns objects depending on PDO mode

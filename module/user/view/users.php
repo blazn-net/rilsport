@@ -1,8 +1,8 @@
-﻿<!-- Contenu principal -->
+<!-- Contenu principal -->
 <main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
         <h2><?php echo $data['txt']['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></h2>
-        <a href="<?php echo URLROOT; ?>/main/user" class="button success mt-2 mt-md-0" title="<?php echo htmlspecialchars($data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'); ?>">
+        <a href="<?php echo URLROOT; ?>/user" class="button success mt-2 mt-md-0" title="<?php echo htmlspecialchars($data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'); ?>">
             <span class="mif-plus"></span> <?php echo $data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'; ?>
         </a>
     </div>
@@ -66,9 +66,9 @@
                     </td>
                     <td data-label="<?php echo $data['txt']['USER_ACTIONS'] ?? 'USER_ACTIONS'; ?>">
                         <div class="d-flex flex-row flex-wrap" style="gap: 5px;">
-                            <a href="<?php echo URLROOT; ?>/main/user/<?php echo $u['id']; ?>"
+                            <a href="<?php echo URLROOT; ?>/user/<?php echo $u['id']; ?>"
                                 class="button small info" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'SYS_BTN_EDIT'); ?>"><span class="mif-pencil"></span></a>
-                            <a href="<?php echo URLROOT; ?>/main/users?action=delete&id=<?php echo $u['id']; ?>"
+                            <a href="<?php echo URLROOT; ?>/user/users?action=delete&id=<?php echo $u['id']; ?>"
                                 class="button small alert" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_DELETE'] ?? 'SYS_BTN_DELETE'); ?>"
                                 onclick="return confirm('<?php echo addslashes($data['txt']['USER_DELETE_USER_CONFIRM'] ?? 'USER_DELETE_USER_CONFIRM'); ?>');"><span
                                     class="mif-bin"></span></a>

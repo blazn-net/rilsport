@@ -1,5 +1,5 @@
-﻿<?php
-namespace Module\Main\Model;
+<?php
+namespace Module\Lang\Model;
 
 use Core\Database;
 
@@ -11,7 +11,7 @@ class Lang {
     }
 
     public function getAllLangs() {
-        $this->db->query("SELECT * FROM t_main_lang ORDER BY lang_code ASC");
+        $this->db->query("SELECT * FROM t_lang_lang ORDER BY lang_code ASC");
         return $this->db->resultSet();
     }
 
@@ -20,9 +20,9 @@ class Lang {
             SELECT l.*, 
                    u_c.username AS created_by_name, 
                    u_m.username AS modified_by_name 
-            FROM t_main_lang l
-            LEFT JOIN t_main_user u_c ON l.created_by = u_c.id
-            LEFT JOIN t_main_user u_m ON l.modified_by = u_m.id
+            FROM t_lang_lang l
+            LEFT JOIN t_user_user u_c ON l.created_by = u_c.id
+            LEFT JOIN t_user_user u_m ON l.modified_by = u_m.id
             WHERE l.lang_code = :code
         ");
         $this->db->bind(':code', $code);
@@ -30,7 +30,7 @@ class Lang {
     }
 
     public function addLang($data) {
-        $this->db->query("INSERT INTO t_main_lang (lang_code, lang_name, lang_flag, status_id, created_by, created_at) 
+        $this->db->query("INSERT INTO t_lang_lang (lang_code, lang_name, lang_flag, status_id, created_by, created_at) 
                           VALUES (:code, :name, :flag, :status, :user, CURRENT_TIMESTAMP)");
         $this->db->bind(':code', $data['lang_code']);
         $this->db->bind(':name', $data['lang_name']);
@@ -44,7 +44,7 @@ class Lang {
             $keyTables = $this->db->resultSet();
 
             foreach ($keyTables as $tbl) {
-                $keyTableName = $tbl['table_name'];
+                $keyTableName  = $tbl['table_name'];
                 $textTableName = str_replace('_key', '', $keyTableName);
                 
                 $this->db->query("SELECT text_code FROM {$keyTableName}");
@@ -63,7 +63,7 @@ class Lang {
     }
 
     public function updateLang($data) {
-        $this->db->query("UPDATE t_main_lang SET lang_name = :name, lang_flag = :flag, status_id = :status, modified_by = :user, modified_at = CURRENT_TIMESTAMP WHERE lang_code = :code");
+        $this->db->query("UPDATE t_lang_lang SET lang_name = :name, lang_flag = :flag, status_id = :status, modified_by = :user, modified_at = CURRENT_TIMESTAMP WHERE lang_code = :code");
         $this->db->bind(':code', $data['lang_code']);
         $this->db->bind(':name', $data['lang_name']);
         $this->db->bind(':flag', $data['lang_flag']);
@@ -73,14 +73,14 @@ class Lang {
     }
 
     public function softDeleteLang($code, $userId) {
-        $this->db->query("UPDATE t_main_lang SET status_id = 2, modified_by = :user, modified_at = CURRENT_TIMESTAMP WHERE lang_code = :code");
+        $this->db->query("UPDATE t_lang_lang SET status_id = 2, modified_by = :user, modified_at = CURRENT_TIMESTAMP WHERE lang_code = :code");
         $this->db->bind(':code', $code);
         $this->db->bind(':user', $userId);
         return $this->db->execute();
     }
 
     public function forceDeleteLang($code) {
-        $this->db->query("DELETE FROM t_main_lang WHERE lang_code = :code");
+        $this->db->query("DELETE FROM t_lang_lang WHERE lang_code = :code");
         $this->db->bind(':code', $code);
         return $this->db->execute();
     }

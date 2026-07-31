@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="<?php echo $_SESSION['lang'] ?? 'fr'; ?>">
 <head>
     <meta charset="UTF-8">

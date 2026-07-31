@@ -1,5 +1,5 @@
-﻿<?php
-namespace Module\Main\Controller;
+<?php
+namespace Module\User\Controller;
 
 use Core\Controller;
 
@@ -13,7 +13,7 @@ class Users extends Controller
             $txt = $this->loadLanguage('user');
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
         }
-        $this->userModel = $this->model('main/User');
+        $this->userModel = $this->model('user/User');
     }
 
     public function index()
@@ -21,13 +21,13 @@ class Users extends Controller
         $txt = $this->loadLanguage('user');
 
         $data = [
-            'txt' => $txt,
-            'title' => ($txt['USER_USERS_LIST'] ?? 'USER_USERS_LIST') . ' - ' . SITENAME,
-            'users' => [],
-            'message' => '',
-            'error' => '',
-            'available_roles' => $this->userModel->getAllRoles(),
-            'available_statuses' => $this->userModel->getUserStatuses()
+            'txt'               => $txt,
+            'title'             => ($txt['USER_USERS_LIST'] ?? 'USER_USERS_LIST') . ' - ' . SITENAME,
+            'users'             => [],
+            'message'           => '',
+            'error'             => '',
+            'available_roles'   => $this->userModel->getAllRoles(),
+            'available_statuses'=> $this->userModel->getUserStatuses()
         ];
 
         // Gérer la suppression si demandée
@@ -48,7 +48,7 @@ class Users extends Controller
 
         $this->view('system/header', $data);
         $this->view('system/sidebar', $data);
-        $this->view('main/user/users', $data);
+        $this->view('user/users', $data);
         $this->view('system/footer', $data);
     }
 }

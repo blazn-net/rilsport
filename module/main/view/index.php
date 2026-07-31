@@ -1,4 +1,4 @@
-﻿    <!-- Contenu principal -->
+    <!-- Contenu principal -->
     <main class="p-4" style="margin-top: 60px;">
         <h1><?php echo htmlspecialchars($data['description']); ?></h1>
         <p><?php echo $data['txt']['SYS_MVC_DESC'] ?? 'SYS_MVC_DESC'; ?></p>

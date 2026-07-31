@@ -1,7 +1,7 @@
-﻿<main class="p-4" style="margin-top: 60px;">
+<main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center mb-4">
-        <h2><?php echo ($data['mode'] === 'edit') ? ($data['txt']['EDIT_LANG_TITLE'] ?? 'EDIT_LANG_TITLE') : ($data['txt']['ADD_LANG_TITLE'] ?? 'ADD_LANG_TITLE'); ?></h2>
-        <a href="<?php echo URLROOT; ?>/main/langs" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'); ?>">
+        <h2><?php echo ($data['mode'] === 'edit') ? ($data['txt']['LANG_EDIT_LANG_TITLE'] ?? 'LANG_EDIT_LANG_TITLE') : ($data['txt']['LANG_ADD_LANG_TITLE'] ?? 'LANG_ADD_LANG_TITLE'); ?></h2>
+        <a href="<?php echo URLROOT; ?>/lang/langs" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'); ?>">
             <span class="mif-arrow-left"></span> <?php echo $data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'; ?>
         </a>
     </div>
@@ -20,7 +20,7 @@
     </div>
     <?php endif; ?>
 
-    <form method="POST" action="<?php echo URLROOT; ?>/main/lang<?php echo ($data['mode'] === 'edit' && isset($data['lang']->lang_code)) ? '/' . htmlspecialchars($data['lang']->lang_code) : ''; ?>">
+    <form method="POST" action="<?php echo URLROOT; ?>/lang<?php echo ($data['mode'] === 'edit' && isset($data['lang']->lang_code)) ? '/' . htmlspecialchars($data['lang']->lang_code) : ''; ?>">
         
         <div class="form-group">
             <label><?php echo $data['txt']['LANG_CODE_LABEL'] ?? 'LANG_CODE_LABEL'; ?></label>
@@ -43,7 +43,7 @@
 
         <?php if ($data['mode'] === 'edit'): ?>
         <div class="form-group mt-2">
-            <label><?php echo $data['txt']['STATUS'] ?? 'STATUS'; ?></label>
+            <label><?php echo $data['txt']['LANG_STATUS'] ?? 'LANG_STATUS'; ?></label>
             <select name="status_id" data-role="select">
                 <option value="1" <?php echo (isset($data['lang']->status_id) && intval($data['lang']->status_id) === 1) ? 'selected' : ''; ?>><?php echo $data['txt']['LANG_ACTIVE'] ?? 'LANG_ACTIVE'; ?></option>
                 <option value="2" <?php echo (isset($data['lang']->status_id) && intval($data['lang']->status_id) === 2) ? 'selected' : ''; ?>><?php echo $data['txt']['LANG_DRAFT'] ?? 'LANG_DRAFT'; ?></option>
@@ -51,18 +51,18 @@
         </div>
 
         <div data-role="panel" 
-             data-title-caption="<?php echo htmlspecialchars($data['txt']['INFO_PANEL'] ?? 'INFO_PANEL'); ?>" 
+             data-title-caption="<?php echo htmlspecialchars($data['txt']['LANG_INFO_PANEL'] ?? 'LANG_INFO_PANEL'); ?>" 
              data-collapsible="true" 
              data-collapsed="true" 
              class="mt-4">
             <div class="row">
                 <div class="cell-md-6">
-                    <p><strong><?php echo $data['txt']['CREATED_AT'] ?? 'CREATED_AT'; ?></strong> <?php echo isset($data['lang']->created_at) && $data['lang']->created_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['lang']->created_at))) : '-'; ?></p>
-                    <p><strong><?php echo $data['txt']['CREATED_BY'] ?? 'CREATED_BY'; ?></strong> <?php echo isset($data['lang']->created_by_name) && $data['lang']->created_by_name ? htmlspecialchars($data['lang']->created_by_name) : '-'; ?></p>
+                    <p><strong><?php echo $data['txt']['LANG_CREATED_AT'] ?? 'LANG_CREATED_AT'; ?></strong> <?php echo isset($data['lang']->created_at) && $data['lang']->created_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['lang']->created_at))) : '-'; ?></p>
+                    <p><strong><?php echo $data['txt']['LANG_CREATED_BY'] ?? 'LANG_CREATED_BY'; ?></strong> <?php echo isset($data['lang']->created_by_name) && $data['lang']->created_by_name ? htmlspecialchars($data['lang']->created_by_name) : '-'; ?></p>
                 </div>
                 <div class="cell-md-6">
-                    <p><strong><?php echo $data['txt']['MODIFIED_AT'] ?? 'MODIFIED_AT'; ?></strong> <?php echo isset($data['lang']->modified_at) && $data['lang']->modified_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['lang']->modified_at))) : '-'; ?></p>
-                    <p><strong><?php echo $data['txt']['MODIFIED_BY'] ?? 'MODIFIED_BY'; ?></strong> <?php echo isset($data['lang']->modified_by_name) && $data['lang']->modified_by_name ? htmlspecialchars($data['lang']->modified_by_name) : '-'; ?></p>
+                    <p><strong><?php echo $data['txt']['LANG_MODIFIED_AT'] ?? 'LANG_MODIFIED_AT'; ?></strong> <?php echo isset($data['lang']->modified_at) && $data['lang']->modified_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['lang']->modified_at))) : '-'; ?></p>
+                    <p><strong><?php echo $data['txt']['LANG_MODIFIED_BY'] ?? 'LANG_MODIFIED_BY'; ?></strong> <?php echo isset($data['lang']->modified_by_name) && $data['lang']->modified_by_name ? htmlspecialchars($data['lang']->modified_by_name) : '-'; ?></p>
                 </div>
             </div>
         </div>

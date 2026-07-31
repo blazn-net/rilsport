@@ -3,8 +3,9 @@
 -- ============================================================
 -- Ordre d'exécution :
 --   1. Schéma : t_system_text_key, t_system_text
---   2. Données : t_system_text_key, t_system_text (traductions)
--- Note : dépend de main.sql (t_main_lang)
+--   2. Données : t_system_text_key, t_system_text (traductions SYS_)
+--
+-- Dépendances : lang.sql (t_lang_lang)
 -- ============================================================
 
 
@@ -22,7 +23,7 @@ CREATE TABLE IF NOT EXISTS t_system_text (
     text_label TEXT         NOT NULL,
     PRIMARY KEY (text_code, lang_code),
     FOREIGN KEY (text_code) REFERENCES t_system_text_key(text_code) ON DELETE CASCADE,
-    FOREIGN KEY (lang_code) REFERENCES t_main_lang(lang_code)       ON DELETE CASCADE
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code)       ON DELETE CASCADE
 );
 
 

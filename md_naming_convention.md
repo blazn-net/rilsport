@@ -118,11 +118,11 @@ module/blog/
 
 | URL | Module | Objet | Page |
 |-----|--------|-------|------|
-| `/main/users` | `main` | `user` | Liste des utilisateurs |
-| `/main/user` | `main` | `user` | Formulaire (ajout) |
-| `/main/user/1` | `main` | `user` | Formulaire (modification id=1) |
-| `/main/login` | `main` | — | Page de connexion |
-| `/main/langs` | `main` | `lang` | Liste des langues |
+| `/user/users` | `user` | `user` | Liste des utilisateurs |
+| `/user/user` | `user` | `user` | Formulaire (ajout) |
+| `/user/user/1` | `user` | `user` | Formulaire (modification id=1) |
+| `/user/login` | `user` | — | Page de connexion |
+| `/lang/langs` | `lang` | `lang` | Liste des langues |
 | `/blog/articles` | `blog` | `article` | Liste des articles |
 | `/blog/article/5` | `blog` | `article` | Formulaire (modification id=5) |
 
@@ -130,9 +130,9 @@ module/blog/
 
 La convention Singulier/Pluriel des pages **List** et **Form** (voir section ci-dessus) s'applique directement dans l'URL :
 
-*   **`/main/users`** ➔ page List (tableau de tous les utilisateurs)
-*   **`/main/user`** ➔ page Form en mode Ajout
-*   **`/main/user/1`** ➔ page Form en mode Modification
+*   **`/user/users`** ➔ page List (tableau de tous les utilisateurs)
+*   **`/user/user`** ➔ page Form en mode Ajout
+*   **`/user/user/1`** ➔ page Form en mode Modification
 
 ---
 
@@ -160,11 +160,11 @@ Convention : **`t_[MODULE]_[OBJET]`**
 
 | Exemple | Module | Objet |
 |---|---|---|
-| `t_main_lang` | `main` | `lang` |
-| `t_main_user` | `main` | `user` |
-| `t_main_role` | `main` | `role` |
-| `t_main_user_role` | `main` | `user_role` (table de liaison) |
-| `t_main_user_status` | `main` | `user_status` |
+| `t_lang_lang` | `lang` | `lang` |
+| `t_user_user` | `user` | `user` |
+| `t_user_role` | `user` | `role` |
+| `t_user_user_role` | `user` | `user_role` (table de liaison) |
+| `t_user_user_status` | `user` | `user_status` |
 | `t_main_text_key` | `main` | registre des clés de traduction |
 | `t_main_text` | `main` | traductions |
 | `t_system_text_key` | `system` | registre des clés de traduction |
@@ -209,8 +209,8 @@ SYS_BTN_EDIT            → module system, bouton modifier
 
 Pour chaque module, respecter cet ordre :
 
-1. `CREATE TABLE` sans dépendances FK (ex: `t_main_lang`)
+1. `CREATE TABLE` sans dépendances FK (ex: `t_lang_lang`)
 2. `CREATE TABLE` des tables de traduction (ex: `t_main_text_key`, `t_main_text`)
-3. `CREATE TABLE` des tables métier avec FK (ex: `t_main_user`, `t_main_role`, ...)
+3. `CREATE TABLE` des tables métier avec FK (ex: `t_user_user`, `t_user_role`, ...)
 4. `INSERT` données de référence (dans le même ordre que les schémas)
 5. `INSERT` traductions (`t_[MODULE]_text_key` puis `t_[MODULE]_text`)

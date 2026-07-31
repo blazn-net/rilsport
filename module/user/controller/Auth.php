@@ -1,5 +1,5 @@
-﻿<?php
-namespace Module\Main\Controller;
+<?php
+namespace Module\User\Controller;
 
 use Core\Controller;
 
@@ -7,11 +7,11 @@ class Auth extends Controller {
     private $userModel;
 
     public function __construct() {
-        $this->userModel = $this->model('main/User');
+        $this->userModel = $this->model('user/User');
     }
 
     public function index() {
-        $this->redirect('main/login');
+        $this->redirect('user/login');
     }
 
     public function login() {
@@ -22,15 +22,15 @@ class Auth extends Controller {
         $txt = $this->loadLanguage('user');
         
         $data = [
-            'txt' => $txt,
-            'title' => ($txt['SYS_LOGIN'] ?? 'SYS_LOGIN') . ' - ' . SITENAME,
-            'login' => '',
+            'txt'      => $txt,
+            'title'    => ($txt['SYS_LOGIN'] ?? 'SYS_LOGIN') . ' - ' . SITENAME,
+            'login'    => '',
             'password' => '',
-            'error' => ''
+            'error'    => ''
         ];
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $data['login'] = trim($_POST['login']);
+            $data['login']    = trim($_POST['login']);
             $data['password'] = $_POST['password'];
 
             $user = $this->userModel->findUserByEmailOrUsername($data['login']);
@@ -38,9 +38,9 @@ class Auth extends Controller {
             if ($user && password_verify($data['password'], is_array($user) ? $user['password_hash'] : $user->password_hash)) {
                 $status_id = is_array($user) ? $user['status_id'] : $user->status_id;
                 if ($status_id == 1) {
-                    $_SESSION['user_id'] = is_array($user) ? $user['id'] : $user->id;
+                    $_SESSION['user_id']  = is_array($user) ? $user['id'] : $user->id;
                     $_SESSION['username'] = is_array($user) ? $user['username'] : $user->username;
-                    $_SESSION['roles'] = is_array($user) ? $user['roles'] : $user->roles;
+                    $_SESSION['roles']    = is_array($user) ? $user['roles'] : $user->roles;
                     $this->redirect('main');
                 } else {
                     $data['error'] = $txt['ERR_ACCOUNT_NOT_VALIDATED'] ?? 'Le compte n\'est pas validé.';
@@ -52,7 +52,7 @@ class Auth extends Controller {
 
         $this->view('system/header', $data);
         $this->view('system/sidebar', $data);
-        $this->view('main/user/login', $data);
+        $this->view('user/login', $data);
         $this->view('system/footer', $data);
     }
 
@@ -64,20 +64,20 @@ class Auth extends Controller {
         $txt = $this->loadLanguage('user');
 
         $data = [
-            'txt' => $txt,
-            'title' => ($txt['SYS_REGISTER'] ?? 'SYS_REGISTER') . ' - ' . SITENAME,
-            'username' => '',
-            'email' => '',
-            'password' => '',
+            'txt'              => $txt,
+            'title'            => ($txt['SYS_REGISTER'] ?? 'SYS_REGISTER') . ' - ' . SITENAME,
+            'username'         => '',
+            'email'            => '',
+            'password'         => '',
             'password_confirm' => '',
-            'error' => '',
-            'success' => ''
+            'error'            => '',
+            'success'          => ''
         ];
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $data['username'] = trim($_POST['username']);
-            $data['email'] = trim($_POST['email']);
-            $data['password'] = $_POST['password'];
+            $data['username']         = trim($_POST['username']);
+            $data['email']            = trim($_POST['email']);
+            $data['password']         = $_POST['password'];
             $data['password_confirm'] = $_POST['password_confirm'];
 
             if ($data['password'] !== $data['password_confirm']) {
@@ -85,7 +85,6 @@ class Auth extends Controller {
             } elseif (strlen($data['password']) < 6) {
                 $data['error'] = $txt['USER_ERR_PASSWORD_LENGTH'] ?? 'USER_ERR_PASSWORD_LENGTH';
             } else {
-                // Vérifier existence
                 if ($this->userModel->findUserByEmailOrUsername($data['email']) || $this->userModel->findUserByEmailOrUsername($data['username'])) {
                     $data['error'] = $txt['USER_ERR_USER_EXISTS'] ?? 'USER_ERR_USER_EXISTS';
                 } else {
@@ -101,13 +100,13 @@ class Auth extends Controller {
 
         $this->view('system/header', $data);
         $this->view('system/sidebar', $data);
-        $this->view('main/user/register', $data);
+        $this->view('user/register', $data);
         $this->view('system/footer', $data);
     }
 
     public function logout() {
         session_unset();
         session_destroy();
-        $this->redirect('main/login');
+        $this->redirect('user/login');
     }
 }

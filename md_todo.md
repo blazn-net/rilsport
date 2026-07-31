@@ -15,9 +15,13 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [x] #3.5 t_[MODULE]_text avec préfixe obligatoire {OBJET}_ dans text_code.
     - [x] #3.6 Ajouter un IF EXISTS dans tous les inserts de données.
         - [x] #3.6.1 Utiliser "ON CONFLICT (...) DO UPDATE"
-    - [x] #3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
-    - [ ] #3.8 Tester les sql 2 fois (script ré-entrant)    
-- [ ] #5 BDD : remplacer les codes par des ids
+    - [ ] #3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
+    - [ ] #3.8 Tester les sql 2 fois (script ré-entrant) ✅ aucune erreur, NOTICE uniquement   
+    - [ ] #3.9 Revoir les script sql !
+    
+- [ ] #5 BDD 
+    - [ ] #5.1 Rechercher les textes en dur
+    - [ ] #5.2 Remplacer les codes par des ids
 - [ ] #6 Créer un module *module* avec les tables :
     - [ ] #6.1 *t_module_module*
     - [ ] #6.2 *t_module_object*

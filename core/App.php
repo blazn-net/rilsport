@@ -31,10 +31,15 @@ class App
                 // Alias : mappe les pages nommées vers leur controller
                 // Ex: /main/login → Controller Auth, méthode login()
                 $aliases = [
-                    'main' => [
+                    'user' => [
                         'login'    => 'Auth',
                         'register' => 'Auth',
                         'logout'   => 'Auth',
+                    ],
+                    'lang' => [
+                        'langs'       => 'Langs',
+                        'delete'      => 'Lang',
+                        'forcedelete' => 'Lang',
                     ]
                 ];
 

@@ -1,4 +1,4 @@
-﻿    <footer class="bg-dark fg-white text-center p-4 mt-auto">
+    <footer class="bg-dark fg-white text-center p-4 mt-auto">
         <p>&copy; <?php echo date('Y'); ?> <?php echo SITENAME; ?>. <?php echo $data['txt']['SYS_COPYRIGHT'] ?? 'SYS_COPYRIGHT'; ?></p>
     </footer>
 

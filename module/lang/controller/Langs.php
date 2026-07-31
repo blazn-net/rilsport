@@ -1,32 +1,30 @@
-﻿<?php
-namespace Module\Main\Controller;
+<?php
+namespace Module\Lang\Controller;
 
 use Core\Controller;
-use Core\Database;
 
 class Langs extends Controller {
     private $langModel;
 
     public function __construct() {
         if (!isset($_SESSION['user_id']) || !isset($_SESSION['roles']) || !in_array('admin', $_SESSION['roles'])) {
-            $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('main'));
+            $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
         }
 
-        $this->langModel = $this->model('main/Lang');
+        $this->langModel = $this->model('lang/Lang');
     }
 
     public function index() {
-        $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('main'));
-
+        $txt   = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
         $langs = $this->langModel->getAllLangs();
 
         $data = [
-            'txt' => $txt,
-            'title' => 'Gestion des Langues - ' . SITENAME,
-            'langs' => $langs,
+            'txt'     => $txt,
+            'title'   => 'Gestion des Langues - ' . SITENAME,
+            'langs'   => $langs,
             'message' => $_SESSION['flash_message'] ?? '',
-            'error' => $_SESSION['flash_error'] ?? ''
+            'error'   => $_SESSION['flash_error'] ?? ''
         ];
 
         unset($_SESSION['flash_message']);
@@ -34,7 +32,7 @@ class Langs extends Controller {
 
         $this->view('system/header', $data);
         $this->view('system/sidebar', $data);
-        $this->view('main/langs', $data); // vue affiche la liste
+        $this->view('lang/langs', $data);
         $this->view('system/footer', $data);
     }
 }

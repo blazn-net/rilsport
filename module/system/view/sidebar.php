@@ -1,4 +1,4 @@
-﻿<!-- Menu latéral (Sidebar) -->
+<!-- Menu latéral (Sidebar) -->
 <aside class="sidebar pos-absolute z-2" data-role="sidebar" data-toggle="#sidebar-toggle" id="sb1">
     <div class="sidebar-header bg-dark">
         <a href="#" class="fg-white sub-action" onclick="Metro.sidebar.close('#sb1'); return false;">
@@ -37,27 +37,26 @@
         <li class="divider"></li>
 
         <?php if (isset($_SESSION['user_id'])): ?>
-            <li><a href="<?php echo URLROOT; ?>/main/user/<?php echo $_SESSION['user_id']; ?>"><span
+            <li><a href="<?php echo URLROOT; ?>/user/<?php echo $_SESSION['user_id']; ?>"><span
                         class="mif-profile icon"></span><?php echo $data['txt']['SYS_MY_PROFILE'] ?? 'SYS_MY_PROFILE'; ?>
                     (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a></li>
             <?php if (isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])): ?>
                 <?php
                 $userTxt = \Core\Language::load('user');
-                $mainTxt = \Core\Language::load('main');
                 ?>
-                <li><a href="<?php echo URLROOT; ?>/main/users"><span
-                            class="mif-admin-panel icon"></span><?php echo $userTxt['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></a>
+                <li><a href="<?php echo URLROOT; ?>/user/users"><span
+                                class="mif-admin-panel icon"></span><?php echo $userTxt['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></a>
                 </li>
-                <li><a href="<?php echo URLROOT; ?>/main/langs"><span
-                            class="mif-language icon"></span><?php echo $mainTxt['LANGS_MGT'] ?? 'LANGS_MGT'; ?></a>
+                <li><a href="<?php echo URLROOT; ?>/lang/langs"><span
+                                class="mif-language icon"></span><?php echo $userTxt['LANG_LANGS_MGT'] ?? 'LANG_LANGS_MGT'; ?></a>
                 </li>
             <?php endif; ?>
-            <li><a href="<?php echo URLROOT; ?>/main/logout"><span
+            <li><a href="<?php echo URLROOT; ?>/user/logout"><span
                         class="mif-exit icon"></span><?php echo $data['txt']['SYS_LOGOUT'] ?? 'SYS_LOGOUT'; ?></a></li>
         <?php else: ?>
-            <li><a href="<?php echo URLROOT; ?>/main/login"><span
+            <li><a href="<?php echo URLROOT; ?>/user/login"><span
                         class="mif-enter icon"></span><?php echo $data['txt']['SYS_LOGIN'] ?? 'SYS_LOGIN'; ?></a></li>
-            <li><a href="<?php echo URLROOT; ?>/main/register"><span
+            <li><a href="<?php echo URLROOT; ?>/user/register"><span
                         class="mif-user-plus icon"></span><?php echo $data['txt']['SYS_REGISTER'] ?? 'SYS_REGISTER'; ?></a>
             </li>
         <?php endif; ?>

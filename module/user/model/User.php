@@ -1,5 +1,5 @@
-﻿<?php
-namespace Module\Main\Model;
+<?php
+namespace Module\User\Model;
 
 use Core\Database;
 use PDOException;
@@ -16,8 +16,8 @@ class User
     // Récupérer tous les rôles configurés avec leurs infos
     public function getAllRoles()
     {
-        $this->db->query('SELECT role_id, text_code, badge_code FROM t_main_role');
-        $res = $this->db->resultSet();
+        $this->db->query('SELECT role_id, text_code, badge_code FROM t_user_role');
+        $res   = $this->db->resultSet();
         $roles = [];
         if ($res) {
             foreach ($res as $r) {
@@ -30,13 +30,13 @@ class User
     // Récupérer tous les statuts d'utilisateurs disponibles
     public function getUserStatuses()
     {
-        $this->db->query('SELECT id, text_code FROM t_main_user_status');
-        $res = $this->db->resultSet();
+        $this->db->query('SELECT id, text_code FROM t_user_user_status');
+        $res      = $this->db->resultSet();
         $statuses = [];
         if ($res) {
             foreach ($res as $s) {
-                $statusId = is_object($s) ? $s->id : $s['id'];
-                $textCode = is_object($s) ? $s->text_code : $s['text_code'];
+                $statusId          = is_object($s) ? $s->id : $s['id'];
+                $textCode          = is_object($s) ? $s->text_code : $s['text_code'];
                 $statuses[$statusId] = $textCode;
             }
         }
@@ -46,9 +46,9 @@ class User
     // Récupérer les rôles d'un utilisateur (seulement les IDs)
     public function getUserRoles($userId)
     {
-        $this->db->query('SELECT role FROM t_main_user_role WHERE user_id = :id');
+        $this->db->query('SELECT role FROM t_user_user_role WHERE user_id = :id');
         $this->db->bind(':id', $userId);
-        $roles = $this->db->resultSet();
+        $roles     = $this->db->resultSet();
         $roleArray = [];
         if ($roles) {
             foreach ($roles as $r) {
@@ -61,12 +61,12 @@ class User
     // Sauvegarder les rôles d'un utilisateur
     public function saveUserRoles($userId, $roles)
     {
-        $this->db->query('DELETE FROM t_main_user_role WHERE user_id = :id');
+        $this->db->query('DELETE FROM t_user_user_role WHERE user_id = :id');
         $this->db->bind(':id', $userId);
         $this->db->execute();
 
         foreach ($roles as $role) {
-            $this->db->query('INSERT INTO t_main_user_role (user_id, role) VALUES (:id, :role)');
+            $this->db->query('INSERT INTO t_user_user_role (user_id, role) VALUES (:id, :role)');
             $this->db->bind(':id', $userId);
             $this->db->bind(':role', $role);
             $this->db->execute();
@@ -76,7 +76,7 @@ class User
     // Trouver un utilisateur par email ou username
     public function findUserByEmailOrUsername($identifier)
     {
-        $this->db->query('SELECT * FROM t_main_user WHERE email = :identifier OR username = :identifier');
+        $this->db->query('SELECT * FROM t_user_user WHERE email = :identifier OR username = :identifier');
         $this->db->bind(':identifier', $identifier);
 
         $row = $this->db->single();
@@ -98,9 +98,9 @@ class User
     {
         $this->db->query('
             SELECT u.*, creator.username as created_by_name, modifier.username as modified_by_name 
-            FROM t_main_user u 
-            LEFT JOIN t_main_user creator ON u.created_by = creator.id 
-            LEFT JOIN t_main_user modifier ON u.modified_by = modifier.id 
+            FROM t_user_user u 
+            LEFT JOIN t_user_user creator ON u.created_by = creator.id 
+            LEFT JOIN t_user_user modifier ON u.modified_by = modifier.id 
             WHERE u.id = :id
         ');
         $this->db->bind(':id', $id);
@@ -118,7 +118,7 @@ class User
     // Récupérer tous les utilisateurs
     public function getUsers()
     {
-        $this->db->query('SELECT id, username, email, created_at, status_id FROM t_main_user ORDER BY created_at DESC');
+        $this->db->query('SELECT id, username, email, created_at, status_id FROM t_user_user ORDER BY created_at DESC');
         $users = $this->db->resultSet();
         foreach ($users as &$user) {
             if (is_array($user)) {
@@ -133,7 +133,7 @@ class User
     // Ajouter un utilisateur
     public function addUser($data)
     {
-        $this->db->query('INSERT INTO t_main_user (username, email, password_hash, status_id) VALUES (:username, :email, :password, :status_id)');
+        $this->db->query('INSERT INTO t_user_user (username, email, password_hash, status_id) VALUES (:username, :email, :password, :status_id)');
         $this->db->bind(':username', $data['username']);
         $this->db->bind(':email', $data['email']);
         $this->db->bind(':password', $data['password']);
@@ -158,10 +158,10 @@ class User
     public function updateUser($data)
     {
         if (!empty($data['password'])) {
-            $this->db->query('UPDATE t_main_user SET username = :username, email = :email, password_hash = :password, status_id = :status_id WHERE id = :id');
+            $this->db->query('UPDATE t_user_user SET username = :username, email = :email, password_hash = :password, status_id = :status_id WHERE id = :id');
             $this->db->bind(':password', $data['password']);
         } else {
-            $this->db->query('UPDATE t_main_user SET username = :username, email = :email, status_id = :status_id WHERE id = :id');
+            $this->db->query('UPDATE t_user_user SET username = :username, email = :email, status_id = :status_id WHERE id = :id');
         }
 
         $this->db->bind(':username', $data['username']);
@@ -179,7 +179,7 @@ class User
     // Enregistrement par défaut (user normal)
     public function register($data)
     {
-        $this->db->query('INSERT INTO t_main_user (username, email, password_hash) VALUES (:username, :email, :password)');
+        $this->db->query('INSERT INTO t_user_user (username, email, password_hash) VALUES (:username, :email, :password)');
         $this->db->bind(':username', $data['username']);
         $this->db->bind(':email', $data['email']);
         $this->db->bind(':password', $data['password']);
@@ -203,7 +203,7 @@ class User
     public function deleteUser($id)
     {
         // La contrainte FOREIGN KEY ON DELETE CASCADE gère les rôles
-        $this->db->query('DELETE FROM t_main_user WHERE id = :id');
+        $this->db->query('DELETE FROM t_user_user WHERE id = :id');
         $this->db->bind(':id', $id);
         return $this->db->execute();
     }

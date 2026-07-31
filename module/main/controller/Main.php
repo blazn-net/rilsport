@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Module\Main\Controller;
 
 use Core\Controller;
