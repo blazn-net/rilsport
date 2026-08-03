@@ -5,7 +5,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
-- [ ] #2 Type de tables :
+- [ ] #2 Type de tables et/ou de modules et/ou objets :
     - system
     - status
     - text
@@ -15,20 +15,20 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [x] #3.5 t_[MODULE]_text avec préfixe obligatoire {OBJET}_ dans text_code.
     - [x] #3.6 Ajouter un IF EXISTS dans tous les inserts de données.
         - [x] #3.6.1 Utiliser "ON CONFLICT (...) DO UPDATE"
-    - [ ] #3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
-    - [ ] #3.8 Tester les sql 2 fois (script ré-entrant) ✅ aucune erreur, NOTICE uniquement   
+    - [x] #3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
+    - [x] #3.8 Tester les sql 2 fois (script ré-entrant) ✅ aucune erreur, NOTICE uniquement   
     - [ ] #3.9 Revoir les script sql !
     
 - [ ] #5 BDD 
     - [ ] #5.1 Rechercher les textes en dur
     - [ ] #5.2 Remplacer les codes par des ids
-- [ ] #6 Créer un module *module* avec les tables :
-    - [ ] #6.1 *t_module_module*
-    - [ ] #6.2 *t_module_object*
-    - [ ] #6.3 *t_module_page*
-    - [ ] #6.4 *t_module_table*
-    - [ ] #6.5 *t_module_column*
-    - [ ] #6.9 *module* sera le seul module qui contiendra des données des autres modules (à l'insertion/suppression d'un module, il faudra mettre à jour les tables du module *module*)
+- [ ] #6 Dans le module *system*, ajouter les objets et tables de métadonnées :
+    - [x] #6.1 *t_system_module*
+    - [x] #6.2 *t_system_object*
+    - [x] #6.3 *t_system_page*
+    - [x] #6.4 *t_system_table*
+    - [x] #6.5 *t_system_column*
+    - [ ] #6.9 *system* sera le seul module qui contiendra des données des autres modules (à l'insertion/suppression d'un module, il faudra mettre à jour les tables du module *system*)
 
 ### P2
 - [ ] #17 

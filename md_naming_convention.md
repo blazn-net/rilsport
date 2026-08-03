@@ -174,14 +174,27 @@ Convention : **`t_[MODULE]_[OBJET]`**
 
 ### Tables de traduction
 
-Chaque module dispose d'**une seule paire de tables de traduction**, partagée par tous ses objets :
+Le projet distingue **2 types de traductions** :
+
+#### 1. Traductions d'Interface Fixes (Boutons, Libellés, Messages d'erreur)
+Chaque module dispose d'**une seule paire de tables de traduction UI** :
 
 | Table | Rôle |
 |---|---|
-| `t_[MODULE]_text_key` | Registre de toutes les clés de traduction du module |
+| `t_[MODULE]_text_key` | Registre de toutes les clés de traduction d'interface |
 | `t_[MODULE]_text` | Traductions : `(text_code, lang_code)` → `text_label` |
 
 **Préfixe obligatoire dans `text_code` : `{OBJET}_`**
+
+#### 2. Traductions des Données Métiers Dynamiques (`_i18n`)
+Pour les objets dont le contenu métier est rédigé et traduisible dans plusieurs langues (ex: nom et description d'un module, titre et contenu d'un article), on utilise une table fille dédiée avec le suffixe **`_i18n`** :
+
+| Table | Rôle |
+|---|---|
+| `t_[MODULE]_[OBJET]` | Données neutres/technique (`id`, `code`, dates, booléens) |
+| `t_[MODULE]_[OBJET]_i18n` | Champs traduisibles : `(objet_id, lang_code)` → `name`, `description`, etc. |
+
+*Exemples : `t_system_module_i18n`, `t_system_object_i18n`, `t_system_page_i18n`.*
 
 Chaque clé doit être préfixée par le nom de l'objet métier auquel elle appartient, en majuscules :
 
