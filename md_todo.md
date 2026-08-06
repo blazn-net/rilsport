@@ -40,6 +40,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     [CLUB_NAME].rilsport.net (ou rilsport.net/[CLUB_NAME])
     [VENUE_NAME].rilsport.net (ou rilsport.net/[VENUE_NAME])
     [PERSON_NAME].rilsport.net (ou rilsport.net/[PERSON_NAME])
+- [ ] #20 Sélecteurs (ou simulaire) : à concevoir
 
 ### P3
 - [ ] #18
