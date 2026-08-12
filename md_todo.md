@@ -5,6 +5,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
+- [ ] B1-0 Module *Sport* : sport, saisons, championnats, ligues, clubs, équipes, matches, classements,  terrains, joueurs/arbitres/officiels/autres..., ... : à placer dans un module *sport*. 
 - [ ] B1-2 Type de tables et/ou de modules et/ou objets :
     - system
     - status
@@ -12,7 +13,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - ...
 - [ ] B1-3 Fichiers .sql :
     - [ ] B1-3.8 Créer/Mettre à jour les user : un user pour chaque profil : login + password
-        - [ ] Si un user a le role admin, il n'a pas besoin d'autres roles (rôle *user* par exemple). Le role admin a tous les droits => mettre à jour md_naming_convention.md.
+        - [ ] B1-3.8.1 Si un user a le role admin, il n'a pas besoin d'autres roles (rôle *user* par exemple). Le role admin a tous les droits => mettre à jour md_naming_convention.md.
     - [ ] B1-3.99 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
     
 - [ ] B1-5 BDD 
