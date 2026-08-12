@@ -5,6 +5,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
+- [ ] B1-1 md_naming_convention.md contient plus que des normes de convention de nommage. À splitter en 2 fichiers md.
 - [ ] B1-2 Type de tables et/ou de modules et/ou objets :
     - system
     - status
@@ -17,6 +18,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
         - [x] B1-3.6.1 Utiliser "ON CONFLICT (...) DO UPDATE"
     - [x] B1-3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
     - [ ] B1-3.8 Mettre à jour les user : un user pour chaque profil : login + password
+        - [ ] Si un user a le role admin, il n'a pas besoin d'autres roles (rôle *user* par exemple). Le role admin a tous les droits => mettre à jour md_naming_convention.md.
     - [ ] B1-3.99 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
     
 - [ ] B1-5 BDD 
