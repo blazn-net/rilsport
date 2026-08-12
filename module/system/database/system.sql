@@ -181,34 +181,26 @@ ON CONFLICT (module_id, lang_code) DO UPDATE SET
     name        = EXCLUDED.name,
     description = EXCLUDED.description;
 
--- Objets métier
+-- Objets métier (module system)
 INSERT INTO t_system_object (id, module_id, code) VALUES
-(1, 1, 'lang'),
 (2, 2, 'module'),
 (3, 2, 'object'),
 (4, 2, 'page'),
 (5, 2, 'table'),
-(6, 2, 'column'),
-(7, 3, 'user'),
-(8, 3, 'role')
+(6, 2, 'column')
 ON CONFLICT (module_id, code) DO NOTHING;
 
 INSERT INTO t_system_object_i18n (object_id, lang_code, name) VALUES
-(1, 'fr', 'Langue'),     (1, 'en', 'Language'),  (1, 'es', 'Idioma'),
 (2, 'fr', 'Module'),     (2, 'en', 'Module'),    (2, 'es', 'Módulo'),
 (3, 'fr', 'Objet'),      (3, 'en', 'Object'),    (3, 'es', 'Objeto'),
 (4, 'fr', 'Page'),       (4, 'en', 'Page'),      (4, 'es', 'Página'),
 (5, 'fr', 'Table BDD'),  (5, 'en', 'DB Table'),  (5, 'es', 'Tabla BD'),
-(6, 'fr', 'Colonne BDD'),(6, 'en', 'DB Column'), (6, 'es', 'Columna BD'),
-(7, 'fr', 'Utilisateur'),(7, 'en', 'User'),      (7, 'es', 'Usuario'),
-(8, 'fr', 'Rôle'),       (8, 'en', 'Role'),      (8, 'es', 'Rol')
+(6, 'fr', 'Colonne BDD'),(6, 'en', 'DB Column'), (6, 'es', 'Columna BD')
 ON CONFLICT (object_id, lang_code) DO UPDATE SET
     name = EXCLUDED.name;
 
--- Pages / Routes
+-- Pages / Routes (module system)
 INSERT INTO t_system_page (id, module_id, object_id, code, page_type, url_path) VALUES
-(1, 1, 1, 'langs',   'list',   '/lang/langs'),
-(2, 1, 1, 'lang',    'form',   '/lang/lang'),
 (3, 2, 2, 'modules', 'list',   '/system/modules'),
 (4, 2, 2, 'module',  'form',   '/system/module'),
 (5, 2, 3, 'objects', 'list',   '/system/objects'),
@@ -218,34 +210,21 @@ INSERT INTO t_system_page (id, module_id, object_id, code, page_type, url_path) 
 (9, 2, 5, 'tables',  'list',   '/system/tables'),
 (10, 2, 5, 'table',  'form',   '/system/table'),
 (11, 2, 6, 'columns','list',   '/system/columns'),
-(12, 2, 6, 'column', 'form',   '/system/column'),
-(13, 3, 7, 'users',   'list',   '/user/users'),
-(14, 3, 7, 'user',    'form',   '/user/user'),
-(15, 3, 7, 'login',   'custom', '/user/login'),
-(16, 3, 7, 'profile', 'custom', '/user/profile')
+(12, 2, 6, 'column', 'form',   '/system/column')
 ON CONFLICT (module_id, code) DO UPDATE SET
     object_id = EXCLUDED.object_id,
     page_type = EXCLUDED.page_type,
     url_path  = EXCLUDED.url_path;
 
--- Tables BDD
+-- Tables BDD (module system)
 INSERT INTO t_system_table (id, module_id, object_id, table_name) VALUES
-(1, 1, 1, 't_lang_lang'),
-(2, 1, 1, 't_lang_text_key'),
-(3, 1, 1, 't_lang_text'),
 (4, 2, 2, 't_system_module'),
 (5, 2, 3, 't_system_object'),
 (6, 2, 4, 't_system_page'),
 (7, 2, 5, 't_system_table'),
 (8, 2, 6, 't_system_column'),
 (9, 2, NULL, 't_system_text_key'),
-(10, 2, NULL, 't_system_text'),
-(11, 3, 7, 't_user_user'),
-(12, 3, 7, 't_user_user_status'),
-(13, 3, 8, 't_user_role'),
-(14, 3, 8, 't_user_user_role'),
-(15, 3, NULL, 't_user_text_key'),
-(16, 3, NULL, 't_user_text')
+(10, 2, NULL, 't_system_text')
 ON CONFLICT (table_name) DO UPDATE SET
     module_id = EXCLUDED.module_id,
     object_id = EXCLUDED.object_id;

@@ -16,8 +16,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [x] #3.6 Ajouter un IF EXISTS dans tous les inserts de données.
         - [x] #3.6.1 Utiliser "ON CONFLICT (...) DO UPDATE"
     - [x] #3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
-    - [x] #3.8 Tester les sql 2 fois (script ré-entrant) ✅ aucune erreur, NOTICE uniquement   
-    - [ ] #3.9 Revoir les script sql !
+    - [ ] #3.99 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
     
 - [ ] #5 BDD 
     - [ ] #5.1 Rechercher les textes en dur
@@ -28,8 +27,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [x] #6.3 *t_system_page*
     - [x] #6.4 *t_system_table*
     - [x] #6.5 *t_system_column*
-    - [ ] #6.9 *system* sera le seul module qui contiendra des données des autres modules (à l'insertion/suppression d'un module, il faudra mettre à jour les tables du module *system*)
-    - [ ] #6.10 on garde *t_system_module* dans *system*. Les autres tables sont dispatchés dans leurs modules respectifs : t_[MODULE]_system_object, t_[MODULE]_system_page, etc...
+    - [x] #6.10 on garde *t_system_module* dans *system*. Les autres tables sont dispatchées dans leurs modules respectifs : t_[MODULE]_object, t_[MODULE]_page, t_[MODULE]_table, t_[MODULE]_column, etc.
 - [ ] #19 Version des modules et des *.sql 
 
 ### P2

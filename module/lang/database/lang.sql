@@ -47,6 +47,94 @@ CREATE TABLE IF NOT EXISTS t_lang_text (
 
 
 -- ============================================================
+-- SCHÉMA : métadonnées du module lang (point 6.10)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_lang_object (
+    id          SERIAL       PRIMARY KEY,
+    module_id   INT          NOT NULL DEFAULT 1,
+    code        VARCHAR(50)  NOT NULL,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uk_lang_object_module_code UNIQUE (module_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS t_lang_object_i18n (
+    object_id   INT          NOT NULL,
+    lang_code   VARCHAR(5)   NOT NULL,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT         DEFAULT NULL,
+    PRIMARY KEY (object_id, lang_code),
+    FOREIGN KEY (object_id) REFERENCES t_lang_object(id)    ON DELETE CASCADE,
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS t_lang_page (
+    id          SERIAL       PRIMARY KEY,
+    module_id   INT          NOT NULL DEFAULT 1,
+    object_id   INT          DEFAULT NULL,
+    code        VARCHAR(50)  NOT NULL,
+    page_type   VARCHAR(20)  NOT NULL DEFAULT 'list',
+    url_path    VARCHAR(255) NOT NULL,
+    is_active   BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (object_id) REFERENCES t_lang_object(id) ON DELETE SET NULL,
+    CONSTRAINT uk_lang_page_module_code UNIQUE (module_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS t_lang_page_i18n (
+    page_id     INT          NOT NULL,
+    lang_code   VARCHAR(5)   NOT NULL,
+    title       VARCHAR(100) NOT NULL,
+    description TEXT         DEFAULT NULL,
+    PRIMARY KEY (page_id, lang_code),
+    FOREIGN KEY (page_id)   REFERENCES t_lang_page(id)    ON DELETE CASCADE,
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS t_lang_table (
+    id          SERIAL       PRIMARY KEY,
+    module_id   INT          NOT NULL DEFAULT 1,
+    object_id   INT          DEFAULT NULL,
+    table_name  VARCHAR(100) NOT NULL UNIQUE,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (object_id) REFERENCES t_lang_object(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS t_lang_table_i18n (
+    table_id    INT          NOT NULL,
+    lang_code   VARCHAR(5)   NOT NULL,
+    description TEXT         NOT NULL,
+    PRIMARY KEY (table_id, lang_code),
+    FOREIGN KEY (table_id)  REFERENCES t_lang_table(id)   ON DELETE CASCADE,
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS t_lang_column (
+    id               SERIAL       PRIMARY KEY,
+    table_id         INT          NOT NULL,
+    column_name      VARCHAR(100) NOT NULL,
+    data_type        VARCHAR(50)  NOT NULL,
+    is_nullable      BOOLEAN      NOT NULL DEFAULT TRUE,
+    is_primary_key   BOOLEAN      NOT NULL DEFAULT FALSE,
+    is_foreign_key   BOOLEAN      NOT NULL DEFAULT FALSE,
+    fk_target_table  VARCHAR(100) DEFAULT NULL,
+    fk_target_column VARCHAR(100) DEFAULT NULL,
+    FOREIGN KEY (table_id) REFERENCES t_lang_table(id) ON DELETE CASCADE,
+    CONSTRAINT uk_lang_column_table_col UNIQUE (table_id, column_name)
+);
+
+CREATE TABLE IF NOT EXISTS t_lang_column_i18n (
+    column_id   INT          NOT NULL,
+    lang_code   VARCHAR(5)   NOT NULL,
+    label       VARCHAR(100) NOT NULL,
+    description TEXT         DEFAULT NULL,
+    PRIMARY KEY (column_id, lang_code),
+    FOREIGN KEY (column_id) REFERENCES t_lang_column(id)  ON DELETE CASCADE,
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code) ON DELETE CASCADE
+);
+
+
+-- ============================================================
 -- DONNÉES : langues initiales
 -- ============================================================
 
@@ -55,6 +143,44 @@ INSERT INTO t_lang_lang (lang_code, lang_name, lang_flag) VALUES
 ('en', 'English',  'fi-gb'),
 ('es', 'Español',  'fi-es')
 ON CONFLICT (lang_code) DO NOTHING;
+
+
+-- ============================================================
+-- DONNÉES : métadonnées du module lang
+-- ============================================================
+
+INSERT INTO t_lang_object (id, module_id, code) VALUES
+(1, 1, 'lang')
+ON CONFLICT (module_id, code) DO NOTHING;
+
+INSERT INTO t_lang_object_i18n (object_id, lang_code, name) VALUES
+(1, 'fr', 'Langue'), (1, 'en', 'Language'), (1, 'es', 'Idioma')
+ON CONFLICT (object_id, lang_code) DO UPDATE SET
+    name = EXCLUDED.name;
+
+INSERT INTO t_lang_page (id, module_id, object_id, code, page_type, url_path) VALUES
+(1, 1, 1, 'langs', 'list', '/lang/langs'),
+(2, 1, 1, 'lang',  'form', '/lang/lang')
+ON CONFLICT (module_id, code) DO UPDATE SET
+    object_id = EXCLUDED.object_id,
+    page_type = EXCLUDED.page_type,
+    url_path  = EXCLUDED.url_path;
+
+INSERT INTO t_lang_table (id, module_id, object_id, table_name) VALUES
+(1, 1, 1, 't_lang_lang'),
+(2, 1, 1, 't_lang_text_key'),
+(3, 1, 1, 't_lang_text'),
+(4, 1, 1, 't_lang_object'),
+(5, 1, 1, 't_lang_object_i18n'),
+(6, 1, 1, 't_lang_page'),
+(7, 1, 1, 't_lang_page_i18n'),
+(8, 1, 1, 't_lang_table'),
+(9, 1, 1, 't_lang_table_i18n'),
+(10, 1, 1, 't_lang_column'),
+(11, 1, 1, 't_lang_column_i18n')
+ON CONFLICT (table_name) DO UPDATE SET
+    module_id = EXCLUDED.module_id,
+    object_id = EXCLUDED.object_id;
 
 
 -- ============================================================

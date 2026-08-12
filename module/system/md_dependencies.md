@@ -12,19 +12,19 @@
 
 ## Tables créées par ce module
 
-### 1. Métadonnées et Traductions Métiers (`_i18n`)
-| Table                  | Description                                            |
-|------------------------|--------------------------------------------------------|
-| `t_system_module`      | Registre des modules (données neutres) (#6.1)          |
-| `t_system_module_i18n` | Traductions (nom, description) par langue pour module  |
-| `t_system_object`      | Registre des objets métier (#6.2)                      |
-| `t_system_object_i18n` | Traductions (nom, description) par langue pour objet   |
-| `t_system_page`        | Registre des pages et routes (#6.3)                    |
-| `t_system_page_i18n`   | Traductions (titre, description) par langue pour page  |
-| `t_system_table`       | Registre des tables BDD (#6.4)                         |
-| `t_system_table_i18n`  | Traductions (description) par langue pour table        |
-| `t_system_column`      | Registre des colonnes BDD (#6.5)                       |
-| `t_system_column_i18n` | Traductions (libellé, description) pour colonne       |
+### 1. Registre des Modules et Métadonnées Métiers du Module System (`_i18n`) (#6.10)
+| Table                  | Description                                                  |
+|------------------------|--------------------------------------------------------------|
+| `t_system_module`      | Registre central de tous les modules du système (#6.1)       |
+| `t_system_module_i18n` | Traductions (nom, description) des modules                   |
+| `t_system_object`      | Objets métier du module system (module, object, page…) (#6.2)|
+| `t_system_object_i18n` | Traductions (nom, description) des objets system             |
+| `t_system_page`        | Pages et routes du module system (#6.3)                      |
+| `t_system_page_i18n`   | Traductions (titre, description) des pages system            |
+| `t_system_table`       | Tables BDD du module system (#6.4)                           |
+| `t_system_table_i18n`  | Traductions (description) des tables system                  |
+| `t_system_column`      | Colonnes BDD des tables system (#6.5)                        |
+| `t_system_column_i18n` | Traductions (libellé, description) des colonnes system       |
 
 ### 2. Traductions d'Interface Fixes (`text`)
 | Table                  | Description                                            |

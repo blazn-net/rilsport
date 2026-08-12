@@ -70,6 +70,97 @@ CREATE TABLE IF NOT EXISTS t_user_text (
 
 
 -- ============================================================
+-- SCHÉMA : métadonnées du module user (point 6.10)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_user_object (
+    id          SERIAL       PRIMARY KEY,
+    module_id   INT          NOT NULL DEFAULT 3,
+    code        VARCHAR(50)  NOT NULL,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (module_id) REFERENCES t_system_module(id) ON DELETE CASCADE,
+    CONSTRAINT uk_user_object_module_code UNIQUE (module_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS t_user_object_i18n (
+    object_id   INT          NOT NULL,
+    lang_code   VARCHAR(5)   NOT NULL,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT         DEFAULT NULL,
+    PRIMARY KEY (object_id, lang_code),
+    FOREIGN KEY (object_id) REFERENCES t_user_object(id)    ON DELETE CASCADE,
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS t_user_page (
+    id          SERIAL       PRIMARY KEY,
+    module_id   INT          NOT NULL DEFAULT 3,
+    object_id   INT          DEFAULT NULL,
+    code        VARCHAR(50)  NOT NULL,
+    page_type   VARCHAR(20)  NOT NULL DEFAULT 'list',
+    url_path    VARCHAR(255) NOT NULL,
+    is_active   BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (module_id) REFERENCES t_system_module(id) ON DELETE CASCADE,
+    FOREIGN KEY (object_id) REFERENCES t_user_object(id)   ON DELETE SET NULL,
+    CONSTRAINT uk_user_page_module_code UNIQUE (module_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS t_user_page_i18n (
+    page_id     INT          NOT NULL,
+    lang_code   VARCHAR(5)   NOT NULL,
+    title       VARCHAR(100) NOT NULL,
+    description TEXT         DEFAULT NULL,
+    PRIMARY KEY (page_id, lang_code),
+    FOREIGN KEY (page_id)   REFERENCES t_user_page(id)    ON DELETE CASCADE,
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS t_user_table (
+    id          SERIAL       PRIMARY KEY,
+    module_id   INT          NOT NULL DEFAULT 3,
+    object_id   INT          DEFAULT NULL,
+    table_name  VARCHAR(100) NOT NULL UNIQUE,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (module_id) REFERENCES t_system_module(id) ON DELETE CASCADE,
+    FOREIGN KEY (object_id) REFERENCES t_user_object(id)   ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS t_user_table_i18n (
+    table_id    INT          NOT NULL,
+    lang_code   VARCHAR(5)   NOT NULL,
+    description TEXT         NOT NULL,
+    PRIMARY KEY (table_id, lang_code),
+    FOREIGN KEY (table_id)  REFERENCES t_user_table(id)   ON DELETE CASCADE,
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS t_user_column (
+    id               SERIAL       PRIMARY KEY,
+    table_id         INT          NOT NULL,
+    column_name      VARCHAR(100) NOT NULL,
+    data_type        VARCHAR(50)  NOT NULL,
+    is_nullable      BOOLEAN      NOT NULL DEFAULT TRUE,
+    is_primary_key   BOOLEAN      NOT NULL DEFAULT FALSE,
+    is_foreign_key   BOOLEAN      NOT NULL DEFAULT FALSE,
+    fk_target_table  VARCHAR(100) DEFAULT NULL,
+    fk_target_column VARCHAR(100) DEFAULT NULL,
+    FOREIGN KEY (table_id) REFERENCES t_user_table(id) ON DELETE CASCADE,
+    CONSTRAINT uk_user_column_table_col UNIQUE (table_id, column_name)
+);
+
+CREATE TABLE IF NOT EXISTS t_user_column_i18n (
+    column_id   INT          NOT NULL,
+    lang_code   VARCHAR(5)   NOT NULL,
+    label       VARCHAR(100) NOT NULL,
+    description TEXT         DEFAULT NULL,
+    PRIMARY KEY (column_id, lang_code),
+    FOREIGN KEY (column_id) REFERENCES t_user_column(id)  ON DELETE CASCADE,
+    FOREIGN KEY (lang_code) REFERENCES t_lang_lang(lang_code) ON DELETE CASCADE
+);
+
+
+-- ============================================================
 -- DONNÉES : statuts et rôles
 -- ============================================================
 
@@ -82,6 +173,51 @@ INSERT INTO t_user_role (role_id, text_code, badge_code) VALUES
 ('admin', 'USER_ROLE_ADMIN', 'alert'),
 ('user',  'USER_ROLE_USER',  'primary')
 ON CONFLICT (role_id) DO NOTHING;
+
+
+-- ============================================================
+-- DONNÉES : métadonnées du module user
+-- ============================================================
+
+INSERT INTO t_user_object (id, module_id, code) VALUES
+(7, 3, 'user'),
+(8, 3, 'role')
+ON CONFLICT (module_id, code) DO NOTHING;
+
+INSERT INTO t_user_object_i18n (object_id, lang_code, name) VALUES
+(7, 'fr', 'Utilisateur'),(7, 'en', 'User'),      (7, 'es', 'Usuario'),
+(8, 'fr', 'Rôle'),       (8, 'en', 'Role'),      (8, 'es', 'Rol')
+ON CONFLICT (object_id, lang_code) DO UPDATE SET
+    name = EXCLUDED.name;
+
+INSERT INTO t_user_page (id, module_id, object_id, code, page_type, url_path) VALUES
+(13, 3, 7, 'users',   'list',   '/user/users'),
+(14, 3, 7, 'user',    'form',   '/user/user'),
+(15, 3, 7, 'login',   'custom', '/user/login'),
+(16, 3, 7, 'profile', 'custom', '/user/profile')
+ON CONFLICT (module_id, code) DO UPDATE SET
+    object_id = EXCLUDED.object_id,
+    page_type = EXCLUDED.page_type,
+    url_path  = EXCLUDED.url_path;
+
+INSERT INTO t_user_table (id, module_id, object_id, table_name) VALUES
+(11, 3, 7, 't_user_user'),
+(12, 3, 7, 't_user_user_status'),
+(13, 3, 8, 't_user_role'),
+(14, 3, 8, 't_user_user_role'),
+(15, 3, NULL, 't_user_text_key'),
+(16, 3, NULL, 't_user_text'),
+(17, 3, 7, 't_user_object'),
+(18, 3, 7, 't_user_object_i18n'),
+(19, 3, 7, 't_user_page'),
+(20, 3, 7, 't_user_page_i18n'),
+(21, 3, 7, 't_user_table'),
+(22, 3, 7, 't_user_table_i18n'),
+(23, 3, 7, 't_user_column'),
+(24, 3, 7, 't_user_column_i18n')
+ON CONFLICT (table_name) DO UPDATE SET
+    module_id = EXCLUDED.module_id,
+    object_id = EXCLUDED.object_id;
 
 
 -- ============================================================
