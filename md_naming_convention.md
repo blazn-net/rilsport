@@ -6,6 +6,8 @@ Ce document recense les règles de nommage que nous avons adoptées pour ce proj
 
 Pour distinguer facilement les pages qui affichent des tableaux de celles qui permettent d'ajouter ou de modifier un élément, nous utilisons une règle stricte basée sur le **Pluriel/Singulier** et des termes génériques pour en parler au global.
 
+> **Règle fondamentale :** Tout objet métier défini dans un module doit **obligatoirement** posséder ses deux pages dédiées : une page **List** (affichage en tableau) et une page **Form** (création / édition).
+
 ### Règle 1 : Noms spécifiques (Pluriel vs Singulier)
 
 Lorsque l'on parle d'un objet spécifique dans le projet, on utilise son nom en anglais et on joue sur le pluriel et le singulier :
@@ -36,9 +38,10 @@ Lorsque l'on veut définir une règle technique ou un changement d'interface qui
 
 ### Principe général
 
-> **1 module = N objets**
+> **1 module = N objets**  
+> **1 objet = 1 page List + 1 page Form**
 
-Un module regroupe plusieurs objets métier liés entre eux. Chaque objet dispose de ses propres fichiers `controller`, `model` et `view` au sein du même module.
+Un module regroupe plusieurs objets métier liés entre eux. Chaque objet dispose **obligatoirement** de ses deux pages (**List** et **Form**) ainsi que de ses propres fichiers `controller`, `model` et `view` au sein du même module.
 
 ### Répertoire racine
 

@@ -52,6 +52,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 - [ ] #8 Gestion des permissions/rôles (rôle fonctionnel, applicatif, global, local)
 - [ ] #9 Gestion du menu
     - [ ] #9.1 Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
+- [ ] #21 Vérifier que chaque objet a ses pages "List" et "Form"
 
 ### P2
 - [ ] #10 Module blog/news/forum
