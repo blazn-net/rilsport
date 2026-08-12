@@ -226,8 +226,8 @@ ON CONFLICT (table_name) DO UPDATE SET
 -- DONNÉES : utilisateurs par défaut (admin & user)
 -- ============================================================
 
--- Mot de passe admin : admin123
--- Mot de passe user  : user123
+-- Admin (login / mdp) : willbask / admin123
+-- Test User (login / mdp) : ireneadler / user123
 -- Note : L'utilisateur de type admin n'a besoin que du rôle 'admin' (rôle admin = tous les droits).
 INSERT INTO t_user_user (username, email, password_hash, nom, prenom, status_id) VALUES
 ('willbask',   'willbask@rilsport.com',   '$2y$10$gFxOZ4d6l22xXRdhD8dHYO2Wgpt9eqyh8TeUqy07MlrcEcp2O1Sd.', 'Baskerville', 'William', 1),
