@@ -29,26 +29,28 @@ class App
             // 2. Load module controller
             if (isset($url[0])) {
                 // Alias : mappe les pages nommées vers leur controller
-                // Ex: /main/login → Controller Auth, méthode login()
+                // Ex: /user/login → Controller Auth
                 $aliases = [
                     'user' => [
                         'login'    => 'Auth',
                         'register' => 'Auth',
                         'logout'   => 'Auth',
-                    ],
-                    'lang' => [
-                        'langs'       => 'Langs',
-                        'delete'      => 'Lang',
-                        'forcedelete' => 'Lang',
                     ]
                 ];
+
+                $candidateClass = ucwords($url[0]);
+                $candidateFile  = 'module/' . $this->currentModule . '/controller/' . $candidateClass . '.php';
 
                 if (isset($aliases[$this->currentModule][$url[0]])) {
                     // On garde $url[0] intact : il sera récupéré comme méthode juste après
                     $this->currentController = $aliases[$this->currentModule][$url[0]];
-                } else {
-                    $this->currentController = ucwords($url[0]);
+                } elseif (file_exists($candidateFile)) {
+                    // Contrôleur spécifique existant (ex: /lang/langs → Controller Langs)
+                    $this->currentController = $candidateClass;
                     unset($url[0]);
+                } else {
+                    // Contrôleur par défaut du module (ex: /lang/en ou /user/1 → Controller Lang / User, param 'en' / '1')
+                    $this->currentController = ucwords($this->currentModule);
                 }
             } else {
                 $this->currentController = ucwords($this->currentModule);

@@ -51,7 +51,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ### P1 (Haute priorité)
 - [ ] E1-8 Gestion des permissions/rôles (rôle fonctionnel, applicatif, global, local)
 - [ ] E1-9 Gestion du menu : en cours (C:\Users\smusl\.gemini\antigravity-ide\brain\950e7931-d767-4c3d-9ac6-7b0398a37c92\implementation_plan.md)
-    - [ ] E1-9.0 Sidebar ou Sidenav ? => NavView
+    - [x] E1-9.0 Sidebar ou Sidenav ? => NavView
     - [ ] E1-9.1 Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
 - [ ] E1-21 Vérifier que chaque objet a ses pages "List" et "Form"
 
