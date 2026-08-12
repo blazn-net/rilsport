@@ -1,17 +1,19 @@
-<!-- Menu latéral (Sidebar) -->
-<aside class="sidebar pos-absolute z-2" data-role="sidebar" data-toggle="#sidebar-toggle" id="sb1">
-    <div class="sidebar-header bg-dark">
-        <a href="#" class="fg-white sub-action" onclick="Metro.sidebar.close('#sb1'); return false;">
-            <span class="mif-arrow-left mif-2x fg-white"></span>
+<!-- Volet latéral NavView -->
+<div class="navview-pane">
+    <div class="logo-container">
+        <button class="pull-button">
+            <span class="mif-menu"></span>
+        </button>
+        <a href="<?php echo URLROOT; ?>/" class="d-flex flex-align-center text-logo bg-transparent" style="width: calc(100% - 54px);">
+            <div class="avatar bg-white border-radius-half d-flex flex-justify-center flex-align-center mr-2" style="width: 30px; height: 30px; min-width: 30px;">
+                <span class="mif-earth mif-2x fg-dark"></span>
+            </div>
+            <div class="enlarge-1 text-weight-9 text-ellipsis fg-default"><?php echo SITENAME; ?></div>
         </a>
-        <div class="avatar"
-            style="background:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center;">
-            <span class="mif-earth mif-3x fg-dark"></span>
-        </div>
-        <span class="title fg-white"><strong><?php echo SITENAME; ?></strong></span>
-        <span class="subtitle fg-white"><strong><?php echo SITEDESCRIPTION; ?><br>toto</strong></span>
     </div>
-    <ul class="sidebar-menu">
+
+    <ul class="navview-menu pad-second-level" id="side-menu">
+        <!-- Sélecteur de langue -->
         <li>
             <div class="d-flex flex-justify-around p-2 flex-wrap" style="gap: 5px;">
                 <?php
@@ -22,7 +24,7 @@
                     $btnClass = $isActive ? 'primary' : 'light';
                     ?>
                     <a href="?lang=<?php echo htmlspecialchars($lang['lang_code']); ?>"
-                        class="button flex-1 <?php echo $btnClass; ?>" style="min-width: 60px;"
+                        class="button flex-1 <?php echo $btnClass; ?>" style="min-width: 45px; padding: 2px 5px;"
                         title="<?php echo htmlspecialchars($lang['lang_name'] ?? strtoupper($lang['lang_code'])); ?>">
                         <span
                             class="<?php echo !empty($lang['lang_flag']) ? 'fi ' . htmlspecialchars($lang['lang_flag']) : 'mif-earth'; ?>"></span>
@@ -31,34 +33,83 @@
                 <?php endforeach; ?>
             </div>
         </li>
-        <li class="divider"></li>
-        <li><a href="<?php echo URLROOT; ?>/"><span
-                    class="mif-home icon"></span><?php echo $data['txt']['SYS_HOME'] ?? 'SYS_HOME'; ?></a></li>
-        <li class="divider"></li>
+
+        <!-- Groupe : Navigation -->
+        <li class="item-header"><?php echo $data['txt']['SYS_NAVIGATION'] ?? 'Navigation'; ?></li>
+        <li>
+            <a href="<?php echo URLROOT; ?>/">
+                <span class="icon"><span class="mif-home"></span></span>
+                <span class="caption"><?php echo $data['txt']['SYS_HOME'] ?? 'SYS_HOME'; ?></span>
+            </a>
+        </li>
 
         <?php if (isset($_SESSION['user_id'])): ?>
-            <li><a href="<?php echo URLROOT; ?>/user/<?php echo $_SESSION['user_id']; ?>"><span
-                        class="mif-profile icon"></span><?php echo $data['txt']['SYS_MY_PROFILE'] ?? 'SYS_MY_PROFILE'; ?>
-                    (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a></li>
             <?php if (isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])): ?>
-                <?php
-                $userTxt = \Core\Language::load('user');
-                ?>
-                <li><a href="<?php echo URLROOT; ?>/user/users"><span
-                                class="mif-admin-panel icon"></span><?php echo $userTxt['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></a>
-                </li>
-                <li><a href="<?php echo URLROOT; ?>/lang/langs"><span
-                                class="mif-language icon"></span><?php echo $userTxt['LANG_LANGS_MGT'] ?? 'LANG_LANGS_MGT'; ?></a>
+                <?php $userTxt = \Core\Language::load('user'); ?>
+                <!-- Groupe : Administration -->
+                <li class="item-header"><?php echo $data['txt']['SYS_ADMINISTRATION'] ?? 'Administration'; ?></li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <span class="icon"><span class="mif-cogs"></span></span>
+                        <span class="caption"><?php echo $userTxt['USER_MANAGEMENT'] ?? 'Gestion système'; ?></span>
+                    </a>
+                    <ul class="navview-menu" data-role="collapse" data-collapsed="true">
+                        <li>
+                            <a href="<?php echo URLROOT; ?>/user/users">
+                                <span class="icon"><span class="mif-users"></span></span>
+                                <span class="caption"><?php echo $userTxt['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo URLROOT; ?>/lang/langs">
+                                <span class="icon"><span class="mif-language"></span></span>
+                                <span class="caption"><?php echo $userTxt['LANG_LANGS_MGT'] ?? 'LANG_LANGS_MGT'; ?></span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             <?php endif; ?>
-            <li><a href="<?php echo URLROOT; ?>/user/logout"><span
-                        class="mif-exit icon"></span><?php echo $data['txt']['SYS_LOGOUT'] ?? 'SYS_LOGOUT'; ?></a></li>
+
+            <!-- Groupe : Mon Compte -->
+            <li class="item-header"><?php echo $data['txt']['SYS_ACCOUNT'] ?? 'Mon Compte'; ?></li>
+            <li>
+                <a href="<?php echo URLROOT; ?>/user/<?php echo $_SESSION['user_id']; ?>">
+                    <span class="icon"><span class="mif-profile"></span></span>
+                    <span class="caption"><?php echo $data['txt']['SYS_MY_PROFILE'] ?? 'SYS_MY_PROFILE'; ?> (<?php echo htmlspecialchars($_SESSION['username']); ?>)</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo URLROOT; ?>/user/logout">
+                    <span class="icon"><span class="mif-exit"></span></span>
+                    <span class="caption"><?php echo $data['txt']['SYS_LOGOUT'] ?? 'SYS_LOGOUT'; ?></span>
+                </a>
+            </li>
         <?php else: ?>
-            <li><a href="<?php echo URLROOT; ?>/user/login"><span
-                        class="mif-enter icon"></span><?php echo $data['txt']['SYS_LOGIN'] ?? 'SYS_LOGIN'; ?></a></li>
-            <li><a href="<?php echo URLROOT; ?>/user/register"><span
-                        class="mif-user-plus icon"></span><?php echo $data['txt']['SYS_REGISTER'] ?? 'SYS_REGISTER'; ?></a>
+            <!-- Groupe : Mon Compte (Non connecté) -->
+            <li class="item-header"><?php echo $data['txt']['SYS_ACCOUNT'] ?? 'Mon Compte'; ?></li>
+            <li>
+                <a href="<?php echo URLROOT; ?>/user/login">
+                    <span class="icon"><span class="mif-enter"></span></span>
+                    <span class="caption"><?php echo $data['txt']['SYS_LOGIN'] ?? 'SYS_LOGIN'; ?></span>
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo URLROOT; ?>/user/register">
+                    <span class="icon"><span class="mif-user-plus"></span></span>
+                    <span class="caption"><?php echo $data['txt']['SYS_REGISTER'] ?? 'SYS_REGISTER'; ?></span>
+                </a>
             </li>
         <?php endif; ?>
     </ul>
-</aside>
+</div>
+
+<!-- Zone de Contenu Principal (navview-content) -->
+<div class="navview-content d-flex flex-column min-vh-100">
+    <div class="app-bar bg-dark pos-relative z-1 flex-align-center" data-role="appbar" id="app-bar-1">
+        <button class="pull-button bg-transparent fg-white bd-none p-2 ml-2 c-pointer d-none-md" title="<?php echo htmlspecialchars($data['txt']['SYS_MENU'] ?? 'Menu'); ?>">
+            <span class="mif-menu mif-2x"></span>
+        </button>
+        <h1 class="m-0 enlarge-1 pl-3 text-weight-normal">
+            <a href="<?php echo URLROOT; ?>" class="fg-white" style="text-decoration:none;"><?php echo SITENAME; ?></a>
+        </h1>
+    </div>

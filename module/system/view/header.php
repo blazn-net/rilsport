@@ -15,11 +15,5 @@
 </head>
 <body class="bg-light">
 
-    <div class="app-bar pos-absolute bg-dark z-1" data-role="appbar" id="app-bar-1">
-        <button class="app-bar-item c-pointer" id="sidebar-toggle" title="<?php echo htmlspecialchars($data['txt']['SYS_MENU'] ?? 'Menu'); ?>">
-            <span class="mif-menu mif-2x fg-white"></span>
-        </button>
-        <h1 class="m-0" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none;">
-            <a href="<?php echo URLROOT; ?>" class="fg-white" style="text-decoration:none; pointer-events: auto;"><?php echo SITENAME; ?></a>
-        </h1>
-    </div>
+<div id="navview" data-role="navview" data-expand-point="md">
+

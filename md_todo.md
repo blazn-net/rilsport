@@ -5,76 +5,77 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
-- [ ] #2 Type de tables et/ou de modules et/ou objets :
+- [ ] B1-2 Type de tables et/ou de modules et/ou objets :
     - system
     - status
     - text
     - ...
-- [ ] #3 Fichiers .sql :
-    - [x] #3.1 Faire un fichier sql par module. Il contient le schema, les données et les textes
-    - [x] #3.5 t_[MODULE]_text avec préfixe obligatoire {OBJET}_ dans text_code.
-    - [x] #3.6 Ajouter un IF EXISTS dans tous les inserts de données.
-        - [x] #3.6.1 Utiliser "ON CONFLICT (...) DO UPDATE"
-    - [x] #3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
-    - [ ] #3.99 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
+- [ ] B1-3 Fichiers .sql :
+    - [x] B1-3.1 Faire un fichier sql par module. Il contient le schema, les données et les textes
+    - [x] B1-3.5 t_[MODULE]_text avec préfixe obligatoire {OBJET}_ dans text_code.
+    - [x] B1-3.6 Ajouter un IF EXISTS dans tous les inserts de données.
+        - [x] B1-3.6.1 Utiliser "ON CONFLICT (...) DO UPDATE"
+    - [x] B1-3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
+    - [ ] B1-3.99 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
     
-- [ ] #5 BDD 
-    - [ ] #5.1 Rechercher les textes en dur
-    - [ ] #5.2 Remplacer les codes par des ids
-- [ ] #6 Dans le module *system*, ajouter les objets et tables de métadonnées :
-    - [x] #6.1 *t_system_module*
-    - [x] #6.2 *t_system_object*
-    - [x] #6.3 *t_system_page*
-    - [x] #6.4 *t_system_table*
-    - [x] #6.5 *t_system_column*
-    - [x] #6.10 on garde *t_system_module* dans *system*. Les autres tables sont dispatchées dans leurs modules respectifs : t_[MODULE]_object, t_[MODULE]_page, t_[MODULE]_table, t_[MODULE]_column, etc.
-- [ ] #19 Version des modules et des *.sql 
+- [ ] B1-5 BDD 
+    - [ ] B1-5.1 Rechercher les textes en dur
+    - [ ] B1-5.2 Remplacer les codes par des ids
+- [ ] B1-6 Dans le module *system*, ajouter les objets et tables de métadonnées :
+    - [x] B1-6.1 *t_system_module*
+    - [x] B1-6.2 *t_system_object*
+    - [x] B1-6.3 *t_system_page*
+    - [x] B1-6.4 *t_system_table*
+    - [x] B1-6.5 *t_system_column*
+    - [x] B1-6.10 on garde *t_system_module* dans *system*. Les autres tables sont dispatchées dans leurs modules respectifs : t_[MODULE]_object, t_[MODULE]_page, t_[MODULE]_table, t_[MODULE]_column, etc.
+- [ ] B1-19 Version des modules et des *.sql 
 
 ### P2
-- [ ] #17 Sous-sites :
+- [ ] B2-17 Sous-sites :
     [SPORT_NAME].rilsport.net (ou rilsport.net/[SPORT_NAME])
     [CHAMPIONNAT_NAME].rilsport.net (ou rilsport.net/[CHAMPIONNAT_NAME])
     [TEAM_NAME].rilsport.net (ou rilsport.net/[TEAM_NAME])
     [CLUB_NAME].rilsport.net (ou rilsport.net/[CLUB_NAME])
     [VENUE_NAME].rilsport.net (ou rilsport.net/[VENUE_NAME])
     [PERSON_NAME].rilsport.net (ou rilsport.net/[PERSON_NAME])
-- [ ] #20 Sélecteurs (ou simulaire) : à concevoir
+- [ ] B2-20 Sélecteurs (ou simulaire) : à concevoir
 
 ### P3
-- [ ] #18
+- [ ] B3-18
 
 ### P4 (Basse priorité)
-- [ ] #7 
+- [ ] B4-7 
 
 ## Évolution
 
 ### P1 (Haute priorité)
-- [ ] #8 Gestion des permissions/rôles (rôle fonctionnel, applicatif, global, local)
-- [ ] #9 Gestion du menu : en cours (C:\Users\smusl\.gemini\antigravity-ide\brain\950e7931-d767-4c3d-9ac6-7b0398a37c92\implementation_plan.md)
-    - [ ] #9.1 Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
-- [ ] #21 Vérifier que chaque objet a ses pages "List" et "Form"
+- [ ] E1-8 Gestion des permissions/rôles (rôle fonctionnel, applicatif, global, local)
+- [ ] E1-9 Gestion du menu : en cours (C:\Users\smusl\.gemini\antigravity-ide\brain\950e7931-d767-4c3d-9ac6-7b0398a37c92\implementation_plan.md)
+    - [ ] E1-9.0 Sidebar ou Sidenav ? => NavView
+    - [ ] E1-9.1 Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
+- [ ] E1-21 Vérifier que chaque objet a ses pages "List" et "Form"
 
 ### P2
-- [ ] #10 Module blog/news/forum
-    - [ ] #10.1 Forum = Discord ?
-    - [ ] #10.2 Blog/News = Facebook/Instagram
+- [ ] E2-10 Module blog/news/forum
+    - [ ] E2-10.1 Forum = Discord ?
+    - [ ] E2-10.2 Blog/News = Facebook/Instagram
 
 ### P3
-- [ ] #11 Couleur des rôles, status, ...
+- [ ] E3-11 Couleur des rôles, status, ...
 
 ### P4 (Basse priorité)
-- [ ] #12 Créer un installateur (code + sql)
+- [ ] E4-12 Créer un installateur (code + sql)
 
 ## Question / Idées
 
 ### P1 (Haute priorité)
-- [ ] #13 
+- [ ] Q1-13 
 
 ### P2
-- [ ] #14 
+- [ ] Q2-14 
 
 ### P3
-- [ ] #15 
+- [ ] Q3-15 
 
 ### P4 (Basse priorité)
-- [ ] #16 
+- [ ] Q4-16 

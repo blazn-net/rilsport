@@ -6,16 +6,20 @@ body {
     min-height: 100vh;
 }
 
-/* 
-   L'app-bar et le sidebar ont tous les deux "pos-absolute" dans Metro UI.
-   On ajoute une marge en haut du contenu principal pour de ne pas être caché 
-   sous l'app-bar qui fait généralement 52px de haut.
-*/
+/* Configuration NavView */
+.navview-pane .logo-container {
+    display: flex;
+    align-items: center;
+    height: 52px;
+    padding: 0 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 main {
     flex-grow: 1;
     padding: 2rem 5%;
     background-color: white;
-    margin: 5rem auto 2rem; /* 5rem en haut = place pour l'app-bar absolue */
+    margin: 2rem auto;
     width: 90%;
     max-width: 1200px;
     border-radius: 8px;
