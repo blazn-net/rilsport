@@ -18,7 +18,7 @@
 |------------------------|----------------------------------------------------|
 | `t_user_user_status`   | Statuts possibles d'un utilisateur                 |
 | `t_user_role`          | Rôles du système (admin, user…)                    |
-| `t_user_user`          | Comptes utilisateurs                               |
+| `t_user_user`          | Comptes utilisateurs (id, username, email, password_hash, nom, prenom, status_id, audit) |
 | `t_user_user_role`     | Association utilisateur ↔ rôle                    |
 | `t_user_text_key`      | Clés de traduction du module user                  |
 | `t_user_text`          | Traductions (fr / en / es) du module user          |
@@ -36,9 +36,11 @@
 | `t_user_column_i18n` | Traductions des libellés de colonnes user          |
 
 ## Données initiales insérées
-- Statuts : `active`, `pending`
+- Statuts : `active` (1), `pending` (2)
 - Rôles : `admin`, `user`
-- Compte administrateur par défaut : `admin / admin@rilsport.com`
+- Compte administrateur par défaut : `willbask` / `willbask@rilsport.com` (Nom: Baskerville, Prénom: William, Rôle: `admin` uniquement)
+- Compte utilisateur par défaut : `ireneadler` / `ireneadler@rilsport.com` (Nom: Adler, Prénom: Irene, Rôle: `user`)
+- Mots de passe de test documentés dans [pwd.md](file:///c:/wamp64/www/rilsport/module/user/pwd.md)
 
 ## Ordre d'exécution recommandé
 ```

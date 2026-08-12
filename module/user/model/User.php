@@ -118,7 +118,7 @@ class User
     // Récupérer tous les utilisateurs
     public function getUsers()
     {
-        $this->db->query('SELECT id, username, email, created_at, status_id FROM t_user_user ORDER BY created_at DESC');
+        $this->db->query('SELECT id, username, email, nom, prenom, created_at, status_id FROM t_user_user ORDER BY created_at DESC');
         $users = $this->db->resultSet();
         foreach ($users as &$user) {
             if (is_array($user)) {
@@ -133,10 +133,12 @@ class User
     // Ajouter un utilisateur
     public function addUser($data)
     {
-        $this->db->query('INSERT INTO t_user_user (username, email, password_hash, status_id) VALUES (:username, :email, :password, :status_id)');
+        $this->db->query('INSERT INTO t_user_user (username, email, password_hash, nom, prenom, status_id) VALUES (:username, :email, :password, :nom, :prenom, :status_id)');
         $this->db->bind(':username', $data['username']);
         $this->db->bind(':email', $data['email']);
         $this->db->bind(':password', $data['password']);
+        $this->db->bind(':nom', !empty($data['nom']) ? $data['nom'] : null);
+        $this->db->bind(':prenom', !empty($data['prenom']) ? $data['prenom'] : null);
         $this->db->bind(':status_id', $data['status_id'] ?? 2);
 
         try {
@@ -158,14 +160,16 @@ class User
     public function updateUser($data)
     {
         if (!empty($data['password'])) {
-            $this->db->query('UPDATE t_user_user SET username = :username, email = :email, password_hash = :password, status_id = :status_id WHERE id = :id');
+            $this->db->query('UPDATE t_user_user SET username = :username, email = :email, password_hash = :password, nom = :nom, prenom = :prenom, status_id = :status_id WHERE id = :id');
             $this->db->bind(':password', $data['password']);
         } else {
-            $this->db->query('UPDATE t_user_user SET username = :username, email = :email, status_id = :status_id WHERE id = :id');
+            $this->db->query('UPDATE t_user_user SET username = :username, email = :email, nom = :nom, prenom = :prenom, status_id = :status_id WHERE id = :id');
         }
 
         $this->db->bind(':username', $data['username']);
         $this->db->bind(':email', $data['email']);
+        $this->db->bind(':nom', !empty($data['nom']) ? $data['nom'] : null);
+        $this->db->bind(':prenom', !empty($data['prenom']) ? $data['prenom'] : null);
         $this->db->bind(':status_id', $data['status_id'] ?? 2);
         $this->db->bind(':id', $data['id']);
 
@@ -179,10 +183,12 @@ class User
     // Enregistrement par défaut (user normal)
     public function register($data)
     {
-        $this->db->query('INSERT INTO t_user_user (username, email, password_hash) VALUES (:username, :email, :password)');
+        $this->db->query('INSERT INTO t_user_user (username, email, password_hash, nom, prenom) VALUES (:username, :email, :password, :nom, :prenom)');
         $this->db->bind(':username', $data['username']);
         $this->db->bind(':email', $data['email']);
         $this->db->bind(':password', $data['password']);
+        $this->db->bind(':nom', !empty($data['nom']) ? $data['nom'] : null);
+        $this->db->bind(':prenom', !empty($data['prenom']) ? $data['prenom'] : null);
 
         try {
             if ($this->db->execute()) {

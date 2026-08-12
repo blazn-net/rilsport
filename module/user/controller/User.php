@@ -60,7 +60,9 @@ class User extends Controller
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $postData = [
                 'username' => trim($_POST['username']),
-                'email'    => trim($_POST['email'])
+                'email'    => trim($_POST['email']),
+                'nom'      => trim($_POST['nom'] ?? ''),
+                'prenom'   => trim($_POST['prenom'] ?? '')
             ];
             
             if ($isAdmin) {

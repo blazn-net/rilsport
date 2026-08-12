@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS t_user_user (
     username      VARCHAR(50)  NOT NULL UNIQUE,
     email         VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    nom           VARCHAR(100) DEFAULT NULL,
+    prenom        VARCHAR(100) DEFAULT NULL,
     status_id     INT          NOT NULL DEFAULT 2,
     created_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     created_by    INT          DEFAULT NULL,
@@ -221,21 +223,30 @@ ON CONFLICT (table_name) DO UPDATE SET
 
 
 -- ============================================================
--- DONNÉES : administrateur par défaut
+-- DONNÉES : utilisateurs par défaut (admin & user)
 -- ============================================================
 
--- Mot de passe : admin123
--- Hash généré avec password_hash('admin123', PASSWORD_DEFAULT)
-INSERT INTO t_user_user (username, email, password_hash, status_id)
-VALUES ('admin', 'admin@rilsport.com', '$2y$10$O0FfK0uRY0D0X8A3u4fK/eFfTf3nZ9aH1P8U2/R5m7xYhL3/K2wI.', 1)
-ON CONFLICT (username) DO NOTHING;
+-- Mot de passe admin : admin123
+-- Mot de passe user  : user123
+-- Note : L'utilisateur de type admin n'a besoin que du rôle 'admin' (rôle admin = tous les droits).
+INSERT INTO t_user_user (username, email, password_hash, nom, prenom, status_id) VALUES
+('willbask',   'willbask@rilsport.com',   '$2y$10$gFxOZ4d6l22xXRdhD8dHYO2Wgpt9eqyh8TeUqy07MlrcEcp2O1Sd.', 'Baskerville', 'William', 1),
+('ireneadler', 'ireneadler@rilsport.com', '$2y$10$0qcpqf8Kgzh4FraeKCwkpu1QODtrcbCIG9q8Rsnaw7ZHJc21hFsH2', 'Adler',       'Irene',   1)
+ON CONFLICT (username) DO UPDATE SET
+    email         = EXCLUDED.email,
+    password_hash = EXCLUDED.password_hash,
+    nom           = EXCLUDED.nom,
+    prenom        = EXCLUDED.prenom,
+    status_id     = EXCLUDED.status_id;
 
+-- Attribution du rôle 'admin' à l'utilisateur admin
 INSERT INTO t_user_user_role (user_id, role)
-SELECT id, 'admin' FROM t_user_user WHERE username = 'admin'
+SELECT id, 'admin' FROM t_user_user WHERE username = 'willbask'
 ON CONFLICT (user_id, role) DO NOTHING;
 
+-- Attribution du rôle 'user' à l'utilisateur user
 INSERT INTO t_user_user_role (user_id, role)
-SELECT id, 'user' FROM t_user_user WHERE username = 'admin'
+SELECT id, 'user' FROM t_user_user WHERE username = 'ireneadler'
 ON CONFLICT (user_id, role) DO NOTHING;
 
 
@@ -245,6 +256,8 @@ ON CONFLICT (user_id, role) DO NOTHING;
 
 INSERT INTO t_user_text_key (text_code) VALUES
 ('USER_USERNAME'),
+('USER_LASTNAME'),
+('USER_FIRSTNAME'),
 ('USER_PASSWORD'),
 ('USER_EMAIL'),
 ('USER_ROLE'),
@@ -300,6 +313,14 @@ INSERT INTO t_user_text (text_code, lang_code, text_label) VALUES
 ('USER_USERNAME',              'fr', 'Nom d''utilisateur'),
 ('USER_USERNAME',              'en', 'Username'),
 ('USER_USERNAME',              'es', 'Nombre de usuario'),
+
+('USER_LASTNAME',              'fr', 'Nom'),
+('USER_LASTNAME',              'en', 'Last Name'),
+('USER_LASTNAME',              'es', 'Apellido'),
+
+('USER_FIRSTNAME',             'fr', 'Prénom'),
+('USER_FIRSTNAME',             'en', 'First Name'),
+('USER_FIRSTNAME',             'es', 'Nombre'),
 
 ('USER_PASSWORD',              'fr', 'Mot de passe'),
 ('USER_PASSWORD',              'en', 'Password'),

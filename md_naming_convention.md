@@ -80,6 +80,12 @@ Toutes les tables doivent obligatoirement respecter le format : **`t_[MODULE]_[O
 
 ---
 
+### Rôles et privilèges utilisateurs
+
+* **Rôle `admin`** : Le rôle `admin` détient par définition l'intégralité des privilèges du système. Un utilisateur possédant le rôle `admin` n'a **pas** besoin de cumuler d'autres rôles (comme le rôle `user`).
+
+---
+
 ### Nommage des clés de traduction d'interface (`text_code`)
 
 Dans les tables `t_[MODULE]_text_key` et `t_[MODULE]_text`, les codes de traduction (`text_code`) doivent **obligatoirement inclure le préfixe de l'objet** auquel ils se rapportent, sous le format `{OBJET}_` (en majuscules) :

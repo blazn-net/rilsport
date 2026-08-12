@@ -17,11 +17,12 @@
 
     <table class="table striped table-border mt-4 w-100 table-responsive-cards" data-role="table"
         data-show-search="true" data-show-rows-steps="false" data-check="false" data-rownum="false"
-        data-search-fields="username,email">
+        data-search-fields="username,email,nom,prenom">
         <thead>
             <tr>
                 <th>ID</th>
                 <th data-name="username"><?php echo $data['txt']['USER_USERNAME'] ?? 'USER_USERNAME'; ?></th>
+                <th><?php echo ($data['txt']['USER_FIRSTNAME'] ?? 'Prénom') . ' ' . ($data['txt']['USER_LASTNAME'] ?? 'Nom'); ?></th>
                 <th data-name="email"><?php echo $data['txt']['USER_EMAIL'] ?? 'USER_EMAIL'; ?></th>
                 <th><?php echo $data['txt']['USER_ROLE'] ?? 'USER_ROLE'; ?></th>
                 <th><?php echo $data['txt']['USER_DATE_REG'] ?? 'USER_DATE_REG'; ?></th>
@@ -35,6 +36,8 @@
                     <td data-label="ID"><?php echo $u['id']; ?></td>
                     <td data-label="<?php echo $data['txt']['USER_USERNAME'] ?? 'USER_USERNAME'; ?>">
                         <?php echo htmlspecialchars($u['username']); ?></td>
+                    <td data-label="Nom">
+                        <?php echo htmlspecialchars(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))); ?></td>
                     <td data-label="<?php echo $data['txt']['USER_EMAIL'] ?? 'USER_EMAIL'; ?>">
                         <?php echo htmlspecialchars($u['email']); ?></td>
                     <td data-label="<?php echo $data['txt']['USER_ROLE'] ?? 'USER_ROLE'; ?>">

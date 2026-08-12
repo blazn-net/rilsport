@@ -19,6 +19,16 @@
                 <label><?php echo $data['txt']['USER_USERNAME'] ?? 'USER_USERNAME'; ?></label>
                 <input type="text" name="username" data-role="input" value="<?php echo isset($data['user']->username) ? htmlspecialchars($data['user']->username) : ''; ?>" required>
             </div>
+            <div class="row mt-2">
+                <div class="cell-md-6 form-group">
+                    <label><?php echo $data['txt']['USER_LASTNAME'] ?? 'USER_LASTNAME'; ?></label>
+                    <input type="text" name="nom" data-role="input" value="<?php echo isset($data['user']->nom) ? htmlspecialchars($data['user']->nom) : ''; ?>">
+                </div>
+                <div class="cell-md-6 form-group">
+                    <label><?php echo $data['txt']['USER_FIRSTNAME'] ?? 'USER_FIRSTNAME'; ?></label>
+                    <input type="text" name="prenom" data-role="input" value="<?php echo isset($data['user']->prenom) ? htmlspecialchars($data['user']->prenom) : ''; ?>">
+                </div>
+            </div>
             <div class="form-group mt-2">
                 <label><?php echo $data['txt']['USER_EMAIL'] ?? 'USER_EMAIL'; ?></label>
                 <input type="email" name="email" data-role="input" value="<?php echo isset($data['user']->email) ? htmlspecialchars($data['user']->email) : ''; ?>" required>
