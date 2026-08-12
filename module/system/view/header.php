@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdn.metroui.org.ua/current/icons.css">
     <!-- Emojis/Drapeaux (Windows ne les affichant pas nativement) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/7.1.0/css/flag-icons.min.css">
-    <link rel="stylesheet" href="<?php echo URLROOT; ?>/style.css">
+    <link rel="stylesheet" href="<?php echo URLROOT; ?>/style.css?v=<?php echo time(); ?>">
 </head>
 <body class="bg-light">
 

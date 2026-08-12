@@ -91,3 +91,70 @@ main p {
         color: #555;
     }
 }
+
+/* Customisation complète du menu latéral NavView (Page active rouge #d9534f + suppression de tout le bleu) */
+
+/* 1. Suppression absolue de tous les indicateurs/barres bleues par défaut de Metro UI */
+.navview .navview-menu li::before,
+.navview .navview-menu li::after,
+.navview .navview-menu li > a::before,
+.navview .navview-menu li > a::after,
+.navview-menu li::before,
+.navview-menu li::after,
+.navview-menu li > a::before,
+.navview-menu li > a::after,
+.navview-menu li.active::before,
+.navview-menu li.active::after,
+.navview-menu li.active > a::before,
+.navview-menu li.active > a::after {
+    display: none !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    border: none !important;
+}
+
+/* 2. Élément de menu actif : fond rouge #d9534f (identique au bouton FR .button.primary) */
+.navview .navview-menu li.active > a,
+.navview-menu li.active > a {
+    background-color: #d9534f !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border-radius: 4px !important;
+}
+
+/* 3. Icônes, textes et flèches de l'élément actif en blanc */
+.navview .navview-menu li.active > a .icon,
+.navview .navview-menu li.active > a .caption,
+.navview-menu li.active > a .icon,
+.navview-menu li.active > a .caption,
+.navview-menu li.active > a.dropdown-toggle::after,
+.navview .navview-menu li.active > a.dropdown-toggle::after {
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+/* 4. Éléments inactifs : icônes et textes foncés sans aucun bleu */
+.navview .navview-menu li:not(.active) > a .icon,
+.navview-menu li:not(.active) > a .icon {
+    color: #333333 !important;
+}
+
+/* 5. Survol (Hover) des éléments inactifs du menu */
+.navview .navview-menu li:not(.active) > a:hover,
+.navview-menu li:not(.active) > a:hover {
+    background-color: rgba(217, 83, 79, 0.1) !important;
+    color: #d9534f !important;
+}
+
+.navview .navview-menu li:not(.active) > a:hover .icon,
+.navview .navview-menu li:not(.active) > a:hover .caption,
+.navview-menu li:not(.active) > a:hover .icon,
+.navview-menu li:not(.active) > a:hover .caption {
+    color: #d9534f !important;
+}
+
+
+
+

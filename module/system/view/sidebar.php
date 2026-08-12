@@ -33,11 +33,22 @@
         </div>
     </div>
 
+    <?php
+    $currentRoute = isset($_GET['url']) ? rtrim($_GET['url'], '/') : '';
+    $isHomeActive = ($currentRoute === '' || $currentRoute === 'main' || $currentRoute === 'main/index');
+    $isProfileActive = (isset($_SESSION['user_id']) && $currentRoute === 'user/' . $_SESSION['user_id']);
+    $isLoginActive = ($currentRoute === 'user/login');
+    $isRegisterActive = ($currentRoute === 'user/register');
+    $isUsersListActive = ($currentRoute === 'user/users' || (strpos($currentRoute, 'user') === 0 && !$isProfileActive && !$isLoginActive && !$isRegisterActive));
+    $isLangsActive = (strpos($currentRoute, 'lang') === 0);
+    $isAdminGroupActive = ($isUsersListActive || $isLangsActive);
+    ?>
+
     <ul class="navview-menu pad-second-level" id="side-menu">
 
         <!-- Groupe : Navigation -->
         <li class="item-header"><?php echo $data['txt']['SYS_NAVIGATION'] ?? 'Navigation'; ?></li>
-        <li>
+        <li class="<?php echo $isHomeActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/">
                 <span class="icon"><span class="mif-home"></span></span>
                 <span class="caption"><?php echo $data['txt']['SYS_HOME'] ?? 'SYS_HOME'; ?></span>
@@ -54,14 +65,14 @@
                         <span class="icon"><span class="mif-cogs"></span></span>
                         <span class="caption"><?php echo $userTxt['USER_MANAGEMENT'] ?? 'Gestion système'; ?></span>
                     </a>
-                    <ul class="navview-menu" data-role="collapse" data-collapsed="true">
-                        <li>
+                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isAdminGroupActive ? 'false' : 'true'; ?>">
+                        <li class="<?php echo $isUsersListActive ? 'active' : ''; ?>">
                             <a href="<?php echo URLROOT; ?>/user/users">
                                 <span class="icon"><span class="mif-users"></span></span>
                                 <span class="caption"><?php echo $userTxt['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></span>
                             </a>
                         </li>
-                        <li>
+                        <li class="<?php echo $isLangsActive ? 'active' : ''; ?>">
                             <a href="<?php echo URLROOT; ?>/lang/langs">
                                 <span class="icon"><span class="mif-language"></span></span>
                                 <span class="caption"><?php echo $userTxt['LANG_LANGS_MGT'] ?? 'LANG_LANGS_MGT'; ?></span>
@@ -73,7 +84,7 @@
 
             <!-- Groupe : Mon Compte -->
             <li class="item-header"><?php echo $data['txt']['SYS_ACCOUNT'] ?? 'Mon Compte'; ?></li>
-            <li>
+            <li class="<?php echo $isProfileActive ? 'active' : ''; ?>">
                 <a href="<?php echo URLROOT; ?>/user/<?php echo $_SESSION['user_id']; ?>">
                     <span class="icon"><span class="mif-profile"></span></span>
                     <span class="caption"><?php echo $data['txt']['SYS_MY_PROFILE'] ?? 'SYS_MY_PROFILE'; ?> (<?php echo htmlspecialchars($_SESSION['username']); ?>)</span>
@@ -88,13 +99,13 @@
         <?php else: ?>
             <!-- Groupe : Mon Compte (Non connecté) -->
             <li class="item-header"><?php echo $data['txt']['SYS_ACCOUNT'] ?? 'Mon Compte'; ?></li>
-            <li>
+            <li class="<?php echo $isLoginActive ? 'active' : ''; ?>">
                 <a href="<?php echo URLROOT; ?>/user/login">
                     <span class="icon"><span class="mif-enter"></span></span>
                     <span class="caption"><?php echo $data['txt']['SYS_LOGIN'] ?? 'SYS_LOGIN'; ?></span>
                 </a>
             </li>
-            <li>
+            <li class="<?php echo $isRegisterActive ? 'active' : ''; ?>">
                 <a href="<?php echo URLROOT; ?>/user/register">
                     <span class="icon"><span class="mif-user-plus"></span></span>
                     <span class="caption"><?php echo $data['txt']['SYS_REGISTER'] ?? 'SYS_REGISTER'; ?></span>
