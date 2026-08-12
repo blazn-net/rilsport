@@ -1,7 +1,7 @@
 <!-- Contenu principal -->
 <main class="d-flex flex-justify-center flex-align-center flex-column" style="margin-top: 60px; min-height: calc(100vh - 150px); width: 100%;">
     <div class="card p-5" style="width: 400px; max-width: 90vw;">
-        <h2 class="text-center mb-4"><?php echo $data['txt']['SYS_LOGIN'] ?? 'SYS_LOGIN'; ?></h2>
+        <h2 class="text-center mb-4"><span class="mif-enter mr-2"></span><?php echo $data['txt']['SYS_LOGIN'] ?? 'SYS_LOGIN'; ?></h2>
         
         <?php if (!empty($data['error'])): ?>
             <div class="remark warning"><?php echo htmlspecialchars($data['error']); ?></div>

@@ -1,6 +1,6 @@
     <!-- Contenu principal -->
     <main class="p-4" style="margin-top: 60px;">
-        <h1><?php echo htmlspecialchars($data['description']); ?></h1>
+        <h1><span class="mif-home mr-2"></span><?php echo htmlspecialchars($data['description']); ?></h1>
         <p><?php echo $data['txt']['SYS_MVC_DESC'] ?? 'SYS_MVC_DESC'; ?></p>
         
         <?php if (isset($_SESSION['user_id'])): ?>

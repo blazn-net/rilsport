@@ -1,6 +1,6 @@
     <main class="p-4" style="margin-top: 60px;">
         <div class="d-flex flex-justify-between flex-align-center mb-4">
-            <h2><?php echo $data['mode'] === 'edit' ? ($data['txt']['USER_EDIT_USER_TITLE'] ?? 'USER_EDIT_USER_TITLE') : ($data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'); ?></h2>
+            <h2><span class="<?php echo $data['mode'] === 'edit' ? 'mif-profile' : 'mif-user-plus'; ?> mr-2"></span><?php echo $data['mode'] === 'edit' ? ($data['txt']['USER_EDIT_USER_TITLE'] ?? 'USER_EDIT_USER_TITLE') : ($data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'); ?></h2>
             <a href="<?php echo URLROOT; ?>/<?php echo $data['is_admin'] ? 'user/users' : 'main'; ?>" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'); ?>">
                 <span class="mif-arrow-left"></span> <?php echo $data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'; ?>
             </a>

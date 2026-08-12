@@ -1,6 +1,6 @@
 <main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center mb-4">
-        <h2><?php echo ($data['mode'] === 'edit') ? ($data['txt']['LANG_EDIT_LANG_TITLE'] ?? 'LANG_EDIT_LANG_TITLE') : ($data['txt']['LANG_ADD_LANG_TITLE'] ?? 'LANG_ADD_LANG_TITLE'); ?></h2>
+        <h2><span class="mif-language mr-2"></span><?php echo ($data['mode'] === 'edit') ? ($data['txt']['LANG_EDIT_LANG_TITLE'] ?? 'LANG_EDIT_LANG_TITLE') : ($data['txt']['LANG_ADD_LANG_TITLE'] ?? 'LANG_ADD_LANG_TITLE'); ?></h2>
         <a href="<?php echo URLROOT; ?>/lang/langs" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'); ?>">
             <span class="mif-arrow-left"></span> <?php echo $data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'; ?>
         </a>

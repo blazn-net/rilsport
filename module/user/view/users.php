@@ -1,7 +1,7 @@
 <!-- Contenu principal -->
 <main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
-        <h2><?php echo $data['txt']['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></h2>
+        <h2><span class="mif-group mr-2"></span><?php echo $data['txt']['USER_USERS_LIST'] ?? 'Utilisateurs'; ?></h2>
         <a href="<?php echo URLROOT; ?>/user" class="button success mt-2 mt-md-0" title="<?php echo htmlspecialchars($data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'); ?>">
             <span class="mif-plus"></span> <?php echo $data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'; ?>
         </a>

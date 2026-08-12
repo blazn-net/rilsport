@@ -21,7 +21,7 @@ class Langs extends Controller {
 
         $data = [
             'txt'     => $txt,
-            'title'   => 'Gestion des Langues - ' . SITENAME,
+            'title'   => ($txt['LANG_LANGS_MGT'] ?? 'Langues') . ' - ' . SITENAME,
             'langs'   => $langs,
             'message' => $_SESSION['flash_message'] ?? '',
             'error'   => $_SESSION['flash_error'] ?? ''

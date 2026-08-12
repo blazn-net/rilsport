@@ -46,8 +46,7 @@
 
     <ul class="navview-menu pad-second-level" id="side-menu">
 
-        <!-- Groupe : Navigation -->
-        <li class="item-header"><?php echo $data['txt']['SYS_NAVIGATION'] ?? 'Navigation'; ?></li>
+        <!-- Accueil (en 1er, sans le header Navigation) -->
         <li class="<?php echo $isHomeActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/">
                 <span class="icon"><span class="mif-home"></span></span>
@@ -56,32 +55,6 @@
         </li>
 
         <?php if (isset($_SESSION['user_id'])): ?>
-            <?php if (isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])): ?>
-                <?php $userTxt = \Core\Language::load('user'); ?>
-                <!-- Groupe : Administration -->
-                <li class="item-header"><?php echo $data['txt']['SYS_ADMINISTRATION'] ?? 'Administration'; ?></li>
-                <li>
-                    <a href="#" class="dropdown-toggle">
-                        <span class="icon"><span class="mif-cogs"></span></span>
-                        <span class="caption"><?php echo $userTxt['USER_MANAGEMENT'] ?? 'Gestion système'; ?></span>
-                    </a>
-                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isAdminGroupActive ? 'false' : 'true'; ?>">
-                        <li class="<?php echo $isUsersListActive ? 'active' : ''; ?>">
-                            <a href="<?php echo URLROOT; ?>/user/users">
-                                <span class="icon"><span class="mif-users"></span></span>
-                                <span class="caption"><?php echo $userTxt['USER_USERS_LIST'] ?? 'USER_USERS_LIST'; ?></span>
-                            </a>
-                        </li>
-                        <li class="<?php echo $isLangsActive ? 'active' : ''; ?>">
-                            <a href="<?php echo URLROOT; ?>/lang/langs">
-                                <span class="icon"><span class="mif-language"></span></span>
-                                <span class="caption"><?php echo $userTxt['LANG_LANGS_MGT'] ?? 'LANG_LANGS_MGT'; ?></span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            <?php endif; ?>
-
             <!-- Groupe : Mon Compte -->
             <li class="item-header"><?php echo $data['txt']['SYS_ACCOUNT'] ?? 'Mon Compte'; ?></li>
             <li class="<?php echo $isProfileActive ? 'active' : ''; ?>">
@@ -96,6 +69,32 @@
                     <span class="caption"><?php echo $data['txt']['SYS_LOGOUT'] ?? 'SYS_LOGOUT'; ?></span>
                 </a>
             </li>
+
+            <?php if (isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])): ?>
+                <?php $userTxt = \Core\Language::load('user'); ?>
+                <!-- Groupe : Administration -->
+                <li class="item-header"><?php echo $data['txt']['SYS_ADMINISTRATION'] ?? 'Administration'; ?></li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <span class="icon"><span class="mif-cogs"></span></span>
+                        <span class="caption"><?php echo $userTxt['USER_MANAGEMENT'] ?? 'System'; ?></span>
+                    </a>
+                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isAdminGroupActive ? 'false' : 'true'; ?>">
+                        <li class="<?php echo $isUsersListActive ? 'active' : ''; ?>">
+                            <a href="<?php echo URLROOT; ?>/user/users">
+                                <span class="icon"><span class="mif-group"></span></span>
+                                <span class="caption"><?php echo $userTxt['USER_USERS_LIST'] ?? 'Utilisateurs'; ?></span>
+                            </a>
+                        </li>
+                        <li class="<?php echo $isLangsActive ? 'active' : ''; ?>">
+                            <a href="<?php echo URLROOT; ?>/lang/langs">
+                                <span class="icon"><span class="mif-language"></span></span>
+                                <span class="caption"><?php echo $userTxt['LANG_LANGS_MGT'] ?? 'Langues'; ?></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            <?php endif; ?>
         <?php else: ?>
             <!-- Groupe : Mon Compte (Non connecté) -->
             <li class="item-header"><?php echo $data['txt']['SYS_ACCOUNT'] ?? 'Mon Compte'; ?></li>

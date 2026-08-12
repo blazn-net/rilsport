@@ -291,6 +291,7 @@ INSERT INTO t_user_text_key (text_code) VALUES
 ('USER_STATUS_ACTIVE'),
 ('USER_STATUS_PENDING'),
 ('USER_MY_PROFILE'),
+('USER_MANAGEMENT'),
 ('USER_SUCCESS_UPDATE_USER'),
 ('ERR_ACCOUNT_NOT_VALIDATED'),
 ('LANG_LANGS_MGT'),
@@ -342,7 +343,7 @@ INSERT INTO t_user_text (text_code, lang_code, text_label) VALUES
 ('USER_DATE_REG',              'en', 'Registration Date'),
 ('USER_DATE_REG',              'es', 'Fecha de registro'),
 
-('USER_USERS_LIST',            'fr', 'Gestion des Utilisateurs'),
+('USER_USERS_LIST',            'fr', 'Utilisateurs'),
 ('USER_USERS_LIST',            'en', 'User Management'),
 ('USER_USERS_LIST',            'es', 'Gestión de Usuarios'),
 
@@ -462,9 +463,13 @@ INSERT INTO t_user_text (text_code, lang_code, text_label) VALUES
 ('ERR_ACCOUNT_NOT_VALIDATED',  'en', 'The account has not been validated yet.'),
 ('ERR_ACCOUNT_NOT_VALIDATED',  'es', 'La cuenta aún no ha sido validada.'),
 
-('LANG_LANGS_MGT',             'fr', 'Gestion des Langues'),
+('LANG_LANGS_MGT',             'fr', 'Langues'),
 ('LANG_LANGS_MGT',             'en', 'Language Management'),
 ('LANG_LANGS_MGT',             'es', 'Gestión de Idiomas'),
+
+('USER_MANAGEMENT',            'fr', 'System'),
+('USER_MANAGEMENT',            'en', 'System'),
+('USER_MANAGEMENT',            'es', 'System'),
 
 ('MAIN',                       'fr', 'Accueil'),
 ('MAIN',                       'en', 'Home'),

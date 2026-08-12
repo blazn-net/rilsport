@@ -1,7 +1,7 @@
 <!-- Contenu principal -->
 <main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
-        <h2><?php echo $data['txt']['LANG_LANGS_MGT'] ?? 'LANG_LANGS_MGT'; ?></h2>
+        <h2><span class="mif-language mr-2"></span><?php echo $data['txt']['LANG_LANGS_MGT'] ?? 'Langues'; ?></h2>
         <a href="<?php echo URLROOT; ?>/lang" class="button success mt-2 mt-md-0" title="<?php echo htmlspecialchars($data['txt']['LANG_ADD_LANG_BTN'] ?? 'LANG_ADD_LANG_BTN'); ?>">
             <span class="mif-plus"></span> <?php echo $data['txt']['LANG_ADD_LANG_BTN'] ?? 'LANG_ADD_LANG_BTN'; ?>
         </a>
