@@ -11,7 +11,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - text
     - ...
 - [ ] B1-3 Fichiers .sql :
-    - [ ] B1-3.8 Mettre à jour les user : un user pour chaque profil : login + password
+    - [ ] B1-3.8 Créer/Mettre à jour les user : un user pour chaque profil : login + password
         - [ ] Si un user a le role admin, il n'a pas besoin d'autres roles (rôle *user* par exemple). Le role admin a tous les droits => mettre à jour md_naming_convention.md.
     - [ ] B1-3.99 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
     
