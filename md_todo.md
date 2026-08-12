@@ -5,7 +5,6 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
-- [x] B1-1 md_naming_convention.md contient plus que des normes de convention de nommage. À splitter en 2 fichiers md.
 - [ ] B1-2 Type de tables et/ou de modules et/ou objets :
     - system
     - status
