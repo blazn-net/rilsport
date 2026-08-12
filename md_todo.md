@@ -16,6 +16,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [x] B1-3.6 Ajouter un IF EXISTS dans tous les inserts de données.
         - [x] B1-3.6.1 Utiliser "ON CONFLICT (...) DO UPDATE"
     - [x] B1-3.7 Documenter (dans md_naming_convention.md, paragraphe "Base de données") 
+    - [ ] B1-3.8 Mettre à jour les user : un user pour chaque profil : login + password
     - [ ] B1-3.99 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
     
 - [ ] B1-5 BDD 
