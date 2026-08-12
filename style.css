@@ -37,6 +37,11 @@ main p {
 
 /* La sidebar utilisera maintenant son thème clair par défaut (fond blanc, texte gris foncé) qui est très lisible ! */
 
+/* Masquer les icônes générées automatiquement par Metro UI (icon-replacer) */
+.icon-replacer {
+    display: none !important;
+}
+
 /* Responsive Table Cards (Global) */
 @media screen and (max-width: 768px) {
     .table-responsive-cards thead {

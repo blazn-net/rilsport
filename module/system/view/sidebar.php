@@ -12,27 +12,28 @@
         </a>
     </div>
 
+    <!-- Sélecteur de langue -->
+    <div class="p-2 border-bottom bd-light">
+        <div class="d-flex flex-justify-around flex-wrap" style="gap: 5px;">
+            <?php
+            $systemLangs = \Core\Language::getSystemLanguages();
+            $currentLang = $_SESSION['lang'] ?? DEFAULT_LANG;
+            foreach ($systemLangs as $lang):
+                $isActive = ($currentLang === $lang['lang_code']);
+                $btnClass = $isActive ? 'primary' : 'light';
+                ?>
+                <a href="?lang=<?php echo htmlspecialchars($lang['lang_code']); ?>"
+                    class="button flex-1 <?php echo $btnClass; ?>" style="min-width: 45px; padding: 2px 5px;"
+                    title="<?php echo htmlspecialchars($lang['lang_name'] ?? strtoupper($lang['lang_code'])); ?>">
+                    <span
+                        class="<?php echo !empty($lang['lang_flag']) ? 'fi ' . htmlspecialchars($lang['lang_flag']) : 'mif-earth'; ?>"></span>
+                    <?php echo htmlspecialchars(strtoupper($lang['lang_code'])); ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
     <ul class="navview-menu pad-second-level" id="side-menu">
-        <!-- Sélecteur de langue -->
-        <li>
-            <div class="d-flex flex-justify-around p-2 flex-wrap" style="gap: 5px;">
-                <?php
-                $systemLangs = \Core\Language::getSystemLanguages();
-                $currentLang = $_SESSION['lang'] ?? DEFAULT_LANG;
-                foreach ($systemLangs as $lang):
-                    $isActive = ($currentLang === $lang['lang_code']);
-                    $btnClass = $isActive ? 'primary' : 'light';
-                    ?>
-                    <a href="?lang=<?php echo htmlspecialchars($lang['lang_code']); ?>"
-                        class="button flex-1 <?php echo $btnClass; ?>" style="min-width: 45px; padding: 2px 5px;"
-                        title="<?php echo htmlspecialchars($lang['lang_name'] ?? strtoupper($lang['lang_code'])); ?>">
-                        <span
-                            class="<?php echo !empty($lang['lang_flag']) ? 'fi ' . htmlspecialchars($lang['lang_flag']) : 'mif-earth'; ?>"></span>
-                        <?php echo htmlspecialchars(strtoupper($lang['lang_code'])); ?>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        </li>
 
         <!-- Groupe : Navigation -->
         <li class="item-header"><?php echo $data['txt']['SYS_NAVIGATION'] ?? 'Navigation'; ?></li>
