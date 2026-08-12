@@ -31,7 +31,7 @@ class Langs extends Controller {
         unset($_SESSION['flash_error']);
 
         $this->view('system/header', $data);
-        $this->view('system/sidebar', $data);
+        $this->view('system/navview', $data);
         $this->view('lang/langs', $data);
         $this->view('system/footer', $data);
     }

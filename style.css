@@ -35,7 +35,7 @@ main p {
     font-size: 1.1rem;
 }
 
-/* La sidebar utilisera maintenant son thème clair par défaut (fond blanc, texte gris foncé) qui est très lisible ! */
+/* La navview utilisera maintenant son thème clair par défaut (fond blanc, texte gris foncé) qui est très lisible ! */
 
 /* Masquer les icônes générées automatiquement par Metro UI (icon-replacer) */
 .icon-replacer {

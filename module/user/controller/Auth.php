@@ -51,7 +51,7 @@ class Auth extends Controller {
         }
 
         $this->view('system/header', $data);
-        $this->view('system/sidebar', $data);
+        $this->view('system/navview', $data);
         $this->view('user/login', $data);
         $this->view('system/footer', $data);
     }
@@ -99,7 +99,7 @@ class Auth extends Controller {
         }
 
         $this->view('system/header', $data);
-        $this->view('system/sidebar', $data);
+        $this->view('system/navview', $data);
         $this->view('user/register', $data);
         $this->view('system/footer', $data);
     }

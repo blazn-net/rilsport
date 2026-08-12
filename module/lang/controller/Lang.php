@@ -74,7 +74,7 @@ class Lang extends Controller {
         }
 
         $this->view('system/header', $data);
-        $this->view('system/sidebar', $data);
+        $this->view('system/navview', $data);
         $this->view('lang/lang', $data);
         $this->view('system/footer', $data);
     }

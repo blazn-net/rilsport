@@ -47,7 +47,7 @@ class Users extends Controller
         $data['users'] = $this->userModel->getUsers();
 
         $this->view('system/header', $data);
-        $this->view('system/sidebar', $data);
+        $this->view('system/navview', $data);
         $this->view('user/users', $data);
         $this->view('system/footer', $data);
     }

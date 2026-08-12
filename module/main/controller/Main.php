@@ -18,7 +18,7 @@ class Main extends Controller {
         ];
 
         $this->view('system/header', $data);
-        $this->view('system/sidebar', $data);
+        $this->view('system/navview', $data);
         $this->view('main/index', $data);
         $this->view('system/footer', $data);
     }
