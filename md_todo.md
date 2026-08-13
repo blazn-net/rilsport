@@ -11,7 +11,8 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     saisons, 
     championnats, 
     ligues,
-    organisateur    
+    organisateur
+    compétition, multi compétition (sport event)
     clubs
     équipes
     matches
