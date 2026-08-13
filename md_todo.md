@@ -18,7 +18,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     matches
     classements
     terrains
-    joueurs/arbitres/officiels/autres...
+    personne : joueurs/arbitres/officiels/autres...
 
 ### P2
 - [ ] B2-0 Type de tables et/ou de modules et/ou objets :
