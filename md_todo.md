@@ -64,6 +64,13 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 
 ### P4 (Basse priorité)
 - [ ] E4-0 Créer un installateur (code + sql)
+- [ ] E4-1 Audit :
+    Pour chaque modification d'objet, il faut stocker :
+    - la date et l'heure
+    - l'user
+    - Les modifications : ancienne et nouvelle valeur
+    - [IMPORTANT] Comment faire pour ne pas surcharger la base de données ?
+    - [IMPORTANT] Comment vérifier la validité des données ?
 
 ## Question / Idées
 
