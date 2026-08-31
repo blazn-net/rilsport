@@ -57,6 +57,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 - [ ] E2-0 Module blog/news/forum
     - [ ] E2-0.1 Forum = Discord ?
     - [ ] E2-0.2 Blog/News = Facebook/Instagram
+- [ ] E2-1 Gestion des fichiers css
 
 ### P3
 - [ ] E3-0 Couleur des rôles, status, ...
