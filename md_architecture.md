@@ -9,11 +9,14 @@ Ce document définit la structure générale de l'application, l'organisation de
 ### Principes généraux
 
 > **1 module = N objets**  
-> **1 objet = 1 page List + 1 page Form**
+> **1 objet = 1 page List + 1 page Form**  
+> **1 page List = 1 lien dans `module/system/view/navview.php`**
 
 Un module regroupe plusieurs objets métier liés entre eux. Chaque objet métier défini dans un module doit **obligatoirement** posséder ses deux pages dédiées :
 * **Page List** : affichage des éléments en tableau.
 * **Page Form** : création et édition d'un élément unique.
+
+> ℹ️ **Gestion de la navigation :** Pour l'instant, les menus sont gérés en dur dans `module/system/view/navview.php`. Toute création d'une nouvelle page **List** pour un objet implique obligatoirement l'ajout de son lien de navigation dans `navview.php`.
 
 Chaque objet dispose de ses propres fichiers `controller`, `model` et `view` au sein du même module.
 
@@ -81,6 +84,18 @@ module/blog/
 └── database/
     └── blog.sql
 ```
+
+---
+
+## Directives Interface Utilisateur et Menus
+
+### Règle d'ajout des liens de navigation
+
+> **Règle :** Pour l'instant, les menus de navigation sont gérés en dur dans `module/system/view/navview.php`. Toute création d'une nouvelle page **List** pour un objet métier doit **obligatoirement** s'accompagner de l'ajout de son lien de navigation correspondant dans `navview.php`.
+
+### Nommage des éléments du menu sous Administration
+
+> **Règle :** Les entrées de menu regroupées sous le groupe ou en-tête **"Administration"** ne doivent **jamais** commencer par *"Gestion [objet]"*, mais porter directement le nom de l'objet au pluriel (ex: `Utilisateurs`, `Langues`, `Menus`, `Modules`, etc.).
 
 ---
 
