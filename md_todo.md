@@ -26,6 +26,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - status
     - text
     - ...
+    - [ ] B2-0.1 Où mettre ces modules ? main, system, param, config, séparé ?
 - [ ] B2-1 BDD 
     - [ ] B2-1.1 Rechercher les textes en dur
     - [ ] B2-1.2 Remplacer les codes par des ids
