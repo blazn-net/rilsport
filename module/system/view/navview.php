@@ -41,7 +41,8 @@
     $isRegisterActive = ($currentRoute === 'user/register');
     $isUsersListActive = ($currentRoute === 'user/users' || (strpos($currentRoute, 'user') === 0 && !$isProfileActive && !$isLoginActive && !$isRegisterActive));
     $isLangsActive = (strpos($currentRoute, 'lang') === 0);
-    $isAdminGroupActive = ($isUsersListActive || $isLangsActive);
+    $isSportsActive = (strpos($currentRoute, 'sport') === 0);
+    $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive);
     ?>
 
     <ul class="navview-menu pad-second-level" id="side-menu">
@@ -71,15 +72,20 @@
             </li>
 
             <?php if (isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])): ?>
-                <?php $userTxt = \Core\Language::load('user'); ?>
+                <?php 
+                    $userTxt = \Core\Language::load('user'); 
+                    $sportTxt = \Core\Language::load('sport'); 
+                ?>
                 <!-- Groupe : Administration -->
                 <li class="item-header"><?php echo $data['txt']['SYS_ADMINISTRATION'] ?? 'Administration'; ?></li>
+
+                <!-- Sous-groupe : System -->
                 <li>
                     <a href="#" class="dropdown-toggle">
                         <span class="icon"><span class="mif-cogs"></span></span>
                         <span class="caption"><?php echo $userTxt['USER_MANAGEMENT'] ?? 'System'; ?></span>
                     </a>
-                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isAdminGroupActive ? 'false' : 'true'; ?>">
+                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isAdminSystemGroupActive ? 'false' : 'true'; ?>">
                         <li class="<?php echo $isUsersListActive ? 'active' : ''; ?>">
                             <a href="<?php echo URLROOT; ?>/user/users">
                                 <span class="icon"><span class="mif-group"></span></span>
@@ -90,6 +96,22 @@
                             <a href="<?php echo URLROOT; ?>/lang/langs">
                                 <span class="icon"><span class="mif-language"></span></span>
                                 <span class="caption"><?php echo $userTxt['LANG_LANGS_MGT'] ?? 'Langues'; ?></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Sous-groupe : Sports -->
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <span class="icon"><span class="mif-trophy"></span></span>
+                        <span class="caption"><?php echo $sportTxt['SPORT_SPORTS_MGT'] ?? 'Sports'; ?></span>
+                    </a>
+                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isSportsActive ? 'false' : 'true'; ?>">
+                        <li class="<?php echo $isSportsActive ? 'active' : ''; ?>">
+                            <a href="<?php echo URLROOT; ?>/sport/sports">
+                                <span class="icon"><span class="mif-trophy"></span></span>
+                                <span class="caption"><?php echo $sportTxt['SPORT_SPORTS_MGT'] ?? 'Sports'; ?></span>
                             </a>
                         </li>
                     </ul>

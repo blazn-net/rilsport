@@ -97,6 +97,13 @@ module/blog/
 
 > **Règle :** Les entrées de menu regroupées sous le groupe ou en-tête **"Administration"** ne doivent **jamais** commencer par *"Gestion [objet]"*, mais porter directement le nom de l'objet au pluriel (ex: `Utilisateurs`, `Langues`, `Menus`, `Modules`, etc.).
 
+### Modes d'affichage des Fiches (View vs Form/Edit)
+
+> **Règle :** Pour la vue d'un objet unique :
+> - **Mode `View` (lecture seule)** : Affiche les informations uniquement sous forme de **libellés/textes HTML, cartes et badges** sans aucun élément de formulaire (`input`, `select`) désactivé ou en `readonly`.
+> - **Mode `Form` / `Edit` (modification)** : Affiche les composants de formulaire interactifs (`textbox`, `dropdownlist`, `checkbox`, etc.) avec le bouton d'enregistrement.
+> - **Adaptation des liens depuis `List`** : Pour un administrateur, l'action sur le tableau pointe vers l'édition ("Modifier" / crayon). Pour un utilisateur simple, l'action pointe vers la consultation ("Consulter" / œil).
+
 ---
 
 ## Directives Base de Données

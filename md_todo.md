@@ -61,6 +61,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 
 ### P3
 - [ ] E3-0 Couleur des rôles, status, ...
+- [ ] E3-1 Icones gratuites en plus de Metro UI
 
 ### P4 (Basse priorité)
 - [ ] E4-0 Créer un installateur (code + sql)

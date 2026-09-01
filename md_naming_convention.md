@@ -34,6 +34,31 @@ Lorsque l'on formule une directive générale s'appliquant à l'ensemble de l'ap
 * **Les pages "Form" (ou les Formulaires)** : Terme générique pour désigner l'ensemble des pages de saisie au singulier.
   * *Exemple : "Faisons en sorte qu'après une mise à jour, on reste sur la page Form."*
 
+### 3. Modes d'affichage des Fiches : Consultation ("View") vs Formulaire ("Form" / "Edit")
+
+Pour la gestion d'un objet unique, nous distinguons deux modes d'affichage selon les privilèges de l'utilisateur :
+
+* **Mode Consultation (`View`) — Utilisateurs sans droit de modification :**
+  - La page affiche la fiche de l'objet sous forme de **libellés, textes, cartes et badges HTML** épurés.
+  - **Aucun champ de formulaire** (`input`, `textarea`, `select`) désactivé ou en `readonly` ne doit être utilisé en mode consultation.
+  - Aucun bouton de validation/soumission n'est présent.
+
+* **Mode Formulaire (`Form` / `Edit`) — Utilisateurs avec droit de modification (Admins) :**
+  - La page affiche un formulaire interactif avec des **composants de saisie** (`textbox`, `dropdownlist`, `checkbox`, `textarea`, etc.).
+  - Présence du bouton d'enregistrement / de mise à jour.
+
+### 4. Adaptation des Liens et Boutons d'Action depuis la page List
+
+Depuis une page **List** (tableau), les actions proposées et les liens vers la page Form/Fiche s'adaptent dynamiquement aux droits de l'utilisateur :
+
+* **Si l'utilisateur a les droits de modification (Admin) :**
+  - Le clic sur le nom de l'objet ou le bouton d'action **"Modifier"** (icône `mif-pencil`) ouvre la page en mode **Formulaire (`Edit`)**.
+  - Les boutons d'ajout, de modification, de désactivation et de suppression sont affichés.
+
+* **Si l'utilisateur a uniquement les droits de lecture (Utilisateur simple) :**
+  - Le clic sur le nom de l'objet ou le bouton d'action **"Consulter"** (icône `mif-eye`) ouvre la page en mode **Consultation (`View`)**.
+  - Les boutons d'ajout, de modification, de désactivation et de suppression sont masqués.
+
 ---
 
 ## Conventions d'URL
