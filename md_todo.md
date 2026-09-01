@@ -40,9 +40,11 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     [CLUB_NAME].rilsport.net (ou rilsport.net/[CLUB_NAME])
     [VENUE_NAME].rilsport.net (ou rilsport.net/[VENUE_NAME])
     [PERSON_NAME].rilsport.net (ou rilsport.net/[PERSON_NAME])
+    - [ ] B3-1.1 Comment gérer les sous domaines avec planethoster ?
 
 ### P4 (Basse priorité)
 - [ ] B4-1 Sélecteurs (ou simulaire) : à concevoir
+- [ ] B4-2 Beaucoup de tables ont des noms non traduits en base de données
 
 ## Évolution
 

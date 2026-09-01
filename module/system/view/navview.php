@@ -41,7 +41,9 @@
     $isRegisterActive = ($currentRoute === 'user/register');
     $isUsersListActive = ($currentRoute === 'user/users' || (strpos($currentRoute, 'user') === 0 && !$isProfileActive && !$isLoginActive && !$isRegisterActive));
     $isLangsActive = (strpos($currentRoute, 'lang') === 0);
-    $isSportsActive = (strpos($currentRoute, 'sport') === 0);
+    $isSeasonsActive = (strpos($currentRoute, 'sport/season') === 0 || strpos($currentRoute, 'sport/seasons') === 0);
+    $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
+    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || strpos($currentRoute, 'sport') === 0);
     $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive);
     ?>
 
@@ -107,11 +109,17 @@
                         <span class="icon"><span class="mif-trophy"></span></span>
                         <span class="caption"><?php echo $sportTxt['SPORT_SPORTS_MGT'] ?? 'Sports'; ?></span>
                     </a>
-                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isSportsActive ? 'false' : 'true'; ?>">
+                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isSportsGroupActive ? 'false' : 'true'; ?>">
                         <li class="<?php echo $isSportsActive ? 'active' : ''; ?>">
                             <a href="<?php echo URLROOT; ?>/sport/sports">
                                 <span class="icon"><span class="mif-trophy"></span></span>
                                 <span class="caption"><?php echo $sportTxt['SPORT_SPORTS_MGT'] ?? 'Sports'; ?></span>
+                            </a>
+                        </li>
+                        <li class="<?php echo $isSeasonsActive ? 'active' : ''; ?>">
+                            <a href="<?php echo URLROOT; ?>/sport/seasons">
+                                <span class="icon"><span class="mif-calendar"></span></span>
+                                <span class="caption"><?php echo $sportTxt['SPORT_SEASONS_MGT'] ?? 'Saisons'; ?></span>
                             </a>
                         </li>
                     </ul>

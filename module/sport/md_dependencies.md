@@ -18,6 +18,7 @@
 | Table               | Description                                        |
 |---------------------|----------------------------------------------------|
 | `t_sport_sport`     | Liste des disciplines sportives (id, code, name, description, icon, status_id, audit) |
+| `t_sport_season`    | Saisons sportives (id, code, name, sport_id, date_start, date_end, status_id, audit) |
 | `t_sport_text_key`  | Clés de traduction du module sport                 |
 | `t_sport_text`      | Traductions (fr / en / es) du module sport         |
 
