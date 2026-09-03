@@ -24,7 +24,9 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] B1-2.2 Pays
     - [ ] B1-2.3 Région / Etat / Province / Land (selon les pays)
     - [ ] B1-2.4 Département / District / Comté (selon les pays)
-    - [ ] B1-2.5 Ville
+    - [ ] B1-2.5 Ville :
+    t_zone_city (table légère, peuplée à la demande)
+        - champ city_name (texte libre) selon l'objet concerné
     - [ ] B1-2.6 Lien avec club, équipe, user (personne?)
 
 ### P2

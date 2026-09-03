@@ -29,15 +29,19 @@ Tous les modules sont placés sous le répertoire `module/` :
 ```
 module/
 ├── main/     ← module obligatoire (objets système et transversaux)
+├── lang/     ← module obligatoire autonome (gestion des langues)
+├── zone/     ← module obligatoire autonome (découpage géographique)
 ├── system/   ← module technique interne
 └── [xxx]/    ← modules optionnels / métier
 ```
 
 | Type | Répertoire | Description |
 |------|-----------|-------------|
-| **Obligatoire** | `module/main/` | Contient tous les objets indispensables au fonctionnement du système (`user`, `lang`, `zone`, `module`, `role`, ...) |
+| **Obligatoire** | `module/main/` | Contient tous les objets indispensables au fonctionnement du système (`user`, `module`, `role`, ...) |
+| **Obligatoire** | `module/lang/` | Gestion des langues — module autonome (comme `zone`) |
+| **Obligatoire** | `module/zone/` | Gestion du découpage géographique (Monde → Continent → Pays → Région → Département → Ville) — module autonome |
 | **Technique** | `module/system/` | Gestion interne bas niveau (logs, config système, métadonnées, ...) |
-| **Optionnel** | `module/[nom]/` | Tout module métier ajouté selon les besoins (`blog`, `shop`, `forum`, ...) |
+| **Optionnel** | `module/[nom]/` | Tout module métier ajouté selon les besoins (`blog`, `shop`, `sport`, `forum`, ...) |
 
 ---
 

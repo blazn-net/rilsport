@@ -13,3 +13,7 @@ define('SITEDESCRIPTION', 'Results Infos Live');
 
 // Langue par défaut
 define('DEFAULT_LANG', 'fr');
+
+// Module Zone — API GeoNames (https://www.geonames.org/login)
+// Créez un compte gratuit et activez le web service dans vos paramètres.
+define('GEONAMES_USERNAME', 'YOUR_GEONAMES_USERNAME_HERE');
