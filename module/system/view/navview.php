@@ -42,8 +42,9 @@
     $isUsersListActive = ($currentRoute === 'user/users' || (strpos($currentRoute, 'user') === 0 && !$isProfileActive && !$isLoginActive && !$isRegisterActive));
     $isLangsActive = (strpos($currentRoute, 'lang') === 0);
     $isSeasonsActive = (strpos($currentRoute, 'sport/season') === 0 || strpos($currentRoute, 'sport/seasons') === 0);
+    $isPersonsActive = (strpos($currentRoute, 'sport/person') === 0 || strpos($currentRoute, 'sport/persons') === 0);
     $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
-    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || strpos($currentRoute, 'sport') === 0);
+    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || $isPersonsActive || strpos($currentRoute, 'sport') === 0);
     $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive);
     ?>
 
@@ -120,6 +121,12 @@
                             <a href="<?php echo URLROOT; ?>/sport/seasons">
                                 <span class="icon"><span class="mif-calendar"></span></span>
                                 <span class="caption"><?php echo $sportTxt['SPORT_SEASONS_MGT'] ?? 'Saisons'; ?></span>
+                            </a>
+                        </li>
+                        <li class="<?php echo $isPersonsActive ? 'active' : ''; ?>">
+                            <a href="<?php echo URLROOT; ?>/sport/persons">
+                                <span class="icon"><span class="mif-contacts"></span></span>
+                                <span class="caption"><?php echo $sportTxt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs'; ?></span>
                             </a>
                         </li>
                     </ul>

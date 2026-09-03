@@ -7,18 +7,18 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ### P1 (Haute priorité)
 - [ ] B1-0 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
 - [ ] B1-1 Module *Sport* : à placer dans un module *sport*. 
-    sport
-    saisons, 
-    championnats, 
-    ligues,
-    organisateur : fédération/ligue/club/personne
-    compétition, multi compétition (sport event)
-    clubs
-    équipes
-    matches
-    classements
-    terrains
-    personne : joueurs/arbitres/officiels/autres...
+    - [x] sport
+    - [x] saisons, 
+    - [ ] clubs, 
+    - [ ] équipes,
+    - [x] acteurs : joueurs/arbitres/officiels/autres...
+    - [ ] compétition, multi compétition (sport event), championnats,
+    - [ ] matches,
+    - [ ] classements,
+    - [ ] fédérations/ligues,
+    - [ ] organisateur : fédération/ligue/club/acteur,
+    - [ ] terrains,
+
 
 ### P2
 - [ ] B2-0 Type de tables et/ou de modules et/ou objets :

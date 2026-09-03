@@ -3,10 +3,10 @@
 -- ============================================================
 -- Ordre d'exécution :
 --   1. Enregistrement module dans t_system_module
---   2. Schéma : t_sport_sport, t_sport_season
+--   2. Schéma : t_sport_sport, t_sport_season, t_sport_person_role, t_sport_person
 --   3. Schéma : t_sport_text_key, t_sport_text
 --   4. Schéma : Métadonnées du module sport
---   5. Données : Sports & Saisons par défaut
+--   5. Données : Sports, Saisons & Personnes par défaut
 --   6. Données : traductions UI fixes (SPORT_)
 --
 -- Dépendances : lang.sql, system.sql, user.sql
@@ -73,6 +73,35 @@ CREATE TABLE IF NOT EXISTS t_sport_season (
     created_by  INT          DEFAULT NULL,
     modified_at TIMESTAMP    DEFAULT NULL,
     modified_by INT          DEFAULT NULL,
+    FOREIGN KEY (created_by)  REFERENCES t_user_user(id) ON DELETE SET NULL,
+    FOREIGN KEY (modified_by) REFERENCES t_user_user(id) ON DELETE SET NULL
+);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_person_role & t_sport_person (Acteurs / Personnes)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_person_role (
+    code      VARCHAR(50)  PRIMARY KEY,
+    name      VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS t_sport_person (
+    id          SERIAL       PRIMARY KEY,
+    code        VARCHAR(50)  NOT NULL UNIQUE,
+    first_name  VARCHAR(100) NOT NULL,
+    last_name   VARCHAR(100) NOT NULL,
+    gender      VARCHAR(10)  DEFAULT 'M',
+    birth_date  DATE         DEFAULT NULL,
+    nationality VARCHAR(50)  DEFAULT NULL,
+    role_code   VARCHAR(50)  NOT NULL DEFAULT 'player',
+    status_id   INT          NOT NULL DEFAULT 1,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by  INT          DEFAULT NULL,
+    modified_at TIMESTAMP    DEFAULT NULL,
+    modified_by INT          DEFAULT NULL,
+    FOREIGN KEY (role_code)   REFERENCES t_sport_person_role(code) ON DELETE RESTRICT,
     FOREIGN KEY (created_by)  REFERENCES t_user_user(id) ON DELETE SET NULL,
     FOREIGN KEY (modified_by) REFERENCES t_user_user(id) ON DELETE SET NULL
 );
@@ -150,7 +179,7 @@ CREATE TABLE IF NOT EXISTS t_sport_table (
     table_name  VARCHAR(100) NOT NULL UNIQUE,
     created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (module_id) REFERENCES t_system_module(id) ON DELETE CASCADE,
-    FOREIGN KEY (object_id) REFERENCES t_system_object(id)  ON DELETE SET NULL
+    FOREIGN KEY (object_id) REFERENCES t_sport_object(id)  ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS t_sport_table_i18n (
@@ -188,10 +217,9 @@ CREATE TABLE IF NOT EXISTS t_sport_column_i18n (
 
 
 -- ============================================================
--- DONNÉES : métadonnées du module sport (Objets & Pages)
+-- DONNÉES : Métadonnées et Objets
 -- ============================================================
 
--- Objets métier
 INSERT INTO t_sport_object (module_id, code)
 SELECT id, 'sport' FROM t_system_module WHERE code = 'sport'
 ON CONFLICT (module_id, code) DO NOTHING;
@@ -200,12 +228,20 @@ INSERT INTO t_sport_object (module_id, code)
 SELECT id, 'season' FROM t_system_module WHERE code = 'sport'
 ON CONFLICT (module_id, code) DO NOTHING;
 
+INSERT INTO t_sport_object (module_id, code)
+SELECT id, 'person' FROM t_system_module WHERE code = 'sport'
+ON CONFLICT (module_id, code) DO NOTHING;
+
 INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
 SELECT o.id, 'fr', 'Sport' FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'sport'
 ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
 
 INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
 SELECT o.id, 'fr', 'Saison' FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'season'
+ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
+SELECT o.id, 'fr', 'Personne / Acteur' FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'person'
 ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
 
 -- Pages / Routes
@@ -225,6 +261,14 @@ INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
 SELECT m.id, o.id, 'season', 'form', '/sport/season' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'season'
 ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
 
+INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
+SELECT m.id, o.id, 'persons', 'list', '/sport/persons' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'person'
+ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
+
+INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
+SELECT m.id, o.id, 'person', 'form', '/sport/person' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'person'
+ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
+
 INSERT INTO t_sport_table (module_id, object_id, table_name)
 SELECT m.id, o.id, 't_sport_sport' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'sport'
 ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
@@ -232,6 +276,23 @@ ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
 INSERT INTO t_sport_table (module_id, object_id, table_name)
 SELECT m.id, o.id, 't_sport_season' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'season'
 ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_person' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'person'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+
+-- ============================================================
+-- DONNÉES : Rôles des personnes
+-- ============================================================
+
+INSERT INTO t_sport_person_role (code, name) VALUES
+('player',   'Joueur / Joueuse'),
+('coach',    'Entraîneur / Coach'),
+('referee',  'Arbitre / Juge'),
+('official', 'Officiel / Délégué'),
+('staff',    'Staff médical / Technique')
+ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name;
 
 
 -- ============================================================
@@ -269,18 +330,41 @@ ON CONFLICT (code) DO UPDATE SET
 
 
 -- ============================================================
+-- DONNÉES : Personnes / Acteurs par défaut
+-- ============================================================
+
+INSERT INTO t_sport_person (code, first_name, last_name, gender, birth_date, nationality, role_code, status_id) VALUES
+('p-mbappe',     'Kylian',    'Mbappé',    'M', '1998-12-20', 'Française', 'player',   1),
+('p-wembanyama', 'Victor',    'Wembanyama','M', '2004-01-04', 'Française', 'player',   1),
+('p-deschamps',  'Didier',    'Deschamps', 'M', '1968-10-15', 'Française', 'coach',    1),
+('p-turpin',     'Clément',   'Turpin',    'M', '1982-03-16', 'Française', 'referee',  1)
+ON CONFLICT (code) DO UPDATE SET
+    first_name  = EXCLUDED.first_name,
+    last_name   = EXCLUDED.last_name,
+    gender      = EXCLUDED.gender,
+    birth_date  = EXCLUDED.birth_date,
+    nationality = EXCLUDED.nationality,
+    role_code   = EXCLUDED.role_code,
+    status_id   = EXCLUDED.status_id;
+
+
+-- ============================================================
 -- DONNÉES : clés de traduction UI (SPORT_)
 -- ============================================================
 
 INSERT INTO t_sport_text_key (text_code) VALUES
 ('SPORT_SPORTS_MGT'),
 ('SPORT_SEASONS_MGT'),
+('SPORT_PERSONS_MGT'),
 ('SPORT_ADD_SPORT_BTN'),
 ('SPORT_ADD_SEASON_BTN'),
+('SPORT_ADD_PERSON_BTN'),
 ('SPORT_EDIT_SPORT_TITLE'),
 ('SPORT_ADD_SPORT_TITLE'),
 ('SPORT_EDIT_SEASON_TITLE'),
 ('SPORT_ADD_SEASON_TITLE'),
+('SPORT_EDIT_PERSON_TITLE'),
+('SPORT_ADD_PERSON_TITLE'),
 ('SPORT_CODE'),
 ('SPORT_NAME'),
 ('SPORT_DESCRIPTION'),
@@ -307,6 +391,29 @@ INSERT INTO t_sport_text_key (text_code) VALUES
 ('SPORT_SEASON_START_LABEL'),
 ('SPORT_SEASON_END_LABEL'),
 ('SPORT_SEASON_CODE_HELP'),
+('SPORT_PERSON_CODE'),
+('SPORT_PERSON_FIRSTNAME'),
+('SPORT_PERSON_LASTNAME'),
+('SPORT_PERSON_FULLNAME'),
+('SPORT_PERSON_GENDER'),
+('SPORT_PERSON_BIRTHDATE'),
+('SPORT_PERSON_NATIONALITY'),
+('SPORT_PERSON_ROLE'),
+('SPORT_PERSON_SPORT'),
+('SPORT_PERSON_CODE_LABEL'),
+('SPORT_PERSON_FIRSTNAME_LABEL'),
+('SPORT_PERSON_LASTNAME_LABEL'),
+('SPORT_PERSON_GENDER_LABEL'),
+('SPORT_PERSON_BIRTHDATE_LABEL'),
+('SPORT_PERSON_NATIONALITY_LABEL'),
+('SPORT_PERSON_ROLE_LABEL'),
+('SPORT_PERSON_SPORT_LABEL'),
+('SPORT_PERSON_ALL_SPORTS'),
+('SPORT_PERSON_ROLE_PLAYER'),
+('SPORT_PERSON_ROLE_COACH'),
+('SPORT_PERSON_ROLE_REFEREE'),
+('SPORT_PERSON_ROLE_OFFICIAL'),
+('SPORT_PERSON_ROLE_STAFF'),
 ('SPORT_MSG_SPORT_ADDED'),
 ('SPORT_MSG_SPORT_UPDATED'),
 ('SPORT_MSG_SPORT_DEACTIVATED'),
@@ -315,13 +422,20 @@ INSERT INTO t_sport_text_key (text_code) VALUES
 ('SPORT_MSG_SEASON_UPDATED'),
 ('SPORT_MSG_SEASON_DEACTIVATED'),
 ('SPORT_MSG_SEASON_DELETED'),
+('SPORT_MSG_PERSON_ADDED'),
+('SPORT_MSG_PERSON_UPDATED'),
+('SPORT_MSG_PERSON_DEACTIVATED'),
+('SPORT_MSG_PERSON_DELETED'),
 ('SPORT_ERR_MISSING_FIELDS'),
 ('SPORT_ERR_CODE_EXISTS'),
 ('SPORT_ERR_SEASON_MISSING_FIELDS'),
 ('SPORT_ERR_SEASON_CODE_EXISTS'),
+('SPORT_ERR_PERSON_MISSING_FIELDS'),
+('SPORT_ERR_PERSON_CODE_EXISTS'),
 ('SPORT_ERR_DATES_INVALID'),
 ('SPORT_DELETE_SPORT_CONFIRM'),
 ('SPORT_DELETE_SEASON_CONFIRM'),
+('SPORT_DELETE_PERSON_CONFIRM'),
 ('SPORT_FORCE_DELETE_CONFIRM'),
 ('SPORT_INFO_PANEL')
 ON CONFLICT (text_code) DO NOTHING;
@@ -340,6 +454,10 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('SPORT_SEASONS_MGT',         'en', 'Seasons'),
 ('SPORT_SEASONS_MGT',         'es', 'Temporadas'),
 
+('SPORT_PERSONS_MGT',         'fr', 'Personnes / Acteurs'),
+('SPORT_PERSONS_MGT',         'en', 'Persons / Actors'),
+('SPORT_PERSONS_MGT',         'es', 'Personas / Actores'),
+
 ('SPORT_ADD_SPORT_BTN',       'fr', 'Ajouter un sport'),
 ('SPORT_ADD_SPORT_BTN',       'en', 'Add Sport'),
 ('SPORT_ADD_SPORT_BTN',       'es', 'Añadir deporte'),
@@ -347,6 +465,10 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('SPORT_ADD_SEASON_BTN',      'fr', 'Ajouter une saison'),
 ('SPORT_ADD_SEASON_BTN',      'en', 'Add Season'),
 ('SPORT_ADD_SEASON_BTN',      'es', 'Añadir temporada'),
+
+('SPORT_ADD_PERSON_BTN',      'fr', 'Ajouter une personne'),
+('SPORT_ADD_PERSON_BTN',      'en', 'Add Person'),
+('SPORT_ADD_PERSON_BTN',      'es', 'Añadir persona'),
 
 ('SPORT_EDIT_SPORT_TITLE',    'fr', 'Modifier le sport'),
 ('SPORT_EDIT_SPORT_TITLE',    'en', 'Edit Sport'),
@@ -363,6 +485,14 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('SPORT_ADD_SEASON_TITLE',    'fr', 'Ajouter une saison'),
 ('SPORT_ADD_SEASON_TITLE',    'en', 'Add Season'),
 ('SPORT_ADD_SEASON_TITLE',    'es', 'Añadir temporada'),
+
+('SPORT_EDIT_PERSON_TITLE',   'fr', 'Modifier la personne'),
+('SPORT_EDIT_PERSON_TITLE',   'en', 'Edit Person'),
+('SPORT_EDIT_PERSON_TITLE',   'es', 'Editar persona'),
+
+('SPORT_ADD_PERSON_TITLE',    'fr', 'Ajouter une personne'),
+('SPORT_ADD_PERSON_TITLE',    'en', 'Add Person'),
+('SPORT_ADD_PERSON_TITLE',    'es', 'Añadir persona'),
 
 ('SPORT_CODE',                'fr', 'Code'),
 ('SPORT_CODE',                'en', 'Code'),
@@ -392,149 +522,125 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('SPORT_INACTIVE',            'en', 'Inactive'),
 ('SPORT_INACTIVE',            'es', 'Inactivo'),
 
-('SPORT_CODE_LABEL',          'fr', 'Code unique du sport'),
-('SPORT_CODE_LABEL',          'en', 'Unique sport code'),
-('SPORT_CODE_LABEL',          'es', 'Código único del deporte'),
+('SPORT_PERSON_CODE',         'fr', 'Code personne'),
+('SPORT_PERSON_CODE',         'en', 'Person code'),
+('SPORT_PERSON_CODE',         'es', 'Código de persona'),
 
-('SPORT_NAME_LABEL',          'fr', 'Nom de la discipline'),
-('SPORT_NAME_LABEL',          'en', 'Discipline name'),
-('SPORT_NAME_LABEL',          'es', 'Nombre de la disciplina'),
+('SPORT_PERSON_FIRSTNAME',    'fr', 'Prénom'),
+('SPORT_PERSON_FIRSTNAME',    'en', 'First name'),
+('SPORT_PERSON_FIRSTNAME',    'es', 'Nombre'),
 
-('SPORT_DESCRIPTION_LABEL',   'fr', 'Description'),
-('SPORT_DESCRIPTION_LABEL',   'en', 'Description'),
-('SPORT_DESCRIPTION_LABEL',   'es', 'Descripción'),
+('SPORT_PERSON_LASTNAME',     'fr', 'Nom'),
+('SPORT_PERSON_LASTNAME',     'en', 'Last name'),
+('SPORT_PERSON_LASTNAME',     'es', 'Apellido'),
 
-('SPORT_ICON_LABEL',          'fr', 'Classe d''icône (ex: mif-trophy)'),
-('SPORT_ICON_LABEL',          'en', 'Icon class (e.g. mif-trophy)'),
-('SPORT_ICON_LABEL',          'es', 'Clase de icono (ej: mif-trophy)'),
+('SPORT_PERSON_FULLNAME',     'fr', 'Nom complet'),
+('SPORT_PERSON_FULLNAME',     'en', 'Full name'),
+('SPORT_PERSON_FULLNAME',     'es', 'Nombre completo'),
 
-('SPORT_STATUS_LABEL',        'fr', 'Statut'),
-('SPORT_STATUS_LABEL',        'en', 'Status'),
-('SPORT_STATUS_LABEL',        'es', 'Estado'),
+('SPORT_PERSON_GENDER',       'fr', 'Genre'),
+('SPORT_PERSON_GENDER',       'en', 'Gender'),
+('SPORT_PERSON_GENDER',       'es', 'Género'),
 
-('SPORT_CODE_HELP',           'fr', 'Le code ne peut plus être modifié après la création.'),
-('SPORT_CODE_HELP',           'en', 'The code cannot be modified after creation.'),
-('SPORT_CODE_HELP',           'es', 'El código no se puede modificar después de la creación.'),
+('SPORT_PERSON_BIRTHDATE',    'fr', 'Date de naissance'),
+('SPORT_PERSON_BIRTHDATE',    'en', 'Birth date'),
+('SPORT_PERSON_BIRTHDATE',    'es', 'Fecha de nacimiento'),
 
-('SPORT_ICON_HELP',           'fr', 'Nom de classe d''icône Metro UI (mif-*).'),
-('SPORT_ICON_HELP',           'en', 'Metro UI icon class name (mif-*).'),
-('SPORT_ICON_HELP',           'es', 'Nombre de clase de icono Metro UI (mif-*).'),
+('SPORT_PERSON_NATIONALITY',  'fr', 'Nationalité'),
+('SPORT_PERSON_NATIONALITY',  'en', 'Nationality'),
+('SPORT_PERSON_NATIONALITY',  'es', 'Nacionalidad'),
 
-('SPORT_SEASON_CODE',         'fr', 'Code saison'),
-('SPORT_SEASON_CODE',         'en', 'Season code'),
-('SPORT_SEASON_CODE',         'es', 'Código de temporada'),
+('SPORT_PERSON_ROLE',         'fr', 'Rôle / Fonction'),
+('SPORT_PERSON_ROLE',         'en', 'Role / Function'),
+('SPORT_PERSON_ROLE',         'es', 'Rol / Función'),
 
-('SPORT_SEASON_NAME',         'fr', 'Nom de la saison'),
-('SPORT_SEASON_NAME',         'en', 'Season name'),
-('SPORT_SEASON_NAME',         'es', 'Nombre de temporada'),
+('SPORT_PERSON_SPORT',        'fr', 'Sport principal'),
+('SPORT_PERSON_SPORT',        'en', 'Primary sport'),
+('SPORT_PERSON_SPORT',        'es', 'Deporte principal'),
 
-('SPORT_SEASON_SPORT',        'fr', 'Sport rattaché'),
-('SPORT_SEASON_SPORT',        'en', 'Associated sport'),
-('SPORT_SEASON_SPORT',        'es', 'Deporte asociado'),
+('SPORT_PERSON_CODE_LABEL',   'fr', 'Code unique (ex: p-mbappe)'),
+('SPORT_PERSON_CODE_LABEL',   'en', 'Unique code (e.g. p-mbappe)'),
+('SPORT_PERSON_CODE_LABEL',   'es', 'Código único (ej: p-mbappe)'),
 
-('SPORT_SEASON_DATE_START',   'fr', 'Date de début'),
-('SPORT_SEASON_DATE_START',   'en', 'Start date'),
-('SPORT_SEASON_DATE_START',   'es', 'Fecha de inicio'),
+('SPORT_PERSON_FIRSTNAME_LABEL', 'fr', 'Prénom'),
+('SPORT_PERSON_FIRSTNAME_LABEL', 'en', 'First name'),
+('SPORT_PERSON_FIRSTNAME_LABEL', 'es', 'Nombre'),
 
-('SPORT_SEASON_DATE_END',     'fr', 'Date de fin'),
-('SPORT_SEASON_DATE_END',     'en', 'End date'),
-('SPORT_SEASON_DATE_END',     'es', 'Fecha de fin'),
+('SPORT_PERSON_LASTNAME_LABEL',  'fr', 'Nom de famille'),
+('SPORT_PERSON_LASTNAME_LABEL',  'en', 'Last name'),
+('SPORT_PERSON_LASTNAME_LABEL',  'es', 'Apellido'),
 
-('SPORT_SEASON_ALL_SPORTS',   'fr', 'Tous les sports (Globale)'),
-('SPORT_SEASON_ALL_SPORTS',   'en', 'All sports (Global)'),
-('SPORT_SEASON_ALL_SPORTS',   'es', 'Todos los deportes (Global)'),
+('SPORT_PERSON_GENDER_LABEL',    'fr', 'Genre (M: Masculin, F: Féminin)'),
+('SPORT_PERSON_GENDER_LABEL',    'en', 'Gender (M: Male, F: Female)'),
+('SPORT_PERSON_GENDER_LABEL',    'es', 'Género (M: Masculino, F: Femenino)'),
 
-('SPORT_SEASON_CODE_LABEL',   'fr', 'Code unique (ex: 2026-2027 ou 2027)'),
-('SPORT_SEASON_CODE_LABEL',   'en', 'Unique code (e.g. 2026-2027 or 2027)'),
-('SPORT_SEASON_CODE_LABEL',   'es', 'Código único (ej: 2026-2027 o 2027)'),
+('SPORT_PERSON_BIRTHDATE_LABEL', 'fr', 'Date de naissance'),
+('SPORT_PERSON_BIRTHDATE_LABEL', 'en', 'Birth date'),
+('SPORT_PERSON_BIRTHDATE_LABEL', 'es', 'Fecha de nacimiento'),
 
-('SPORT_SEASON_NAME_LABEL',   'fr', 'Nom de la saison (ex: Saison 2026-2027)'),
-('SPORT_SEASON_NAME_LABEL',   'en', 'Season name (e.g. Season 2026-2027)'),
-('SPORT_SEASON_NAME_LABEL',   'es', 'Nombre de la temporada (ej: Temporada 2026-2027)'),
+('SPORT_PERSON_NATIONALITY_LABEL','fr', 'Nationalité'),
+('SPORT_PERSON_NATIONALITY_LABEL','en', 'Nationality'),
+('SPORT_PERSON_NATIONALITY_LABEL','es', 'Nacionalidad'),
 
-('SPORT_SEASON_SPORT_LABEL',  'fr', 'Sport concerné (laisser vide si globale)'),
-('SPORT_SEASON_SPORT_LABEL',  'en', 'Associated sport (leave empty for global)'),
-('SPORT_SEASON_SPORT_LABEL',  'es', 'Deporte correspondiente (dejar en blanco para global)'),
+('SPORT_PERSON_ROLE_LABEL',    'fr', 'Rôle principal'),
+('SPORT_PERSON_ROLE_LABEL',    'en', 'Primary role'),
+('SPORT_PERSON_ROLE_LABEL',    'es', 'Rol principal'),
 
-('SPORT_SEASON_START_LABEL',  'fr', 'Date de début de saison'),
-('SPORT_SEASON_START_LABEL',  'en', 'Season start date'),
-('SPORT_SEASON_START_LABEL',  'es', 'Fecha de inicio de temporada'),
+('SPORT_PERSON_SPORT_LABEL',   'fr', 'Sport principal rattaché'),
+('SPORT_PERSON_SPORT_LABEL',   'en', 'Associated primary sport'),
+('SPORT_PERSON_SPORT_LABEL',   'es', 'Deporte principal asociado'),
 
-('SPORT_SEASON_END_LABEL',    'fr', 'Date de fin de saison'),
-('SPORT_SEASON_END_LABEL',    'en', 'Season end date'),
-('SPORT_SEASON_END_LABEL',    'es', 'Fecha de fin de temporada'),
+('SPORT_PERSON_ALL_SPORTS',    'fr', 'Tous les sports / Aucun'),
+('SPORT_PERSON_ALL_SPORTS',    'en', 'All sports / None'),
+('SPORT_PERSON_ALL_SPORTS',    'es', 'Todos los deportes / Ninguno'),
 
-('SPORT_SEASON_CODE_HELP',    'fr', 'Identifiant de la saison.'),
-('SPORT_SEASON_CODE_HELP',    'en', 'Season identifier.'),
-('SPORT_SEASON_CODE_HELP',    'es', 'Identificador de la temporada.'),
+('SPORT_PERSON_ROLE_PLAYER',   'fr', 'Joueur / Joueuse'),
+('SPORT_PERSON_ROLE_PLAYER',   'en', 'Player'),
+('SPORT_PERSON_ROLE_PLAYER',   'es', 'Jugador / Jugadora'),
 
-('SPORT_MSG_SPORT_ADDED',     'fr', 'Sport ajouté avec succès.'),
-('SPORT_MSG_SPORT_ADDED',     'en', 'Sport added successfully.'),
-('SPORT_MSG_SPORT_ADDED',     'es', 'Deporte añadido con éxito.'),
+('SPORT_PERSON_ROLE_COACH',    'fr', 'Entraîneur / Coach'),
+('SPORT_PERSON_ROLE_COACH',    'en', 'Coach'),
+('SPORT_PERSON_ROLE_COACH',    'es', 'Entrenador / Coach'),
 
-('SPORT_MSG_SPORT_UPDATED',   'fr', 'Sport mis à jour avec succès.'),
-('SPORT_MSG_SPORT_UPDATED',   'en', 'Sport updated successfully.'),
-('SPORT_MSG_SPORT_UPDATED',   'es', 'Deporte actualizado con éxito.'),
+('SPORT_PERSON_ROLE_REFEREE',  'fr', 'Arbitre / Juge'),
+('SPORT_PERSON_ROLE_REFEREE',  'en', 'Referee / Judge'),
+('SPORT_PERSON_ROLE_REFEREE',  'es', 'Árbitro / Juez'),
 
-('SPORT_MSG_SPORT_DEACTIVATED','fr', 'Sport désactivé.'),
-('SPORT_MSG_SPORT_DEACTIVATED','en', 'Sport deactivated.'),
-('SPORT_MSG_SPORT_DEACTIVATED','es', 'Deporte desactivado.'),
+('SPORT_PERSON_ROLE_OFFICIAL', 'fr', 'Officiel / Délégué'),
+('SPORT_PERSON_ROLE_OFFICIAL', 'en', 'Official'),
+('SPORT_PERSON_ROLE_OFFICIAL', 'es', 'Oficial / Delegado'),
 
-('SPORT_MSG_SPORT_DELETED',   'fr', 'Sport supprimé.'),
-('SPORT_MSG_SPORT_DELETED',   'en', 'Sport deleted.'),
-('SPORT_MSG_SPORT_DELETED',   'es', 'Deporte eliminado.'),
+('SPORT_PERSON_ROLE_STAFF',    'fr', 'Staff médical / Technique'),
+('SPORT_PERSON_ROLE_STAFF',    'en', 'Medical / Tech Staff'),
+('SPORT_PERSON_ROLE_STAFF',    'es', 'Personal médico / Técnico'),
 
-('SPORT_MSG_SEASON_ADDED',    'fr', 'Saison ajoutée avec succès.'),
-('SPORT_MSG_SEASON_ADDED',    'en', 'Season added successfully.'),
-('SPORT_MSG_SEASON_ADDED',    'es', 'Temporada añadida con éxito.'),
+('SPORT_MSG_PERSON_ADDED',     'fr', 'Personne ajoutée avec succès.'),
+('SPORT_MSG_PERSON_ADDED',     'en', 'Person added successfully.'),
+('SPORT_MSG_PERSON_ADDED',     'es', 'Persona añadida con éxito.'),
 
-('SPORT_MSG_SEASON_UPDATED',  'fr', 'Saison mise à jour avec succès.'),
-('SPORT_MSG_SEASON_UPDATED',  'en', 'Season updated successfully.'),
-('SPORT_MSG_SEASON_UPDATED',  'es', 'Temporada actualizada con éxito.'),
+('SPORT_MSG_PERSON_UPDATED',   'fr', 'Personne mise à jour avec succès.'),
+('SPORT_MSG_PERSON_UPDATED',   'en', 'Person updated successfully.'),
+('SPORT_MSG_PERSON_UPDATED',   'es', 'Persona actualizada con éxito.'),
 
-('SPORT_MSG_SEASON_DEACTIVATED','fr', 'Saison désactivée.'),
-('SPORT_MSG_SEASON_DEACTIVATED','en', 'Season deactivated.'),
-('SPORT_MSG_SEASON_DEACTIVATED','es', 'Temporada desactivada.'),
+('SPORT_MSG_PERSON_DEACTIVATED','fr', 'Personne désactivée.'),
+('SPORT_MSG_PERSON_DEACTIVATED','en', 'Person deactivated.'),
+('SPORT_MSG_PERSON_DEACTIVATED','es', 'Persona desactivada.'),
 
-('SPORT_MSG_SEASON_DELETED',  'fr', 'Saison supprimée.'),
-('SPORT_MSG_SEASON_DELETED',  'en', 'Season deleted.'),
-('SPORT_MSG_SEASON_DELETED',  'es', 'Temporada eliminada.'),
+('SPORT_MSG_PERSON_DELETED',   'fr', 'Personne supprimée.'),
+('SPORT_MSG_PERSON_DELETED',   'en', 'Person deleted.'),
+('SPORT_MSG_PERSON_DELETED',   'es', 'Persona eliminada.'),
 
-('SPORT_ERR_MISSING_FIELDS',  'fr', 'Veuillez remplir tous les champs obligatoires (Code et Nom).'),
-('SPORT_ERR_MISSING_FIELDS',  'en', 'Please fill in all required fields (Code and Name).'),
-('SPORT_ERR_MISSING_FIELDS',  'es', 'Por favor complete todos los campos obligatorios (Código y Nombre).'),
+('SPORT_ERR_PERSON_MISSING_FIELDS', 'fr', 'Veuillez remplir tous les champs obligatoires (Code, Prénom, Nom).'),
+('SPORT_ERR_PERSON_MISSING_FIELDS', 'en', 'Please fill in all required fields (Code, First name, Last name).'),
+('SPORT_ERR_PERSON_MISSING_FIELDS', 'es', 'Por favor complete todos los campos obligatorios (Código, Nombre, Apellido).'),
 
-('SPORT_ERR_CODE_EXISTS',      'fr', 'Un sport avec ce code existe déjà.'),
-('SPORT_ERR_CODE_EXISTS',      'en', 'A sport with this code already exists.'),
-('SPORT_ERR_CODE_EXISTS',      'es', 'Ya existe un deporte con este código.'),
+('SPORT_ERR_PERSON_CODE_EXISTS', 'fr', 'Une personne avec ce code existe déjà.'),
+('SPORT_ERR_PERSON_CODE_EXISTS', 'en', 'A person with this code already exists.'),
+('SPORT_ERR_PERSON_CODE_EXISTS', 'es', 'Ya existe una persona con este código.'),
 
-('SPORT_ERR_SEASON_MISSING_FIELDS', 'fr', 'Veuillez remplir tous les champs obligatoires (Code, Nom, Date de début, Date de fin).'),
-('SPORT_ERR_SEASON_MISSING_FIELDS', 'en', 'Please fill in all required fields (Code, Name, Start date, End date).'),
-('SPORT_ERR_SEASON_MISSING_FIELDS', 'es', 'Por favor complete todos los campos obligatorios (Código, Nombre, Fecha de inicio, Fecha de fin).'),
-
-('SPORT_ERR_SEASON_CODE_EXISTS', 'fr', 'Une saison avec ce code existe déjà.'),
-('SPORT_ERR_SEASON_CODE_EXISTS', 'en', 'A season with this code already exists.'),
-('SPORT_ERR_SEASON_CODE_EXISTS', 'es', 'Ya existe una temporada con este código.'),
-
-('SPORT_ERR_DATES_INVALID',    'fr', 'La date de début doit être antérieure à la date de fin.'),
-('SPORT_ERR_DATES_INVALID',    'en', 'The start date must be before the end date.'),
-('SPORT_ERR_DATES_INVALID',    'es', 'La fecha de inicio debe ser anterior a la fecha de fin.'),
-
-('SPORT_DELETE_SPORT_CONFIRM','fr', 'Voulez-vous vraiment désactiver ce sport ?'),
-('SPORT_DELETE_SPORT_CONFIRM','en', 'Are you sure you want to deactivate this sport?'),
-('SPORT_DELETE_SPORT_CONFIRM','es', '¿Está seguro de que desea desactivar este deporte?'),
-
-('SPORT_DELETE_SEASON_CONFIRM','fr', 'Voulez-vous vraiment désactiver cette saison ?'),
-('SPORT_DELETE_SEASON_CONFIRM','en', 'Are you sure you want to deactivate this season?'),
-('SPORT_DELETE_SEASON_CONFIRM','es', '¿Está seguro de que desea desactivar esta temporada?'),
-
-('SPORT_FORCE_DELETE_CONFIRM','fr', 'Voulez-vous vraiment supprimer définitivement cet élément ?'),
-('SPORT_FORCE_DELETE_CONFIRM','en', 'Are you sure you want to permanently delete this item?'),
-('SPORT_FORCE_DELETE_CONFIRM','es', '¿Está seguro de que desea eliminar permanentemente este elemento?'),
-
-('SPORT_INFO_PANEL',          'fr', 'Informations d''audit'),
-('SPORT_INFO_PANEL',          'en', 'Audit information'),
-('SPORT_INFO_PANEL',          'es', 'Información de auditoría')
+('SPORT_DELETE_PERSON_CONFIRM','fr', 'Voulez-vous vraiment désactiver cette personne ?'),
+('SPORT_DELETE_PERSON_CONFIRM','en', 'Are you sure you want to deactivate this person?'),
+('SPORT_DELETE_PERSON_CONFIRM','es', '¿Está seguro de que desea desactivar esta persona?')
 
 ON CONFLICT (text_code, lang_code) DO UPDATE
     SET text_label = EXCLUDED.text_label;
