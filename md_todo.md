@@ -18,7 +18,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] fédérations/ligues,
     - [ ] organisateur : fédération/ligue/club/acteur,
     - [ ] terrains,
-- [ ] B1-2 Module *Zone* : Zone administratives, Zone pays, Zone région, Zone département, Zone ville, Zone club, Zone équipe, Zone personne.
+- [ ] B1-2 Module *Zone* : ‼️<strong><u>AVEC CLAUDE</u></strong>‼️.
     - [ ] B1-2.0 Monde
     - [ ] B1-2.1 Continent
     - [ ] B1-2.2 Pays
