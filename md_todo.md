@@ -6,7 +6,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 
 ### P1 (Haute priorité)
 - [ ] B1-0 BDD
-    - [x] B1-0.1 Skill/lesson : structurer les fichiers .md pour prendre en compte toutes les règles (doc/architecture_rules.md, doc/naming_conventions.md, doc/database_rules.md et .agents/rules/)
+    - [x] B1-0.1 Skill/lesson : md_architecture.md, md_naming_convention.md : structurer les fichiers .md pour prendre en compte toutes les règles : Traductions des textes et statuts dans les tables. (Répertoire doc/ et .agents/rules/ créés)
     - [ ] B1-0.2 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
 - [ ] B1-1 Module *Sport* : à placer dans un module *sport*. 
     - [x] sport
@@ -58,6 +58,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ### P4 (Basse priorité)
 - [ ] B4-1 Sélecteurs (ou simulaire) : à concevoir
 - [ ] B4-2 Beaucoup de tables ont des noms non traduits en base de données
+- [ ] B4-3 Revoir les statuts par table  
 
 ## Évolution
 
