@@ -5,8 +5,9 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
-- [ ] B1-0 Skill/lesson : md_architecture.md, md_naming_convention.md : structurer les fichiers md pour prendre en compte toutes les règles : Traductions des textes et statuts dans les tables.
-- [ ] B1-0 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
+- [ ] B1-0 BDD
+    - [ ] B1-0.1 Skill/lesson : md_architecture.md, md_naming_convention.md : structurer les fichiers .md pour prendre en compte toutes les règles : Traductions des textes et statuts dans les tables.
+    - [ ] B1-0.2 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
 - [ ] B1-1 Module *Sport* : à placer dans un module *sport*. 
     - [x] sport
     - [x] saisons, 
@@ -19,14 +20,14 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] fédérations/ligues,
     - [ ] organisateur : fédération/ligue/club/acteur,
     - [ ] terrains,
-- [ ] B1-2 Module *Zone* : ‼️<strong><u>AVEC CLAUDE</u></strong>‼️. *=> en cours...*
-    - [ ] B1-2.0 Monde
-    - [ ] B1-2.1 Continent
-    - [ ] B1-2.2 Pays
+- [-] B1-2 Module *Zone* : ‼️<strong><u>AVEC CLAUDE</u></strong>‼️. *=> en cours...*
+    - [x] B1-2.0 Monde
+    - [x] B1-2.1 Continent
+    - [x] B1-2.2 Pays
     - [ ] B1-2.3 Région / Etat / Province / Land (selon les pays)
     - [ ] B1-2.4 Département / District / Comté (selon les pays)
-    - [ ] B1-2.5 Ville :
-        t_zone_city (table légère, peuplée à la demande)
+    - [-] B1-2.5 Ville : *=> en cours...*
+        - t_zone_city (table légère, peuplée à la demande)
         - champ city_name (texte libre) selon l'objet concerné
     - [ ] B1-2.6 Lien avec club, équipe, user (personne?)
 
