@@ -23,17 +23,23 @@ class GeoNamesService {
     // Récupérer les enfants d'une zone GeoNames
     // -------------------------------------------------------
 
-    public function getChildren(int $geonamesId): array {
+    public function getChildren(int $geonamesId, string $lang = 'fr'): ?array {
         $url = "{$this->baseUrl}/childrenJSON"
              . "?geonameId={$geonamesId}"
-             . "&username={$this->username}";
+             . "&username={$this->username}"
+             . "&lang=" . urlencode($lang);
 
         $raw = $this->httpGet($url);
         if ($raw === null) {
-            return [];
+            return null;
         }
 
         $json = json_decode($raw, true);
+        if (isset($json['status'])) {
+            error_log('[GeoNamesService] Error: ' . ($json['status']['message'] ?? 'API error'));
+            return null;
+        }
+
         return $json['geonames'] ?? [];
     }
 
@@ -138,7 +144,8 @@ class GeoNamesService {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => 10,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_USERAGENT      => 'rilsport/1.0',
         ]);
 

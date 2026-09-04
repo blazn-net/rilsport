@@ -24,14 +24,16 @@ class Zones extends Controller {
     public function index() {
         $txt      = $this->loadLanguage('zone');
         $langCode = $_SESSION['lang_code'] ?? 'fr';
-        $root     = $this->zoneModel->getRootZone($langCode);
+        $root       = $this->zoneModel->getRootZone($langCode);
+        $continents = $root ? $this->zoneModel->getChildren((int) $root['id'], $langCode) : [];
 
         $data = [
-            'txt'     => $txt,
-            'title'   => ($txt['ZONE_TITLE_ZONES'] ?? 'Zones géographiques') . ' - ' . SITENAME,
-            'root'    => $root,
-            'message' => $_SESSION['flash_message'] ?? '',
-            'error'   => $_SESSION['flash_error'] ?? ''
+            'txt'        => $txt,
+            'title'      => ($txt['ZONE_TITLE_ZONES'] ?? 'Zones géographiques') . ' - ' . SITENAME,
+            'root'       => $root,
+            'continents' => $continents,
+            'message'    => $_SESSION['flash_message'] ?? '',
+            'error'      => $_SESSION['flash_error'] ?? ''
         ];
 
         unset($_SESSION['flash_message']);

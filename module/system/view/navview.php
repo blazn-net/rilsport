@@ -41,11 +41,12 @@
     $isRegisterActive = ($currentRoute === 'user/register');
     $isUsersListActive = ($currentRoute === 'user/users' || (strpos($currentRoute, 'user') === 0 && !$isProfileActive && !$isLoginActive && !$isRegisterActive));
     $isLangsActive = (strpos($currentRoute, 'lang') === 0);
+    $isZonesActive = (strpos($currentRoute, 'zone') === 0);
     $isSeasonsActive = (strpos($currentRoute, 'sport/season') === 0 || strpos($currentRoute, 'sport/seasons') === 0);
     $isPersonsActive = (strpos($currentRoute, 'sport/person') === 0 || strpos($currentRoute, 'sport/persons') === 0);
     $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
     $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || $isPersonsActive || strpos($currentRoute, 'sport') === 0);
-    $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive);
+    $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive || $isZonesActive);
     ?>
 
     <ul class="navview-menu pad-second-level" id="side-menu">
@@ -78,6 +79,7 @@
                 <?php 
                     $userTxt = \Core\Language::load('user'); 
                     $sportTxt = \Core\Language::load('sport'); 
+                    $zoneTxt = \Core\Language::load('zone');
                 ?>
                 <!-- Groupe : Administration -->
                 <li class="item-header"><?php echo $data['txt']['SYS_ADMINISTRATION'] ?? 'Administration'; ?></li>
@@ -99,6 +101,12 @@
                             <a href="<?php echo URLROOT; ?>/lang/langs">
                                 <span class="icon"><span class="mif-language"></span></span>
                                 <span class="caption"><?php echo $userTxt['LANG_LANGS_MGT'] ?? 'Langues'; ?></span>
+                            </a>
+                        </li>
+                        <li class="<?php echo $isZonesActive ? 'active' : ''; ?>">
+                            <a href="<?php echo URLROOT; ?>/zone/zones">
+                                <span class="icon"><span class="mif-earth"></span></span>
+                                <span class="caption"><?php echo $zoneTxt['ZONE_TITLE_ZONES'] ?? 'Zones géographiques'; ?></span>
                             </a>
                         </li>
                     </ul>

@@ -22,12 +22,14 @@
 | `t_zone_text_key`   | Clés de traduction du module zone                                      |
 | `t_zone_text`       | Traductions (fr / en / es) du module zone                              |
 
-## Stratégie de chargement (Lazy Tree)
-- Au premier lancement, seule la zone racine "Monde" (geonames_id 6295630) est en base.
-- Quand un utilisateur clique sur une zone dans le treeview, le backend vérifie `children_loaded`.
-- Si `FALSE` → appel à l'API GeoNames (`/childrenJSON?geonameId=...`) → insertion en BDD → `children_loaded = TRUE`.
-- Les traductions sont insérées pour toutes les langues actives de `t_lang_lang`.
-- Si une nouvelle langue est ajoutée ultérieurement, une commande de re-synchronisation est disponible.
+## Stratégie de chargement
+- **Monde → Continents → Pays** : **pré-seedés** dans ce fichier SQL. `children_loaded = TRUE` pour Monde et Continents.
+- **Continents** : Continents officiels GeoNames avec leur `geonames_id` (Afrique, Amérique du Nord, Amérique du Sud, Antarctique, Asie, Europe, Océanie). Chaque zone possède désormais un `geonames_id` officiel GeoNames.
+- **Pays** : 193 membres ONU pré-seedés. Chaque pays possède son `geonames_id` GeoNames officiel pour le lazy-loading des sous-niveaux (Amérique du Nord : 23, Amérique du Sud : 12, Afrique : 54, Asie : 47, Europe : 44, Océanie : 13).
+- **Admin1 (régions/états)** : lazy-loaded depuis l'API GeoNames au premier clic.
+- **Admin2 (départements/provinces)** : lazy-loaded depuis l'API GeoNames au premier clic.
+- **Villes** : chargées à la demande dans `t_zone_city` (hors treeview principal).
+
 
 ## Modules qui dépendent de `zone`
 _(à compléter au fur et à mesure)_

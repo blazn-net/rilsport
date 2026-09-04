@@ -40,7 +40,7 @@ class Zone extends Controller {
         $langCode = $_SESSION['lang_code'] ?? 'fr';
         $zone     = $id ? $this->zoneModel->getZoneById($id, $langCode) : null;
 
-        if ($id && !$zone) {
+        if (!$id || !$zone) {
             return $this->redirect('zone/zones');
         }
 
@@ -81,8 +81,10 @@ class Zone extends Controller {
         // 1. Vérifier si les enfants sont déjà en BDD
         if ($this->zoneModel->areChildrenLoaded($parentId)) {
             $children = $this->zoneModel->getChildren($parentId, $langCode);
-            echo json_encode(['zones' => $children, 'cached' => true]);
-            exit;
+            if (!empty($children)) {
+                echo json_encode(['zones' => $children, 'cached' => true]);
+                exit;
+            }
         }
 
         // 2. Récupérer la zone parente pour obtenir son geonames_id
@@ -92,17 +94,26 @@ class Zone extends Controller {
             exit;
         }
 
-        // 3. Appel GeoNames
+        // 3. Appel GeoNames (directement avec la langue active)
         $txt = $this->loadLanguage('zone');
-        $geoChildren = $this->geoNames->getChildren((int) $parent['geonames_id']);
+        $geoChildren = $this->geoNames->getChildren((int) $parent['geonames_id'], $langCode);
+
+        if ($geoChildren === null) {
+            // Erreur réseau ou API GeoNames : NE PAS marquer comme chargé pour permettre de réessayer
+            echo json_encode([
+                'error'   => $txt['ZONE_ERR_GEONAMES_UNAVAILABLE'] ?? 'Service GeoNames indisponible',
+                'zones'   => [],
+                'cached'  => false
+            ]);
+            exit;
+        }
 
         if (empty($geoChildren)) {
-            // GeoNames indisponible ou zone sans enfants → marquer quand même
+            // Vraie zone sans enfants (feuille)
             $this->zoneModel->markChildrenLoaded($parentId);
             echo json_encode([
                 'zones'   => [],
-                'cached'  => false,
-                'warning' => $txt['ZONE_ERR_GEONAMES_UNAVAILABLE'] ?? 'Service indisponible'
+                'cached'  => false
             ]);
             exit;
         }
@@ -114,7 +125,8 @@ class Zone extends Controller {
         // 5. Insérer chaque enfant en BDD
         foreach ($geoChildren as $child) {
             $geonamesId  = (int) ($child['geonameId'] ?? 0);
-            $nameDefault = $child['name'] ?? 'Unknown';
+            $toponymName = $child['toponymName'] ?? ($child['name'] ?? 'Unknown');
+            $childName   = $child['name'] ?? $toponymName;
             $fcode       = $child['fcode'] ?? '';
             $fcl         = $child['fcl']   ?? '';
             $countryCode = $child['countryCode'] ?? null;
@@ -126,25 +138,28 @@ class Zone extends Controller {
                 'geonames_id'  => $geonamesId,
                 'type_code'    => $typeCode,
                 'parent_id'    => $parentId,
-                'name_default' => $nameDefault,
+                'name_default' => $toponymName,
                 'country_code' => $countryCode,
                 'created_by'   => $userId,
             ]);
 
             if (!$zoneId) continue;
 
-            // 6. Récupérer les noms traduits en 1 appel API
-            $names = $this->geoNames->getNamesForLangs($geonamesId, $activeLangs);
-            foreach ($activeLangs as $lang) {
-                $name = $names[$lang] ?? $nameDefault;
-                $this->zoneModel->upsertZoneI18n($zoneId, $lang, $name);
+            // Insérer la traduction dans la langue courante
+            $this->zoneModel->upsertZoneI18n($zoneId, $langCode, $childName);
+
+            // Pour les autres langues actives, initialiser avec toponymName si absent
+            foreach ($activeLangs as $l) {
+                if ($l !== $langCode) {
+                    $this->zoneModel->upsertZoneI18n($zoneId, $l, $toponymName);
+                }
             }
         }
 
-        // 7. Marquer les enfants comme chargés
+        // 6. Marquer les enfants comme chargés
         $this->zoneModel->markChildrenLoaded($parentId);
 
-        // 8. Retourner les enfants depuis la BDD (données propres)
+        // 7. Retourner les enfants depuis la BDD (données propres)
         $children = $this->zoneModel->getChildren($parentId, $langCode);
         echo json_encode(['zones' => $children, 'cached' => false]);
         exit;
