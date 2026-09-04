@@ -58,6 +58,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ### P4 (Basse priorité)
 - [ ] B4-1 Sélecteurs (ou simulaire) : à concevoir
 - [ ] B4-2 Beaucoup de tables ont des noms non traduits en base de données
+- [ ] B4-3 Revoir les statuts par table
 
 ## Évolution
 
