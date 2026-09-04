@@ -5,6 +5,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Bug
 
 ### P1 (Haute priorité)
+- [ ] B1-0 Skill/lesson : md_architecture.md, md_naming_convention.md : structurer les fichiers md pour prendre en compte toutes les règles : Traductions des textes et statuts dans les tables.
 - [ ] B1-0 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
 - [ ] B1-1 Module *Sport* : à placer dans un module *sport*. 
     - [x] sport
@@ -18,14 +19,14 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] fédérations/ligues,
     - [ ] organisateur : fédération/ligue/club/acteur,
     - [ ] terrains,
-- [ ] B1-2 Module *Zone* : ‼️<strong><u>AVEC CLAUDE</u></strong>‼️.
+- [ ] B1-2 Module *Zone* : ‼️<strong><u>AVEC CLAUDE</u></strong>‼️. *=> en cours...*
     - [ ] B1-2.0 Monde
     - [ ] B1-2.1 Continent
     - [ ] B1-2.2 Pays
     - [ ] B1-2.3 Région / Etat / Province / Land (selon les pays)
     - [ ] B1-2.4 Département / District / Comté (selon les pays)
     - [ ] B1-2.5 Ville :
-    t_zone_city (table légère, peuplée à la demande)
+        t_zone_city (table légère, peuplée à la demande)
         - champ city_name (texte libre) selon l'objet concerné
     - [ ] B1-2.6 Lien avec club, équipe, user (personne?)
 
@@ -36,9 +37,11 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - text
     - ...
     - [ ] B2-0.1 Où mettre ces modules ? main, system, param, config, séparé ?
-- [ ] B2-1 BDD 
+- [ ] B2-1 BDD (ref : B1-0)
     - [ ] B2-1.1 Rechercher les textes en dur
-    - [ ] B2-1.2 Remplacer les codes par des ids
+    - [ ] B2-1.2 Vérifier les traductions
+    - [ ] B2-1.3 Vérifier les statuts de chaque table
+    - [ ] B2-1.4 Remplacer les codes par des ids
 - [ ] B2-99 Version des modules et des *.sql 
 
 ### P3

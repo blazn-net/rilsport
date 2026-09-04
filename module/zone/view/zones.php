@@ -30,6 +30,7 @@
     user-select: none;
     transition: background 0.15s ease;
     font-size: 14px;
+    min-width: 440px;
 }
 .zone-row:hover {
     background-color: #f1f5f9;
@@ -79,6 +80,47 @@
 .zone-badge.badge-admin1    { background: #f3e8ff; color: #7c3aed; border-color: #ddd6fe; }
 .zone-badge.badge-admin2    { background: #f8fafc; color: #475569; border-color: #cbd5e1; }
 
+.zone-actions {
+    margin-left: auto;
+    padding-left: 16px;
+    display: inline-flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+.zone-row:hover .zone-actions {
+    opacity: 1;
+}
+.zone-btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #64748b;
+    font-size: 11px;
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+}
+.zone-btn-action:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-color: #94a3b8;
+}
+.zone-btn-action.action-add:hover {
+    background: #ecfdf5;
+    color: #059669;
+    border-color: #a7f3d0;
+}
+.zone-btn-action.action-delete:hover {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
 .zone-children {
     border-left: 2px solid #e2e8f0;
     margin-left: 9px !important;
@@ -102,7 +144,14 @@
 
 <main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
-        <h2><span class="mif-earth mr-2"></span><?php echo $data['txt']['ZONE_TITLE_ZONES'] ?? 'Zones géographiques'; ?></h2>
+        <h2>
+            <span class="mif-earth mr-2"></span>
+            <?php echo $data['txt']['ZONE_TITLE_ZONES'] ?? 'Zones géographiques'; ?>
+        </h2>
+        <a href="<?php echo URLROOT; ?>/zone/add" class="button primary">
+            <span class="mif-plus mr-1"></span>
+            <?php echo $data['txt']['ZONE_TITLE_ZONE_ADD'] ?? 'Ajouter une zone'; ?>
+        </a>
     </div>
 
     <?php if (!empty($data['message'])): ?>
@@ -135,9 +184,21 @@
                             <span class="zone-label"><?php echo htmlspecialchars($data['root']['name'] ?? 'Monde'); ?></span>
                             <span class="zone-badge badge-world">Monde</span>
                             <span class="zone-loading" style="display:none;"></span>
+
+                            <!-- Actions administrateur -->
+                            <div class="zone-actions">
+                                <a href="<?php echo URLROOT; ?>/zone/add?parent_id=<?php echo (int) $data['root']['id']; ?>"
+                                   class="zone-btn-action action-add" title="Ajouter une sous-zone">
+                                    <span class="mif-plus"></span>
+                                </a>
+                                <a href="<?php echo URLROOT; ?>/zone/<?php echo (int) $data['root']['id']; ?>"
+                                   class="zone-btn-action" title="Modifier">
+                                    <span class="mif-pencil"></span>
+                                </a>
+                            </div>
                         </div>
 
-                        <!-- 5 Continents pré-chargés immédiatement -->
+                        <!-- Continents pré-chargés immédiatement -->
                         <ul class="zone-children" data-parent-id="<?php echo (int) $data['root']['id']; ?>" style="display:block;">
                             <?php foreach ($data['continents'] as $continent): ?>
                                 <li id="zone-node-<?php echo (int) $continent['id']; ?>"
@@ -151,6 +212,24 @@
                                         <span class="zone-label"><?php echo htmlspecialchars($continent['name']); ?></span>
                                         <span class="zone-badge badge-continent">Continent</span>
                                         <span class="zone-loading" style="display:none;"></span>
+
+                                        <!-- Actions administrateur -->
+                                        <div class="zone-actions">
+                                            <a href="<?php echo URLROOT; ?>/zone/add?parent_id=<?php echo (int) $continent['id']; ?>"
+                                               class="zone-btn-action action-add" title="Ajouter une sous-zone">
+                                                <span class="mif-plus"></span>
+                                            </a>
+                                            <a href="<?php echo URLROOT; ?>/zone/<?php echo (int) $continent['id']; ?>"
+                                               class="zone-btn-action" title="Modifier">
+                                                <span class="mif-pencil"></span>
+                                            </a>
+                                            <a href="<?php echo URLROOT; ?>/zone/delete/<?php echo (int) $continent['id']; ?>"
+                                               class="zone-btn-action action-delete"
+                                               onclick="return confirm('Confirmer la suppression de « <?php echo addslashes($continent['name']); ?> » ?');"
+                                               title="Supprimer">
+                                                <span class="mif-bin"></span>
+                                            </a>
+                                        </div>
                                     </div>
 
                                     <ul class="zone-children" data-parent-id="<?php echo (int) $continent['id']; ?>" style="display:none;"></ul>
@@ -202,14 +281,36 @@
             iconHtml = `<span class="zone-icon ${cfg.icon}" style="color: ${cfg.color};"></span>`;
         }
 
+        const safeName = escHtml(zone.name);
+
         li.innerHTML = `
             <div class="zone-row" data-zone-id="${zone.id}">
                 <span class="zone-toggle ${hasKids ? 'mif-chevron-right' : 'mif-blank'}"
                       data-zone-id="${zone.id}"></span>
                 ${iconHtml}
-                <span class="zone-label">${escHtml(zone.name)}</span>
+                <span class="zone-label">${safeName}</span>
                 <span class="zone-badge ${cfg.badge}">${cfg.label}</span>
                 <span class="zone-loading" style="display:none;"></span>
+
+                <!-- Actions administrateur -->
+                <div class="zone-actions">
+                    ${hasKids ? `
+                        <a href="${URLROOT}/zone/add?parent_id=${zone.id}"
+                           class="zone-btn-action action-add" title="Ajouter une sous-zone">
+                            <span class="mif-plus"></span>
+                        </a>` : ''
+                    }
+                    <a href="${URLROOT}/zone/${zone.id}"
+                       class="zone-btn-action" title="Modifier">
+                        <span class="mif-pencil"></span>
+                    </a>
+                    <a href="${URLROOT}/zone/delete/${zone.id}"
+                       class="zone-btn-action action-delete"
+                       onclick="return confirm('Confirmer la suppression de cette zone ?');"
+                       title="Supprimer">
+                        <span class="mif-bin"></span>
+                    </a>
+                </div>
             </div>
             ${hasKids ? `<ul class="zone-children" data-parent-id="${zone.id}" style="display:none;"></ul>` : ''}
         `;
@@ -294,8 +395,10 @@
             row.dataset.bound = 'true';
 
             row.addEventListener('click', function (e) {
-                // Si on clique sur un lien futur ou bouton, ne pas propager
-                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+                // Ne pas déplier si on clique sur un bouton ou lien d'action
+                if (e.target.closest('.zone-actions') || e.target.closest('a') || e.target.closest('button')) {
+                    return;
+                }
                 const zoneId = this.dataset.zoneId;
                 if (zoneId) {
                     toggleNode(zoneId);
