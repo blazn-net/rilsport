@@ -42,10 +42,11 @@
     $isUsersListActive = ($currentRoute === 'user/users' || (strpos($currentRoute, 'user') === 0 && !$isProfileActive && !$isLoginActive && !$isRegisterActive));
     $isLangsActive = (strpos($currentRoute, 'lang') === 0);
     $isZonesActive = (strpos($currentRoute, 'zone') === 0);
+    $sportTxt = \Core\Language::load('sport');
     $isSeasonsActive = (strpos($currentRoute, 'sport/season') === 0 || strpos($currentRoute, 'sport/seasons') === 0);
     $isPersonsActive = (strpos($currentRoute, 'sport/person') === 0 || strpos($currentRoute, 'sport/persons') === 0);
     $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
-    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || $isPersonsActive || strpos($currentRoute, 'sport') === 0);
+    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive);
     $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive || $isZonesActive);
     ?>
 
@@ -56,6 +57,14 @@
             <a href="<?php echo URLROOT; ?>/">
                 <span class="icon"><span class="mif-home"></span></span>
                 <span class="caption"><?php echo $data['txt']['SYS_HOME'] ?? 'SYS_HOME'; ?></span>
+            </a>
+        </li>
+
+        <!-- Personnes / Acteurs (au même niveau qu'Accueil) -->
+        <li class="<?php echo $isPersonsActive ? 'active' : ''; ?>">
+            <a href="<?php echo URLROOT; ?>/sport/persons">
+                <span class="icon"><span class="mif-contacts"></span></span>
+                <span class="caption"><?php echo $sportTxt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs'; ?></span>
             </a>
         </li>
 
@@ -129,12 +138,6 @@
                             <a href="<?php echo URLROOT; ?>/sport/seasons">
                                 <span class="icon"><span class="mif-calendar"></span></span>
                                 <span class="caption"><?php echo $sportTxt['SPORT_SEASONS_MGT'] ?? 'Saisons'; ?></span>
-                            </a>
-                        </li>
-                        <li class="<?php echo $isPersonsActive ? 'active' : ''; ?>">
-                            <a href="<?php echo URLROOT; ?>/sport/persons">
-                                <span class="icon"><span class="mif-contacts"></span></span>
-                                <span class="caption"><?php echo $sportTxt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs'; ?></span>
                             </a>
                         </li>
                     </ul>

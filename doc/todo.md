@@ -10,16 +10,16 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] B1-0.2 ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
 - [ ] B1-1 Module *Sport* : à placer dans un module *sport*. 
     - [x] sport
-    - [x] saisons, 
-    - [ ] clubs, 
-    - [ ] équipes,
-    - [x] acteurs : joueurs/arbitres/officiels/autres...
-    - [ ] compétition, multi compétition (sport event), championnats,
-    - [ ] matches,
-    - [ ] classements,
-    - [ ] fédérations/ligues,
-    - [ ] organisateur : fédération/ligue/club/acteur,
-    - [ ] terrains,
+    - [x] saisons
+    - [ ] clubs, sections, équipes
+    - [x] acteurs : joueurs/arbitres/officiels/autres...   
+        - [ ] un acteur peut avoir plusieurs rôles. Les roles dépendent des matchs  
+    - [ ] compétition, multi compétition (sport event), championnats (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
+    - [ ] matches : triangulaires (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
+    - [ ] classements (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
+    - [ ] fédérations/ligues
+    - [ ] organisateur : fédération/ligue/club/acteur
+    - [ ] terrains
 - [-] B1-2 Module *Zone* : ‼️<strong><u>AVEC CLAUDE</u></strong>‼️. *=> en cours...*
     - [x] B1-2.0 Monde
     - [x] B1-2.1 Continent
