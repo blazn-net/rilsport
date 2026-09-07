@@ -24,6 +24,8 @@
 | `t_sport_club_status` | Statuts possibles d'un club et section (actif, en attente, inactif, dissous) |
 | `t_sport_club`        | Clubs sportifs (id, code, name, short_name, acronym, foundation_year, logo, colors, country_code, city_name, city_id, postal_code, address, website, email, phone, description, status_id, audit) |
 | `t_sport_section`     | Sections sportives rattachées aux clubs (id, club_id, sport_id, code, name, logo, creation_year, status_id, audit) |
+| `t_sport_team_status` | Statuts possibles d'une équipe (active, inactive, dissoute) |
+| `t_sport_team`        | Équipes sportives (id, section_id, code, name, short_name, gender, category, level, status_id, audit) |
 | `t_sport_text_key`    | Clés de traduction du module sport                 |
 | `t_sport_text`        | Traductions (fr / en / es) du module sport         |
 

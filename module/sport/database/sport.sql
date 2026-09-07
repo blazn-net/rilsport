@@ -184,6 +184,44 @@ CREATE INDEX IF NOT EXISTS idx_sport_section_sport ON t_sport_section(sport_id);
 
 
 -- ============================================================
+-- SCHÉMA : t_sport_team_status (Statuts des équipes)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_team_status (
+    id        SERIAL       PRIMARY KEY,
+    text_code VARCHAR(100) NOT NULL UNIQUE
+);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_team (Équipes sportives)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_team (
+    id          SERIAL       PRIMARY KEY,
+    section_id  INT          NOT NULL,
+    code        VARCHAR(50)  NOT NULL UNIQUE,
+    name        VARCHAR(150) NOT NULL,
+    short_name  VARCHAR(50)  DEFAULT NULL,
+    gender      VARCHAR(10)  DEFAULT 'M',
+    category    VARCHAR(50)  DEFAULT 'Senior',
+    level       VARCHAR(50)  DEFAULT 'National',
+    status_id   INT          NOT NULL DEFAULT 1,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by  INT          DEFAULT NULL,
+    modified_at TIMESTAMP    DEFAULT NULL,
+    modified_by INT          DEFAULT NULL,
+    FOREIGN KEY (section_id)  REFERENCES t_sport_section(id)     ON DELETE CASCADE,
+    FOREIGN KEY (status_id)   REFERENCES t_sport_team_status(id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_by)  REFERENCES t_user_user(id)         ON DELETE SET NULL,
+    FOREIGN KEY (modified_by) REFERENCES t_user_user(id)         ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_team_section ON t_sport_team(section_id);
+CREATE INDEX IF NOT EXISTS idx_sport_team_status  ON t_sport_team(status_id);
+
+
+-- ============================================================
 -- SCHÉMA : traductions UI du module sport
 -- ============================================================
 
@@ -393,6 +431,30 @@ INSERT INTO t_sport_table (module_id, object_id, table_name)
 SELECT m.id, o.id, 't_sport_section' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'section'
 ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
 
+INSERT INTO t_sport_object (module_id, code)
+SELECT id, 'team' FROM t_system_module WHERE code = 'sport'
+ON CONFLICT (module_id, code) DO NOTHING;
+
+INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
+SELECT o.id, 'fr', 'Équipe' FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'team'
+ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
+SELECT m.id, o.id, 'teams', 'list', '/sport/teams' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'team'
+ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
+
+INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
+SELECT m.id, o.id, 'team', 'form', '/sport/team' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'team'
+ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_team_status' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'team'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_team' FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id WHERE m.code = 'sport' AND o.code = 'team'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
 
 -- ============================================================
 -- DONNÉES : Rôles des personnes
@@ -527,6 +589,52 @@ ON CONFLICT (club_id, sport_id) DO UPDATE SET name = EXCLUDED.name, status_id = 
 
 
 -- ============================================================
+-- DONNÉES : Statuts des équipes
+-- ============================================================
+
+INSERT INTO t_sport_team_status (id, text_code) VALUES
+(1, 'TEAM_STATUS_ACTIVE'),
+(2, 'TEAM_STATUS_INACTIVE'),
+(3, 'TEAM_STATUS_DISSOLVED')
+ON CONFLICT (id) DO UPDATE SET text_code = EXCLUDED.text_code;
+
+
+-- ============================================================
+-- DONNÉES : Équipes par défaut
+-- ============================================================
+
+INSERT INTO t_sport_team (section_id, code, name, short_name, gender, category, level, status_id)
+SELECT id, 'psg-foot-pro', 'Équipe Première (Pro)', 'PSG Pro', 'M', 'Senior', 'Professionnel', 1
+FROM t_sport_section WHERE code = 'psg-football'
+ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, status_id = EXCLUDED.status_id;
+
+INSERT INTO t_sport_team (section_id, code, name, short_name, gender, category, level, status_id)
+SELECT id, 'psg-foot-reserve', 'Équipe Réserve (National 3)', 'PSG Réserve', 'M', 'Senior', 'National', 1
+FROM t_sport_section WHERE code = 'psg-football'
+ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, status_id = EXCLUDED.status_id;
+
+INSERT INTO t_sport_team (section_id, code, name, short_name, gender, category, level, status_id)
+SELECT id, 'psg-foot-u19', 'U19 National', 'PSG U19', 'M', 'U19', 'National', 1
+FROM t_sport_section WHERE code = 'psg-football'
+ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, status_id = EXCLUDED.status_id;
+
+INSERT INTO t_sport_team (section_id, code, name, short_name, gender, category, level, status_id)
+SELECT id, 'psg-hand-pro', 'Équipe Pro Handball (StarLigue)', 'PSG Hand Pro', 'M', 'Senior', 'Professionnel', 1
+FROM t_sport_section WHERE code = 'psg-handball'
+ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, status_id = EXCLUDED.status_id;
+
+INSERT INTO t_sport_team (section_id, code, name, short_name, gender, category, level, status_id)
+SELECT id, 'real-madrid-foot-pro', 'Primer Equipo (La Liga)', 'Real Madrid Pro', 'M', 'Senior', 'Professionnel', 1
+FROM t_sport_section WHERE code = 'real-madrid-football'
+ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, status_id = EXCLUDED.status_id;
+
+INSERT INTO t_sport_team (section_id, code, name, short_name, gender, category, level, status_id)
+SELECT id, 'as-rillieux-rugby-seniors', 'Séniors A', 'AS Rillieux 1', 'M', 'Senior', 'Régional', 1
+FROM t_sport_section WHERE code = 'as-rillieux-rugby'
+ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, status_id = EXCLUDED.status_id;
+
+
+-- ============================================================
 -- DONNÉES : clés de traduction UI (SPORT_)
 -- ============================================================
 
@@ -535,12 +643,49 @@ INSERT INTO t_sport_text_key (text_code) VALUES
 ('SPORT_SEASONS_MGT'),
 ('SPORT_PERSONS_MGT'),
 ('SPORT_CLUBS_MGT'),
+('SPORT_TEAMS_MGT'),
 ('SPORT_ADD_SPORT_BTN'),
 ('SPORT_ADD_SEASON_BTN'),
 ('SPORT_ADD_PERSON_BTN'),
 ('SPORT_ADD_CLUB_BTN'),
+('SPORT_ADD_TEAM_BTN'),
 ('SPORT_EDIT_SPORT_TITLE'),
 ('SPORT_ADD_SPORT_TITLE'),
+('SPORT_EDIT_SEASON_TITLE'),
+('SPORT_ADD_SEASON_TITLE'),
+('SPORT_EDIT_PERSON_TITLE'),
+('SPORT_ADD_PERSON_TITLE'),
+('SPORT_EDIT_CLUB_TITLE'),
+('SPORT_ADD_CLUB_TITLE'),
+('SPORT_VIEW_CLUB_TITLE'),
+('SPORT_EDIT_TEAM_TITLE'),
+('SPORT_ADD_TEAM_TITLE'),
+('SPORT_VIEW_TEAM_TITLE'),
+('SPORT_NAV_CLUBS'),
+('SPORT_NAV_TEAMS'),
+('TEAM_CODE'),
+('TEAM_NAME'),
+('TEAM_SHORT_NAME'),
+('TEAM_SECTION'),
+('TEAM_CLUB'),
+('TEAM_SPORT'),
+('TEAM_GENDER'),
+('TEAM_GENDER_M'),
+('TEAM_GENDER_F'),
+('TEAM_GENDER_MIXED'),
+('TEAM_CATEGORY'),
+('TEAM_LEVEL'),
+('TEAM_STATUS'),
+('TEAM_STATUS_ACTIVE'),
+('TEAM_STATUS_INACTIVE'),
+('TEAM_STATUS_DISSOLVED'),
+('TEAM_MSG_ADDED'),
+('TEAM_MSG_UPDATED'),
+('TEAM_MSG_DEACTIVATED'),
+('TEAM_MSG_DELETED'),
+('TEAM_ERR_MISSING_FIELDS'),
+('TEAM_ERR_CODE_EXISTS'),
+('TEAM_DELETE_CONFIRM'),
 ('SPORT_EDIT_SEASON_TITLE'),
 ('SPORT_ADD_SEASON_TITLE'),
 ('SPORT_EDIT_PERSON_TITLE'),
@@ -1044,7 +1189,124 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 
 ('SECTION_CONFIRM_DELETE',     'fr', 'Voulez-vous vraiment retirer cette section ?'),
 ('SECTION_CONFIRM_DELETE',     'en', 'Are you sure you want to remove this section?'),
-('SECTION_CONFIRM_DELETE',     'es', '¿Está seguro de que desea eliminar esta sección?')
+('SECTION_CONFIRM_DELETE',     'es', '¿Está seguro de que desea eliminar esta sección?'),
+
+-- Traductions Équipes
+('SPORT_TEAMS_MGT',            'fr', 'Équipes'),
+('SPORT_TEAMS_MGT',            'en', 'Teams'),
+('SPORT_TEAMS_MGT',            'es', 'Equipos'),
+
+('SPORT_NAV_TEAMS',            'fr', 'Équipes'),
+('SPORT_NAV_TEAMS',            'en', 'Teams'),
+('SPORT_NAV_TEAMS',            'es', 'Equipos'),
+
+('SPORT_ADD_TEAM_BTN',         'fr', 'Nouvelle équipe'),
+('SPORT_ADD_TEAM_BTN',         'en', 'New Team'),
+('SPORT_ADD_TEAM_BTN',         'es', 'Nuevo Equipo'),
+
+('SPORT_EDIT_TEAM_TITLE',      'fr', 'Modifier l''équipe'),
+('SPORT_EDIT_TEAM_TITLE',      'en', 'Edit Team'),
+('SPORT_EDIT_TEAM_TITLE',      'es', 'Editar Equipo'),
+
+('SPORT_ADD_TEAM_TITLE',       'fr', 'Créer une équipe'),
+('SPORT_ADD_TEAM_TITLE',       'en', 'Create Team'),
+('SPORT_ADD_TEAM_TITLE',       'es', 'Crear Equipo'),
+
+('SPORT_VIEW_TEAM_TITLE',      'fr', 'Fiche de l''équipe'),
+('SPORT_VIEW_TEAM_TITLE',      'en', 'Team Details'),
+('SPORT_VIEW_TEAM_TITLE',      'es', 'Ficha del Equipo'),
+
+('TEAM_CODE',                  'fr', 'Code / Identifiant'),
+('TEAM_CODE',                  'en', 'Code / Slug'),
+('TEAM_CODE',                  'es', 'Código / Slug'),
+
+('TEAM_NAME',                  'fr', 'Nom de l''équipe'),
+('TEAM_NAME',                  'en', 'Team Name'),
+('TEAM_NAME',                  'es', 'Nombre del equipo'),
+
+('TEAM_SHORT_NAME',            'fr', 'Nom court'),
+('TEAM_SHORT_NAME',            'en', 'Short Name'),
+('TEAM_SHORT_NAME',            'es', 'Nombre corto'),
+
+('TEAM_SECTION',               'fr', 'Section rattachée'),
+('TEAM_SECTION',               'en', 'Associated Section'),
+('TEAM_SECTION',               'es', 'Sección asociada'),
+
+('TEAM_CLUB',                  'fr', 'Club'),
+('TEAM_CLUB',                  'en', 'Club'),
+('TEAM_CLUB',                  'es', 'Club'),
+
+('TEAM_SPORT',                 'fr', 'Discipline / Sport'),
+('TEAM_SPORT',                 'en', 'Sport'),
+('TEAM_SPORT',                 'es', 'Deporte'),
+
+('TEAM_GENDER',                'fr', 'Genre'),
+('TEAM_GENDER',                'en', 'Gender'),
+('TEAM_GENDER',                'es', 'Género'),
+
+('TEAM_GENDER_M',              'fr', 'Masculin'),
+('TEAM_GENDER_M',              'en', 'Male'),
+('TEAM_GENDER_M',              'es', 'Masculino'),
+
+('TEAM_GENDER_F',              'fr', 'Féminin'),
+('TEAM_GENDER_F',              'en', 'Female'),
+('TEAM_GENDER_F',              'es', 'Femenino'),
+
+('TEAM_GENDER_MIXED',          'fr', 'Mixte'),
+('TEAM_GENDER_MIXED',          'en', 'Mixed'),
+('TEAM_GENDER_MIXED',          'es', 'Mixto'),
+
+('TEAM_CATEGORY',              'fr', 'Catégorie d''âge'),
+('TEAM_CATEGORY',              'en', 'Age Category'),
+('TEAM_CATEGORY',              'es', 'Categoría de edad'),
+
+('TEAM_LEVEL',                 'fr', 'Niveau / Rang'),
+('TEAM_LEVEL',                 'en', 'Level / Rank'),
+('TEAM_LEVEL',                 'es', 'Nivel / Rango'),
+
+('TEAM_STATUS',                'fr', 'Statut'),
+('TEAM_STATUS',                'en', 'Status'),
+('TEAM_STATUS',                'es', 'Estado'),
+
+('TEAM_STATUS_ACTIVE',         'fr', 'Active'),
+('TEAM_STATUS_ACTIVE',         'en', 'Active'),
+('TEAM_STATUS_ACTIVE',         'es', 'Activo'),
+
+('TEAM_STATUS_INACTIVE',       'fr', 'Inactive'),
+('TEAM_STATUS_INACTIVE',       'en', 'Inactive'),
+('TEAM_STATUS_INACTIVE',       'es', 'Inactivo'),
+
+('TEAM_STATUS_DISSOLVED',      'fr', 'Dissoute'),
+('TEAM_STATUS_DISSOLVED',      'en', 'Dissolved'),
+('TEAM_STATUS_DISSOLVED',      'es', 'Disuelto'),
+
+('TEAM_MSG_ADDED',             'fr', 'L''équipe a été créée avec succès.'),
+('TEAM_MSG_ADDED',             'en', 'Team created successfully.'),
+('TEAM_MSG_ADDED',             'es', 'Equipo creado con éxito.'),
+
+('TEAM_MSG_UPDATED',           'fr', 'L''équipe a été mise à jour avec succès.'),
+('TEAM_MSG_UPDATED',           'en', 'Team updated successfully.'),
+('TEAM_MSG_UPDATED',           'es', 'Equipo actualizado con éxito.'),
+
+('TEAM_MSG_DEACTIVATED',       'fr', 'L''équipe a été désactivée.'),
+('TEAM_MSG_DEACTIVATED',       'en', 'Team deactivated.'),
+('TEAM_MSG_DEACTIVATED',       'es', 'Equipo desactivado.'),
+
+('TEAM_MSG_DELETED',           'fr', 'L''équipe a été supprimée.'),
+('TEAM_MSG_DELETED',           'en', 'Team deleted.'),
+('TEAM_MSG_DELETED',           'es', 'Equipo eliminado.'),
+
+('TEAM_ERR_MISSING_FIELDS',    'fr', 'Veuillez remplir tous les champs obligatoires (Section, Code, Nom).'),
+('TEAM_ERR_MISSING_FIELDS',    'en', 'Please fill in all required fields (Section, Code, Name).'),
+('TEAM_ERR_MISSING_FIELDS',    'es', 'Por favor complete todos los campos obligatorios (Sección, Código, Nombre).'),
+
+('TEAM_ERR_CODE_EXISTS',       'fr', 'Une équipe avec cet identifiant/code existe déjà.'),
+('TEAM_ERR_CODE_EXISTS',       'en', 'A team with this code already exists.'),
+('TEAM_ERR_CODE_EXISTS',       'es', 'Ya existe un equipo con este código.'),
+
+('TEAM_DELETE_CONFIRM',        'fr', 'Voulez-vous vraiment désactiver cette équipe ?'),
+('TEAM_DELETE_CONFIRM',        'en', 'Are you sure you want to deactivate this team?'),
+('TEAM_DELETE_CONFIRM',        'es', '¿Está seguro de que desea desactivar este equipo?')
 
 ON CONFLICT (text_code, lang_code) DO UPDATE
     SET text_label = EXCLUDED.text_label;
@@ -1060,4 +1322,5 @@ SELECT setval('t_sport_person_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_per
 SELECT setval('t_sport_club_status_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_club_status), 1));
 SELECT setval('t_sport_club_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_club), 1));
 SELECT setval('t_sport_section_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_section), 1));
-
+SELECT setval('t_sport_team_status_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_team_status), 1));
+SELECT setval('t_sport_team_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_team), 1));

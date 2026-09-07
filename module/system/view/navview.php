@@ -46,8 +46,9 @@
     $isSeasonsActive = (strpos($currentRoute, 'sport/season') === 0 || strpos($currentRoute, 'sport/seasons') === 0);
     $isPersonsActive = (strpos($currentRoute, 'sport/person') === 0 || strpos($currentRoute, 'sport/persons') === 0);
     $isClubsActive = (strpos($currentRoute, 'sport/club') === 0 || strpos($currentRoute, 'sport/clubs') === 0);
+    $isTeamsActive = (strpos($currentRoute, 'sport/team') === 0 || strpos($currentRoute, 'sport/teams') === 0);
     $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
-    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || $isClubsActive);
+    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || $isClubsActive || $isTeamsActive);
     $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive || $isZonesActive);
     ?>
 
@@ -74,6 +75,14 @@
             <a href="<?php echo URLROOT; ?>/sport/clubs">
                 <span class="icon"><span class="mif-shield"></span></span>
                 <span class="caption"><?php echo $sportTxt['SPORT_CLUBS_MGT'] ?? 'Clubs'; ?></span>
+            </a>
+        </li>
+
+        <!-- Équipes (au même niveau qu'Accueil, Personnes et Clubs) -->
+        <li class="<?php echo $isTeamsActive ? 'active' : ''; ?>">
+            <a href="<?php echo URLROOT; ?>/sport/teams">
+                <span class="icon"><span class="mif-users"></span></span>
+                <span class="caption"><?php echo $sportTxt['SPORT_TEAMS_MGT'] ?? 'Équipes'; ?></span>
             </a>
         </li>
 
@@ -153,6 +162,12 @@
                             <a href="<?php echo URLROOT; ?>/sport/clubs">
                                 <span class="icon"><span class="mif-shield"></span></span>
                                 <span class="caption"><?php echo $sportTxt['SPORT_CLUBS_MGT'] ?? 'Clubs'; ?></span>
+                            </a>
+                        </li>
+                        <li class="<?php echo $isTeamsActive ? 'active' : ''; ?>">
+                            <a href="<?php echo URLROOT; ?>/sport/teams">
+                                <span class="icon"><span class="mif-users"></span></span>
+                                <span class="caption"><?php echo $sportTxt['SPORT_TEAMS_MGT'] ?? 'Équipes'; ?></span>
                             </a>
                         </li>
                     </ul>

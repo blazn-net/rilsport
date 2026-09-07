@@ -20,7 +20,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [-] clubs, sections, équipes
         - [-] clubs
         - [-] sections
-        - [ ] équipes
+        - [-] équipes
     - [x] acteurs : joueurs/arbitres/officiels/autres...   
         - [ ] un acteur peut avoir plusieurs rôles. Les roles dépendent des matchs  
     - [ ] compétition, multi compétition (sport event), championnats (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
@@ -83,6 +83,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] E2-0.1 Forum = Discord ?
     - [ ] E2-0.2 Blog/News = Facebook/Instagram
 - [ ] E2-1 Gestion des fichiers css
+- [ ] E2-2 Si un sélecteur n'a qu'une seule valeur, il faut afficher directement cette valeur
 
 ### P3
 - [ ] E3-0 Couleur des rôles, status, ...
