@@ -45,8 +45,9 @@
     $sportTxt = \Core\Language::load('sport');
     $isSeasonsActive = (strpos($currentRoute, 'sport/season') === 0 || strpos($currentRoute, 'sport/seasons') === 0);
     $isPersonsActive = (strpos($currentRoute, 'sport/person') === 0 || strpos($currentRoute, 'sport/persons') === 0);
+    $isClubsActive = (strpos($currentRoute, 'sport/club') === 0 || strpos($currentRoute, 'sport/clubs') === 0);
     $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
-    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive);
+    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || $isClubsActive);
     $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive || $isZonesActive);
     ?>
 
@@ -65,6 +66,14 @@
             <a href="<?php echo URLROOT; ?>/sport/persons">
                 <span class="icon"><span class="mif-contacts"></span></span>
                 <span class="caption"><?php echo $sportTxt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs'; ?></span>
+            </a>
+        </li>
+
+        <!-- Clubs (au même niveau qu'Accueil et Personnes) -->
+        <li class="<?php echo $isClubsActive ? 'active' : ''; ?>">
+            <a href="<?php echo URLROOT; ?>/sport/clubs">
+                <span class="icon"><span class="mif-shield"></span></span>
+                <span class="caption"><?php echo $sportTxt['SPORT_CLUBS_MGT'] ?? 'Clubs'; ?></span>
             </a>
         </li>
 
@@ -138,6 +147,12 @@
                             <a href="<?php echo URLROOT; ?>/sport/seasons">
                                 <span class="icon"><span class="mif-calendar"></span></span>
                                 <span class="caption"><?php echo $sportTxt['SPORT_SEASONS_MGT'] ?? 'Saisons'; ?></span>
+                            </a>
+                        </li>
+                        <li class="<?php echo $isClubsActive ? 'active' : ''; ?>">
+                            <a href="<?php echo URLROOT; ?>/sport/clubs">
+                                <span class="icon"><span class="mif-shield"></span></span>
+                                <span class="caption"><?php echo $sportTxt['SPORT_CLUBS_MGT'] ?? 'Clubs'; ?></span>
                             </a>
                         </li>
                     </ul>

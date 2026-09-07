@@ -21,8 +21,11 @@
 | `t_sport_season`      | Saisons sportives (id, code, name, date_start, date_end, status_id, audit) |
 | `t_sport_person_role` | Rôles / Fonctions des personnes (code, name)       |
 | `t_sport_person`      | Personnes / Acteurs du sport (id, code, first_name, last_name, gender, birth_date, nationality, role_code, sport_id, status_id, audit) |
+| `t_sport_club_status` | Statuts possibles d'un club et section (actif, en attente, inactif, dissous) |
+| `t_sport_club`        | Clubs sportifs (id, code, name, short_name, acronym, foundation_year, logo, colors, country_code, city_name, city_id, postal_code, address, website, email, phone, description, status_id, audit) |
+| `t_sport_section`     | Sections sportives rattachées aux clubs (id, club_id, sport_id, code, name, logo, creation_year, status_id, audit) |
 | `t_sport_text_key`    | Clés de traduction du module sport                 |
-| `t_sport_text`      | Traductions (fr / en / es) du module sport         |
+| `t_sport_text`        | Traductions (fr / en / es) du module sport         |
 
 ### 2. Métadonnées locales du module sport
 | Table                 | Description                                        |
