@@ -33,3 +33,13 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 - **Pluriel = Liste** (ex: `Users`, `Sports`, route `/[module]/[objets]`).
 - **Singulier = Formulaire** (ex: `User`, `Sport`, route création `/[module]/[objet]`, route édition `/[module]/[objet]/[id]`).
 - Classes PHP en PascalCase, méthodes en camelCase.
+
+---
+
+## 4. Suivi des Tâches (`doc/todo.md`)
+
+Lors de la lecture ou de la mise à jour de [doc/todo.md](file:///c:/wamp64/www/rilsport/doc/todo.md) :
+- `[ ]` ou `[]` : Tâche à faire
+- `[-]` : Tâche en cours
+- `[x]` : Tâche réalisée
+

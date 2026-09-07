@@ -1,5 +1,12 @@
 # TODO Liste
 
+## Légende
+- `[ ]` ou `[]` : Tâche à faire
+- `[-]` : Tâche en cours
+- `[x]` : Tâche réalisée
+
+---
+
 Liste des futures tâches à réaliser pour le projet rilsport :
 
 ## Bug
