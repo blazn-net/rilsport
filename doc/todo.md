@@ -72,6 +72,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ## Évolution
 
 ### P1 (Haute priorité)
+- [ ] E1-0 Mobile first !
 - [ ] E1-1 Gestion des permissions/rôles (rôle fonctionnel, applicatif, global, local)
 - [ ] E1-2 Gestion du menu : en cours (C:\Users\smusl\.gemini\antigravity-ide\brain\950e7931-d767-4c3d-9ac6-7b0398a37c92\implementation_plan.md)
     - [ ] E1-2.1 Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
@@ -84,6 +85,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] E2-0.2 Blog/News = Facebook/Instagram
 - [ ] E2-1 Gestion des fichiers css
 - [ ] E2-2 Si un sélecteur n'a qu'une seule valeur, il faut afficher directement cette valeur
+- [ ] E2-3 Les statuts ne doivent être visibles que pour lees admins, sauf exeptions
 
 ### P3
 - [ ] E3-0 Couleur des rôles, status, ...
