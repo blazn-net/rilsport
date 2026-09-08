@@ -13,7 +13,7 @@ class Club extends Controller {
         $this->sportModel = $this->model('sport/Sport');
     }
 
-    public function index($id = null) {
+    public function index($id = null, $action = null) {
         $txt     = array_merge(
             $this->loadLanguage('system'),
             $this->loadLanguage('user'),
@@ -43,7 +43,7 @@ class Club extends Controller {
         }
 
         // Mode : view (consultation simple) ou edit/add (formulaire)
-        $mode = $id ? ($isAdmin ? 'edit' : 'view') : 'add';
+        $mode = $id ? (($action === 'edit' && $isAdmin) ? 'edit' : 'view') : 'add';
 
         // Traitement du formulaire POST (création / modification)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -60,7 +60,7 @@ class Club extends Controller {
             // Validation des champs obligatoires
             if (empty($code) || empty($name) || empty($countryCode) || empty($cityName)) {
                 $_SESSION['flash_error'] = $txt['CLUB_ERR_MISSING_FIELDS'] ?? 'Veuillez remplir les champs obligatoires (Code, Nom, Pays, Ville).';
-                return $this->redirect($clubData ? 'sport/club/' . $clubData['id'] : 'sport/club');
+                return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['id'] : 'sport/club');
             }
 
             // Vérification de l'unicité du code lors de l'ajout
@@ -80,13 +80,13 @@ class Club extends Controller {
                 // 1. Vérification du code d'erreur PHP
                 if ($file['error'] !== UPLOAD_ERR_OK) {
                     $_SESSION['flash_error'] = $txt['CLUB_ERR_INVALID_IMAGE'] ?? 'Erreur lors du téléversement du fichier.';
-                    return $this->redirect($clubData ? 'sport/club/' . $clubData['id'] : 'sport/club');
+                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['id'] : 'sport/club');
                 }
 
                 // 2. Limitation stricte du poids à 2 Mo
                 if ($file['size'] > self::MAX_FILE_SIZE) {
                     $_SESSION['flash_error'] = $txt['CLUB_ERR_FILE_TOO_LARGE'] ?? 'Le fichier est trop volumineux (2 Mo maximum).';
-                    return $this->redirect($clubData ? 'sport/club/' . $clubData['id'] : 'sport/club');
+                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['id'] : 'sport/club');
                 }
 
                 // 3. Validation du type MIME réel
@@ -104,7 +104,7 @@ class Club extends Controller {
 
                 if (!array_key_exists($mimeType, $allowedMimes)) {
                     $_SESSION['flash_error'] = $txt['CLUB_ERR_INVALID_IMAGE'] ?? 'Format de fichier non autorisé (PNG, JPG, WEBP, SVG uniquement).';
-                    return $this->redirect($clubData ? 'sport/club/' . $clubData['id'] : 'sport/club');
+                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['id'] : 'sport/club');
                 }
 
                 // 4. Déplacement sécurisé vers public/uploads/clubs/
@@ -174,7 +174,7 @@ class Club extends Controller {
         }, $sections);
 
         $title = $id
-            ? ($isAdmin
+            ? ($mode === 'edit'
                 ? ($txt['SPORT_EDIT_CLUB_TITLE'] ?? 'Modifier le club')
                 : ($txt['SPORT_VIEW_CLUB_TITLE'] ?? 'Fiche du club'))
             : ($txt['SPORT_ADD_CLUB_TITLE'] ?? 'Créer un club');
@@ -201,6 +201,13 @@ class Club extends Controller {
         $this->view('system/navview', $data);
         $this->view('sport/club', $data);
         $this->view('system/footer', $data);
+    }
+
+    /**
+     * Accès direct au formulaire d'édition (Admin)
+     */
+    public function edit($id = null) {
+        return $this->index($id, 'edit');
     }
 
     /**

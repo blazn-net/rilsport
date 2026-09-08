@@ -14,7 +14,7 @@
             </a>
             <span class="text-leader ml-2">
                 <?php if ($isViewMode): ?>
-                    <span class="mif-users mr-1"></span> <?php echo htmlspecialchars($team->name ?? ''); ?>
+                    <span class="mif-groups mr-1"></span> <?php echo htmlspecialchars($team->name ?? ''); ?>
                 <?php else: ?>
                     <span class="mif-pencil mr-1"></span> <?php echo $team ? ($data['txt']['SPORT_EDIT_TEAM_TITLE'] ?? 'Modifier l\'équipe') : ($data['txt']['SPORT_ADD_TEAM_TITLE'] ?? 'Créer une équipe'); ?>
                 <?php endif; ?>
@@ -46,7 +46,7 @@
                 <div class="card p-4">
                     <div class="d-flex flex-align-center mb-3">
                         <div style="width: 50px; height: 50px; line-height: 50px; border-radius: 50%; background: <?php echo !empty($team->club_primary_color) ? htmlspecialchars($team->club_primary_color) : '#0072c6'; ?>; color: #fff; text-align: center; font-size: 22px;" class="mr-3">
-                            <span class="mif-users"></span>
+                            <span class="mif-groups"></span>
                         </div>
                         <div>
                             <h4 class="mb-0"><?php echo htmlspecialchars($team->name); ?></h4>
@@ -60,7 +60,7 @@
                     <hr class="thin my-3">
 
                     <p class="mb-2">
-                        <span class="mif-shield mr-2"></span><strong>Club :</strong>
+                        <span class="mif-security mr-2"></span><strong>Club :</strong>
                         <a href="<?php echo URLROOT; ?>/sport/club/<?php echo htmlspecialchars($team->club_id); ?>" class="fg-primary text-bold">
                             <?php echo htmlspecialchars($team->club_name); ?>
                         </a>

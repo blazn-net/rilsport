@@ -77,7 +77,12 @@ Pour l'affichage d'un objet unique :
   - Composants de saisie interactifs de l'UI (ex: Metro UI `textbox`, `dropdownlist`, `checkbox`, `calendarpicker`).
   - Boutons de validation ("Enregistrer", "Annuler").
 
-### C. Adaptation Dynamique depuis la page List
+### C. Colonne Actions et Accès aux Fiches (Point [20260908-2304])
 Sur le tableau d'une page List :
-- Si l'utilisateur est **Admin / Éditeur** : l'action principale pointe vers la modification (icône crayon `mif-pencil`, mode Formulaire).
-- Si l'utilisateur est **Visiteur / Lecteur** : l'action pointe vers la consultation (icône œil `mif-eye`, mode Fiche Consultation).
+- **Lien sur le nom de l'objet** : Ouvre systématiquement la fiche en mode consultation (`View`), pour tous les utilisateurs (visiteurs comme administrateurs).
+- **Colonne Actions** : Visible **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`). Elle est totalement masquée pour les visiteurs et utilisateurs non-administrateurs.
+- **Accès au mode Édition (`Edit`)** : Réservé aux administrateurs, accessible soit via le bouton Modifier (crayon `mif-pencil`) de la colonne Actions, soit via le bouton Modifier présent en haut de la fiche en mode View.
+
+### D. Visibilité des Statuts (Point [20260908-2330])
+- **Règle générale** : Les statuts des entités ne doivent être visibles que pour les administrateurs (`!empty($data['isAdmin'])`), sauf exceptions métier dûment justifiées.
+- **Pages List** : La colonne "Statut" du tableau ne s'affiche que si l'utilisateur possède les privilèges d'administrateur. Les visiteurs et utilisateurs non-administrateurs ne voient pas cette colonne.

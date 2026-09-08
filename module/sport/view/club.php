@@ -17,7 +17,7 @@
             </a>
             <span class="text-leader ml-2">
                 <?php if ($isViewMode): ?>
-                    <span class="mif-shield mr-1"></span> <?php echo htmlspecialchars($club->name ?? ''); ?>
+                    <span class="mif-security mr-1"></span> <?php echo htmlspecialchars($club->name ?? ''); ?>
                 <?php else: ?>
                     <span class="mif-pencil mr-1"></span> <?php echo $club ? ($data['txt']['SPORT_EDIT_CLUB_TITLE'] ?? 'Modifier le club') : ($data['txt']['SPORT_ADD_CLUB_TITLE'] ?? 'Créer un club'); ?>
                 <?php endif; ?>
@@ -25,7 +25,7 @@
         </div>
 
         <?php if ($isViewMode && !empty($data['isAdmin'])): ?>
-            <a href="<?php echo URLROOT; ?>/sport/club/<?php echo htmlspecialchars($club->id); ?>" class="button info">
+            <a href="<?php echo URLROOT; ?>/sport/club/edit/<?php echo htmlspecialchars($club->id); ?>" class="button info">
                 <span class="mif-pencil"></span> <?php echo $data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'; ?>
             </a>
         <?php endif; ?>
@@ -46,23 +46,26 @@
         <div class="row">
             <!-- Colonne gauche : Carte d'identité du Club -->
             <div class="cell-md-4 mb-4">
-                <div class="card">
+                <div class="border bd-default border-radius-4 bg-white shadow-1 mb-4" style="overflow: visible; position: relative;">
                     <!-- Bannière aux couleurs du club -->
-                    <div style="height: 100px; background: linear-gradient(135deg, <?php echo !empty($club->primary_color) ? htmlspecialchars($club->primary_color) : '#001C58'; ?>, <?php echo !empty($club->secondary_color) ? htmlspecialchars($club->secondary_color) : '#DA291C'; ?>); border-radius: 4px 4px 0 0; position: relative;">
+                    <div style="height: 100px; background: linear-gradient(135deg, <?php echo !empty($club->primary_color) ? htmlspecialchars($club->primary_color) : '#001C58'; ?>, <?php echo !empty($club->secondary_color) ? htmlspecialchars($club->secondary_color) : '#DA291C'; ?>); border-radius: 4px 4px 0 0;">
                     </div>
 
                     <!-- Logo en médaillon -->
-                    <div class="text-center" style="margin-top: -50px;">
+                    <div class="text-center" style="margin-top: -50px; position: relative; z-index: 2;">
                         <?php if ($logoUrl && file_exists(dirname(__DIR__, 3) . '/' . ltrim($club->logo, '/'))): ?>
                             <img src="<?php echo htmlspecialchars($logoUrl); ?>" alt="Logo" class="shadow-2" style="width: 100px; height: 100px; border-radius: 50%; background: #fff; padding: 5px; object-fit: contain; border: 3px solid #fff;">
                         <?php else: ?>
-                            <div class="shadow-2" style="display: inline-block; width: 100px; height: 100px; line-height: 94px; border-radius: 50%; background: <?php echo !empty($club->primary_color) ? htmlspecialchars($club->primary_color) : '#0072c6'; ?>; color: #fff; font-size: 28px; font-weight: bold; border: 3px solid #fff;">
-                                <?php echo htmlspecialchars(!empty($club->acronym) ? $club->acronym : strtoupper(substr($club->name, 0, 3))); ?>
+                            <?php 
+                                $clubBg = (!empty($club->primary_color) && strtolower($club->primary_color) !== '#ffffff' && strtolower($club->primary_color) !== '#fff') ? htmlspecialchars($club->primary_color) : '#0072c6'; 
+                            ?>
+                            <div class="shadow-2" style="display: inline-flex; align-items: center; justify-content: center; width: 100px; height: 100px; border-radius: 50%; background: <?php echo $clubBg; ?>; color: #fff; border: 3px solid #fff;">
+                                <span class="mif-security" style="font-size: 48px;"></span>
                             </div>
                         <?php endif; ?>
                     </div>
 
-                    <div class="card-content p-3 text-center">
+                    <div class="p-3 text-center" style="display: block; width: 100%;">
                         <h4 class="mb-1"><?php echo htmlspecialchars($club->name); ?></h4>
                         <?php if (!empty($club->short_name)): ?>
                             <div class="fg-gray"><?php echo htmlspecialchars($club->short_name); ?></div>
@@ -332,7 +335,7 @@
                 <button type="submit" class="button success large">
                     <span class="mif-floppy-disk mr-1"></span> <?php echo $data['txt']['SYS_BTN_SAVE'] ?? 'Enregistrer'; ?>
                 </button>
-                <a href="<?php echo URLROOT; ?>/sport/clubs" class="button secondary large">
+                <a href="<?php echo $club ? URLROOT . '/sport/club/' . htmlspecialchars($club->id) : URLROOT . '/sport/clubs'; ?>" class="button secondary large">
                     <?php echo $data['txt']['SYS_BTN_CANCEL'] ?? 'Annuler'; ?>
                 </a>
             </div>

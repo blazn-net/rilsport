@@ -25,6 +25,7 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 - **Modes de Fiche** :
   - **Consultation (`View`)** : Textes et badges HTML purs, jamais de balises `<input>`/`<select>` readonly ou disabled.
   - **Formulaire (`Form` / `Edit`)** : Éléments de formulaire interactifs réservés aux utilisateurs avec privilèges d'édition.
+- **Visibilité des Statuts** : Visibles uniquement pour les administrateurs (colonne "Statut" masquée sur les pages List pour les non-admins).
 
 ---
 

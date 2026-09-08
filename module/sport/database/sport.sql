@@ -696,13 +696,16 @@ INSERT INTO t_sport_text_key (text_code) VALUES
 ('SPORT_NAV_CLUBS'),
 ('CLUB_CODE'),
 ('CLUB_NAME'),
+('CLUB_TABLE_NAME'),
 ('CLUB_SHORT_NAME'),
 ('CLUB_ACRONYM'),
 ('CLUB_FOUNDATION'),
 ('CLUB_LOGO'),
+('CLUB_TABLE_LOGO'),
 ('CLUB_COLORS'),
 ('CLUB_COUNTRY'),
 ('CLUB_CITY'),
+('CLUB_TABLE_LOCATION'),
 ('CLUB_POSTAL_CODE'),
 ('CLUB_ADDRESS'),
 ('CLUB_CONTACT'),
@@ -712,6 +715,7 @@ INSERT INTO t_sport_text_key (text_code) VALUES
 ('CLUB_DESCRIPTION'),
 ('CLUB_STATUS'),
 ('CLUB_SECTIONS'),
+('CLUB_FILTER_SPORT'),
 ('CLUB_PRIMARY_COLOR'),
 ('CLUB_SECONDARY_COLOR'),
 ('CLUB_STATUS_ACTIVE'),
@@ -1043,6 +1047,10 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('CLUB_NAME',                  'en', 'Official Name'),
 ('CLUB_NAME',                  'es', 'Nombre oficial'),
 
+('CLUB_TABLE_NAME',            'fr', 'Nom'),
+('CLUB_TABLE_NAME',            'en', 'Name'),
+('CLUB_TABLE_NAME',            'es', 'Nombre'),
+
 ('CLUB_SHORT_NAME',            'fr', 'Nom court'),
 ('CLUB_SHORT_NAME',            'en', 'Short Name'),
 ('CLUB_SHORT_NAME',            'es', 'Nombre corto'),
@@ -1055,9 +1063,13 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('CLUB_FOUNDATION',            'en', 'Foundation Year'),
 ('CLUB_FOUNDATION',            'es', 'Año de fundación'),
 
-('CLUB_LOGO',                  'fr', 'Logo du club'),
-('CLUB_LOGO',                  'en', 'Club Logo'),
-('CLUB_LOGO',                  'es', 'Escudo del club'),
+('CLUB_LOGO',                  'fr', 'Logo'),
+('CLUB_LOGO',                  'en', 'Logo'),
+('CLUB_LOGO',                  'es', 'Logo'),
+
+('CLUB_TABLE_LOGO',            'fr', 'Logo'),
+('CLUB_TABLE_LOGO',            'en', 'Logo'),
+('CLUB_TABLE_LOGO',            'es', 'Logo'),
 
 ('CLUB_COLORS',                'fr', 'Couleurs du club'),
 ('CLUB_COLORS',                'en', 'Club Colors'),
@@ -1078,6 +1090,10 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('CLUB_CITY',                  'fr', 'Ville'),
 ('CLUB_CITY',                  'en', 'City'),
 ('CLUB_CITY',                  'es', 'Ciudad'),
+
+('CLUB_TABLE_LOCATION',        'fr', 'Localisation'),
+('CLUB_TABLE_LOCATION',        'en', 'Location'),
+('CLUB_TABLE_LOCATION',        'es', 'Ubicación'),
 
 ('CLUB_POSTAL_CODE',           'fr', 'Code postal'),
 ('CLUB_POSTAL_CODE',           'en', 'Postal Code'),
@@ -1127,9 +1143,13 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('CLUB_STATUS_DISSOLVED',      'en', 'Dissolved'),
 ('CLUB_STATUS_DISSOLVED',      'es', 'Disuelto'),
 
-('CLUB_SECTIONS',              'fr', 'Sections & Disciplines sportives'),
-('CLUB_SECTIONS',              'en', 'Sports Sections & Disciplines'),
-('CLUB_SECTIONS',              'es', 'Secciones y Disciplinas deportivas'),
+('CLUB_SECTIONS',              'fr', 'Sport'),
+('CLUB_SECTIONS',              'en', 'Sport'),
+('CLUB_SECTIONS',              'es', 'Deporte'),
+
+('CLUB_FILTER_SPORT',         'fr', 'Sport'),
+('CLUB_FILTER_SPORT',         'en', 'Sport'),
+('CLUB_FILTER_SPORT',         'es', 'Deporte'),
 
 ('CLUB_MSG_ADDED',             'fr', 'Le club a été créé avec succès.'),
 ('CLUB_MSG_ADDED',             'en', 'Club created successfully.'),
@@ -1161,15 +1181,15 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 
 ('CLUB_ERR_INVALID_IMAGE',     'fr', 'Format d''image non valide (formats acceptés : PNG, JPG, JPEG, WEBP, SVG).'),
 ('CLUB_ERR_INVALID_IMAGE',     'en', 'Invalid image format (accepted formats: PNG, JPG, JPEG, WEBP, SVG).'),
-('CLUB_ERR_INVALID_IMAGE',     'es', 'Formato de imagen no válido (formatos aceptados: PNG, JPG, JPEG, WEBP, SVG).'),
+('CLUB_ERR_INVALID_IMAGE',     'es', 'Formato de imagen no válido (formatos acceptados: PNG, JPG, JPEG, WEBP, SVG).'),
 
 ('CLUB_DELETE_CONFIRM',        'fr', 'Voulez-vous vraiment désactiver ce club ?'),
 ('CLUB_DELETE_CONFIRM',        'en', 'Are you sure you want to deactivate this club?'),
 ('CLUB_DELETE_CONFIRM',        'es', '¿Está seguro de que desea desactivar este club?'),
 
-('SECTION_LBL_SPORT',          'fr', 'Discipline / Sport'),
-('SECTION_LBL_SPORT',          'en', 'Sport / Discipline'),
-('SECTION_LBL_SPORT',          'es', 'Deporte / Disciplina'),
+('SECTION_LBL_SPORT',          'fr', 'Sport'),
+('SECTION_LBL_SPORT',          'en', 'Sport'),
+('SECTION_LBL_SPORT',          'es', 'Deporte'),
 
 ('SECTION_LBL_NAME',           'fr', 'Nom de la section'),
 ('SECTION_LBL_NAME',           'en', 'Section Name'),

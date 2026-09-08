@@ -48,7 +48,7 @@
     $isClubsActive = (strpos($currentRoute, 'sport/club') === 0 || strpos($currentRoute, 'sport/clubs') === 0);
     $isTeamsActive = (strpos($currentRoute, 'sport/team') === 0 || strpos($currentRoute, 'sport/teams') === 0);
     $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
-    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive || $isClubsActive || $isTeamsActive);
+    $isSportsGroupActive = ($isSportsActive || $isSeasonsActive);
     $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive || $isZonesActive);
     ?>
 
@@ -62,27 +62,27 @@
             </a>
         </li>
 
-        <!-- Personnes / Acteurs (au même niveau qu'Accueil) -->
-        <li class="<?php echo $isPersonsActive ? 'active' : ''; ?>">
-            <a href="<?php echo URLROOT; ?>/sport/persons">
-                <span class="icon"><span class="mif-contacts"></span></span>
-                <span class="caption"><?php echo $sportTxt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs'; ?></span>
-            </a>
-        </li>
-
-        <!-- Clubs (au même niveau qu'Accueil et Personnes) -->
+        <!-- Clubs (au même niveau qu'Accueil) -->
         <li class="<?php echo $isClubsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/clubs">
-                <span class="icon"><span class="mif-shield"></span></span>
+                <span class="icon"><span class="mif-security"></span></span>
                 <span class="caption"><?php echo $sportTxt['SPORT_CLUBS_MGT'] ?? 'Clubs'; ?></span>
             </a>
         </li>
 
-        <!-- Équipes (au même niveau qu'Accueil, Personnes et Clubs) -->
+        <!-- Équipes (au même niveau qu'Accueil et Clubs) -->
         <li class="<?php echo $isTeamsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/teams">
-                <span class="icon"><span class="mif-users"></span></span>
+                <span class="icon"><span class="mif-groups"></span></span>
                 <span class="caption"><?php echo $sportTxt['SPORT_TEAMS_MGT'] ?? 'Équipes'; ?></span>
+            </a>
+        </li>
+
+        <!-- Personnes / Acteurs (au même niveau qu'Accueil, Clubs et Équipes) -->
+        <li class="<?php echo $isPersonsActive ? 'active' : ''; ?>">
+            <a href="<?php echo URLROOT; ?>/sport/persons">
+                <span class="icon"><span class="mif-contacts"></span></span>
+                <span class="caption"><?php echo $sportTxt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs'; ?></span>
             </a>
         </li>
 
@@ -156,18 +156,6 @@
                             <a href="<?php echo URLROOT; ?>/sport/seasons">
                                 <span class="icon"><span class="mif-calendar"></span></span>
                                 <span class="caption"><?php echo $sportTxt['SPORT_SEASONS_MGT'] ?? 'Saisons'; ?></span>
-                            </a>
-                        </li>
-                        <li class="<?php echo $isClubsActive ? 'active' : ''; ?>">
-                            <a href="<?php echo URLROOT; ?>/sport/clubs">
-                                <span class="icon"><span class="mif-shield"></span></span>
-                                <span class="caption"><?php echo $sportTxt['SPORT_CLUBS_MGT'] ?? 'Clubs'; ?></span>
-                            </a>
-                        </li>
-                        <li class="<?php echo $isTeamsActive ? 'active' : ''; ?>">
-                            <a href="<?php echo URLROOT; ?>/sport/teams">
-                                <span class="icon"><span class="mif-users"></span></span>
-                                <span class="caption"><?php echo $sportTxt['SPORT_TEAMS_MGT'] ?? 'Équipes'; ?></span>
                             </a>
                         </li>
                     </ul>

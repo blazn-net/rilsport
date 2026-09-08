@@ -1,7 +1,7 @@
 <!-- Contenu principal Liste des Équipes -->
 <main class="p-4" style="margin-top: 60px;">
     <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
-        <h2><span class="mif-users mr-2"></span><?php echo $data['txt']['SPORT_TEAMS_MGT'] ?? 'Équipes'; ?></h2>
+        <h2><span class="mif-groups mr-2"></span><?php echo $data['txt']['SPORT_TEAMS_MGT'] ?? 'Équipes'; ?></h2>
         <?php if (!empty($data['isAdmin'])): ?>
         <a href="<?php echo URLROOT; ?>/sport/team" class="button success mt-2 mt-md-0" title="<?php echo htmlspecialchars($data['txt']['SPORT_ADD_TEAM_BTN'] ?? 'Nouvelle équipe'); ?>">
             <span class="mif-plus"></span> <?php echo $data['txt']['SPORT_ADD_TEAM_BTN'] ?? 'Nouvelle équipe'; ?>
@@ -18,15 +18,15 @@
     <?php endif; ?>
 
     <!-- Barre de filtres -->
-    <div class="card p-3 mb-4 bg-light">
-        <form method="GET" action="<?php echo URLROOT; ?>/sport/teams" class="d-flex flex-wrap flex-align-end" style="gap: 15px;">
-            <div style="flex: 1; min-width: 220px;">
-                <label class="text-bold"><span class="mif-search mr-1"></span><?php echo $data['txt']['SYS_SEARCH'] ?? 'Recherche'; ?></label>
+    <div class="p-3 mb-4 bg-light border bd-default border-radius-4">
+        <form method="GET" action="<?php echo URLROOT; ?>/sport/teams" class="d-flex flex-row flex-wrap flex-align-end" style="gap: 10px;">
+            <div style="flex: 1.5; min-width: 160px;">
+                <label class="text-bold d-block"><span class="mif-search mr-1"></span><?php echo $data['txt']['SYS_SEARCH'] ?? 'Recherche'; ?></label>
                 <input type="text" name="search" data-role="input" placeholder="Nom d'équipe, code..." value="<?php echo htmlspecialchars($data['search'] ?? ''); ?>">
             </div>
 
-            <div style="min-width: 180px;">
-                <label class="text-bold"><span class="mif-shield mr-1"></span><?php echo $data['txt']['TEAM_CLUB'] ?? 'Club'; ?></label>
+            <div style="flex: 1.2; min-width: 150px;">
+                <label class="text-bold d-block"><span class="mif-security mr-1"></span><?php echo $data['txt']['TEAM_CLUB'] ?? 'Club'; ?></label>
                 <select name="club" data-role="select">
                     <option value="">-- Tous les clubs --</option>
                     <?php foreach ($data['clubs'] as $cl): ?>
@@ -37,8 +37,8 @@
                 </select>
             </div>
 
-            <div style="min-width: 180px;">
-                <label class="text-bold"><span class="mif-trophy mr-1"></span><?php echo $data['txt']['TEAM_SPORT'] ?? 'Discipline'; ?></label>
+            <div style="flex: 1.2; min-width: 140px;">
+                <label class="text-bold d-block"><span class="mif-trophy mr-1"></span><?php echo $data['txt']['TEAM_SPORT'] ?? 'Discipline'; ?></label>
                 <select name="sport" data-role="select">
                     <option value="">-- Tous les sports --</option>
                     <?php foreach ($data['sports'] as $sp): ?>
@@ -49,8 +49,8 @@
                 </select>
             </div>
 
-            <div style="min-width: 140px;">
-                <label class="text-bold"><span class="mif-user mr-1"></span><?php echo $data['txt']['TEAM_GENDER'] ?? 'Genre'; ?></label>
+            <div style="flex: 0.9; min-width: 110px;">
+                <label class="text-bold d-block"><span class="mif-user mr-1"></span><?php echo $data['txt']['TEAM_GENDER'] ?? 'Genre'; ?></label>
                 <select name="gender" data-role="select">
                     <option value="">-- Tous --</option>
                     <option value="M" <?php echo ($data['selectedGender'] === 'M') ? 'selected' : ''; ?>>Masculin</option>
@@ -59,8 +59,8 @@
                 </select>
             </div>
 
-            <div>
-                <button type="submit" class="button primary"><span class="mif-filter"></span> Filtrer</button>
+            <div style="flex: 0 0 auto; padding-bottom: 2px;">
+                <button type="submit" class="button primary mr-1"><span class="mif-filter"></span> Filtrer</button>
                 <a href="<?php echo URLROOT; ?>/sport/teams" class="button secondary">Réinitialiser</a>
             </div>
         </form>
@@ -76,7 +76,9 @@
                 <th><?php echo $data['txt']['TEAM_SPORT'] ?? 'Discipline'; ?></th>
                 <th><?php echo $data['txt']['TEAM_CATEGORY'] ?? 'Catégorie'; ?> / <?php echo $data['txt']['TEAM_GENDER'] ?? 'Genre'; ?></th>
                 <th><?php echo $data['txt']['TEAM_LEVEL'] ?? 'Niveau'; ?></th>
-                <th><?php echo $data['txt']['TEAM_STATUS'] ?? 'Statut'; ?></th>
+                <?php if (!empty($data['isAdmin'])): ?>
+                    <th><?php echo $data['txt']['TEAM_STATUS'] ?? 'Statut'; ?></th>
+                <?php endif; ?>
                 <th style="width: 130px;"><?php echo $data['txt']['USER_ACTIONS'] ?? 'Actions'; ?></th>
             </tr>
         </thead>
@@ -107,7 +109,7 @@
                         <!-- Club -->
                         <td data-label="<?php echo htmlspecialchars($data['txt']['TEAM_CLUB'] ?? 'Club'); ?>">
                             <a href="<?php echo URLROOT; ?>/sport/club/<?php echo htmlspecialchars($team['club_id']); ?>" class="fg-dark text-bold">
-                                <span class="mif-shield mr-1" style="color: <?php echo !empty($team['club_primary_color']) ? htmlspecialchars($team['club_primary_color']) : '#0072c6'; ?>;"></span>
+                                <span class="mif-security mr-1" style="color: <?php echo !empty($team['club_primary_color']) ? htmlspecialchars($team['club_primary_color']) : '#0072c6'; ?>;"></span>
                                 <?php echo htmlspecialchars($team['club_name']); ?>
                             </a>
                         </td>
@@ -129,10 +131,12 @@
                             <?php echo htmlspecialchars($team['level'] ?? '-'); ?>
                         </td>
 
-                        <!-- Statut -->
-                        <td data-label="<?php echo htmlspecialchars($data['txt']['TEAM_STATUS'] ?? 'Statut'); ?>">
-                            <span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($statusText); ?></span>
-                        </td>
+                        <!-- Statut (Admin uniquement) -->
+                        <?php if (!empty($data['isAdmin'])): ?>
+                            <td data-label="<?php echo htmlspecialchars($data['txt']['TEAM_STATUS'] ?? 'Statut'); ?>">
+                                <span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($statusText); ?></span>
+                            </td>
+                        <?php endif; ?>
 
                         <!-- Actions -->
                         <td data-label="<?php echo htmlspecialchars($data['txt']['USER_ACTIONS'] ?? 'Actions'); ?>">
