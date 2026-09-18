@@ -37,7 +37,8 @@ module/[nom]/
 │       └── form.php
 ├── database/
 │   └── [nom].sql
-└── md_dependencies.md
+├── md_dependencies.md
+└── test_plan.md
 ```
 
 - **Contrôleur** : Étend `Core\Controller`. Réceptionne les requêtes HTTP, vérifie les droits et permissions, appelle le modèle et charge la vue.
@@ -45,6 +46,7 @@ module/[nom]/
 - **Vues** : Fichiers PHP de rendu HTML purs, séparés par objet en minuscules (`view/[objet]/list.php` et `view/[objet]/form.php`).
 - **Database** : Un unique fichier SQL `[nom].sql` par module, strictement ré-entrant.
 - **Documentation de dépendances** : Un fichier `md_dependencies.md` à la racine du module.
+- **Plan de test et recette** : Un fichier `test_plan.md` à la racine de chaque module consignant la recette fonctionnelle, le respect du mobile first et des règles d'interface.
 
 ---
 

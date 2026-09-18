@@ -16,6 +16,7 @@ Tout module sous `module/[nom]/` comprend :
 - `view/[objet]/list.php` et `view/[objet]/form.php`
 - `database/[nom].sql`
 - `md_dependencies.md`
+- `test_plan.md` (Plan de test et recette fonctionnelle, mobile first et interfaces)
 
 ## 3. Modes d'Affichage Fiche
 - **Mode Consultation (`View`)** :

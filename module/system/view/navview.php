@@ -4,8 +4,10 @@
         <button class="pull-button">
             <span class="mif-menu"></span>
         </button>
-        <a href="<?php echo URLROOT; ?>/" class="d-flex flex-align-center text-logo bg-transparent" style="width: calc(100% - 54px);">
-            <div class="avatar bg-white border-radius-half d-flex flex-justify-center flex-align-center mr-2" style="width: 30px; height: 30px; min-width: 30px;">
+        <a href="<?php echo URLROOT; ?>/" class="d-flex flex-align-center text-logo bg-transparent"
+            style="width: calc(100% - 54px);">
+            <div class="avatar bg-white border-radius-half d-flex flex-justify-center flex-align-center mr-2"
+                style="width: 30px; height: 30px; min-width: 30px;">
                 <span class="mif-earth mif-2x fg-dark"></span>
             </div>
             <div class="enlarge-1 text-weight-9 text-ellipsis fg-default"><?php echo SITENAME; ?></div>
@@ -63,6 +65,16 @@
             </a>
         </li>
 
+        <!-- Compétitions -->
+        <li class="<?php echo $isCompetitionsActive ? 'active' : ''; ?>">
+            <a href="<?php echo URLROOT; ?>/sport/competitions">
+                <span class="icon"><span class="mif-trophy"></span></span>
+                <span class="caption">
+                    <?php echo $sportTxt['COMPETITION_NAV_COMPETITIONS'] ?? 'Compétitions'; ?>
+                </span>
+            </a>
+        </li>
+
         <!-- Clubs (au même niveau qu'Accueil) -->
         <li class="<?php echo $isClubsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/clubs">
@@ -76,14 +88,6 @@
             <a href="<?php echo URLROOT; ?>/sport/teams">
                 <span class="icon"><span class="mif-groups"></span></span>
                 <span class="caption"><?php echo $sportTxt['SPORT_TEAMS_MGT'] ?? 'Équipes'; ?></span>
-            </a>
-        </li>
-
-        <!-- Compétitions -->
-        <li class="<?php echo $isCompetitionsActive ? 'active' : ''; ?>">
-            <a href="<?php echo URLROOT; ?>/sport/competitions">
-                <span class="icon"><span class="mif-trophy"></span></span>
-                <span class="caption"><?php echo $sportTxt['COMPETITION_NAV_COMPETITIONS'] ?? 'Compétitions'; ?></span>
             </a>
         </li>
 
@@ -101,7 +105,8 @@
             <li class="<?php echo $isProfileActive ? 'active' : ''; ?>">
                 <a href="<?php echo URLROOT; ?>/user/<?php echo $_SESSION['user_id']; ?>">
                     <span class="icon"><span class="mif-profile"></span></span>
-                    <span class="caption"><?php echo $data['txt']['SYS_MY_PROFILE'] ?? 'SYS_MY_PROFILE'; ?> (<?php echo htmlspecialchars($_SESSION['username']); ?>)</span>
+                    <span class="caption"><?php echo $data['txt']['SYS_MY_PROFILE'] ?? 'SYS_MY_PROFILE'; ?>
+                        (<?php echo htmlspecialchars($_SESSION['username']); ?>)</span>
                 </a>
             </li>
             <li>
@@ -112,10 +117,10 @@
             </li>
 
             <?php if (isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])): ?>
-                <?php 
-                    $userTxt = \Core\Language::load('user'); 
-                    $sportTxt = \Core\Language::load('sport'); 
-                    $zoneTxt = \Core\Language::load('zone');
+                <?php
+                $userTxt = \Core\Language::load('user');
+                $sportTxt = \Core\Language::load('sport');
+                $zoneTxt = \Core\Language::load('zone');
                 ?>
                 <!-- Groupe : Administration -->
                 <li class="item-header"><?php echo $data['txt']['SYS_ADMINISTRATION'] ?? 'Administration'; ?></li>
@@ -126,7 +131,8 @@
                         <span class="icon"><span class="mif-cogs"></span></span>
                         <span class="caption"><?php echo $userTxt['USER_MANAGEMENT'] ?? 'System'; ?></span>
                     </a>
-                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isAdminSystemGroupActive ? 'false' : 'true'; ?>">
+                    <ul class="navview-menu" data-role="collapse"
+                        data-collapsed="<?php echo $isAdminSystemGroupActive ? 'false' : 'true'; ?>">
                         <li class="<?php echo $isUsersListActive ? 'active' : ''; ?>">
                             <a href="<?php echo URLROOT; ?>/user/users">
                                 <span class="icon"><span class="mif-group"></span></span>
@@ -142,7 +148,8 @@
                         <li class="<?php echo $isZonesActive ? 'active' : ''; ?>">
                             <a href="<?php echo URLROOT; ?>/zone/zones">
                                 <span class="icon"><span class="mif-earth"></span></span>
-                                <span class="caption"><?php echo $zoneTxt['ZONE_TITLE_ZONES'] ?? 'Zones géographiques'; ?></span>
+                                <span
+                                    class="caption"><?php echo $zoneTxt['ZONE_TITLE_ZONES'] ?? 'Zones géographiques'; ?></span>
                             </a>
                         </li>
                     </ul>
@@ -154,7 +161,8 @@
                         <span class="icon"><span class="mif-trophy"></span></span>
                         <span class="caption"><?php echo $sportTxt['SPORT_SPORTS_MGT'] ?? 'Sports'; ?></span>
                     </a>
-                    <ul class="navview-menu" data-role="collapse" data-collapsed="<?php echo $isSportsGroupActive ? 'false' : 'true'; ?>">
+                    <ul class="navview-menu" data-role="collapse"
+                        data-collapsed="<?php echo $isSportsGroupActive ? 'false' : 'true'; ?>">
                         <li class="<?php echo $isSportsActive ? 'active' : ''; ?>">
                             <a href="<?php echo URLROOT; ?>/sport/sports">
                                 <span class="icon"><span class="mif-trophy"></span></span>
@@ -192,7 +200,8 @@
 <!-- Zone de Contenu Principal (navview-content) -->
 <div class="navview-content d-flex flex-column min-vh-100">
     <div class="app-bar bg-dark pos-relative z-1 flex-align-center" data-role="appbar" id="app-bar-1">
-        <button class="pull-button bg-transparent fg-white bd-none p-2 ml-2 c-pointer d-none-md" title="<?php echo htmlspecialchars($data['txt']['SYS_MENU'] ?? 'Menu'); ?>">
+        <button class="pull-button bg-transparent fg-white bd-none p-2 ml-2 c-pointer d-none-md"
+            title="<?php echo htmlspecialchars($data['txt']['SYS_MENU'] ?? 'Menu'); ?>">
             <span class="mif-menu mif-2x"></span>
         </button>
         <h1 class="m-0 enlarge-1 pl-3 text-weight-normal">
