@@ -17,7 +17,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 ### P1 (Haute priorité)
 - [ ] [20260908-2236] BDD
     - [x] [20260908-2237] Skill/lesson : structurer les fichiers .md pour prendre en compte toutes les règles (doc/architecture_rules.md, doc/naming_conventions.md, doc/database_rules.md et .agents/rules/)
-    - [ ] [20260908-2238] ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
+    - [x] [20260908-2238] ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️ — sport.sql validé x2 ✅
 - [ ] [20260908-2239] Module *Sport* : à placer dans un module *sport*.
     - [x] [20260908-2240] sport
     - [-] [20260908-2241] clubs, sections, équipes
@@ -26,7 +26,13 @@ Liste des futures tâches à réaliser pour le projet rilsport :
         - [-] [20260908-2244] équipes
     - [-] [20260908-2245] acteurs : joueurs/arbitres/officiels/autres...  
         - [ ] [20260908-2246] un acteur peut avoir plusieurs rôles. Les roles dépendent des matchs  
-    - [ ] [20260908-2247] compétition, multi compétition (sport event), championnats (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
+    - [-] [20260908-2247] compétition, multi compétition (sport event), championnats (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
+        - [x] [20260918-1800] Modèle BDD : 9 tables `t_sport_competition*` (type, status, competition, i18n, edition, phase, group, round, entry)
+        - [x] [20260918-1810] MVC Compétitions : Model + Controllers + Vues (list + fiche)
+        - [x] [20260918-1820] MVC Éditions : Model + Controllers + Vues (list + fiche avec phases/équipes/sous-éditions)
+        - [x] [20260918-1830] Navigation + fix routeur kebab-case (App.php)
+        - [ ] MVC Phases, Groupes, Rounds (à faire)
+        - [ ] MVC Inscriptions / Entries (à faire)
     - [ ] [20260908-2248] matches : triangulaires (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
     - [ ] [20260908-2249] classements (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
     - [ ] [20260908-2250] fédérations/ligues

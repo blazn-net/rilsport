@@ -47,6 +47,7 @@
     $isPersonsActive = (strpos($currentRoute, 'sport/person') === 0 || strpos($currentRoute, 'sport/persons') === 0);
     $isClubsActive = (strpos($currentRoute, 'sport/club') === 0 || strpos($currentRoute, 'sport/clubs') === 0);
     $isTeamsActive = (strpos($currentRoute, 'sport/team') === 0 || strpos($currentRoute, 'sport/teams') === 0);
+    $isCompetitionsActive = (strpos($currentRoute, 'sport/competition') === 0);
     $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
     $isSportsGroupActive = ($isSportsActive || $isSeasonsActive);
     $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive || $isZonesActive);
@@ -75,6 +76,14 @@
             <a href="<?php echo URLROOT; ?>/sport/teams">
                 <span class="icon"><span class="mif-groups"></span></span>
                 <span class="caption"><?php echo $sportTxt['SPORT_TEAMS_MGT'] ?? 'Équipes'; ?></span>
+            </a>
+        </li>
+
+        <!-- Compétitions -->
+        <li class="<?php echo $isCompetitionsActive ? 'active' : ''; ?>">
+            <a href="<?php echo URLROOT; ?>/sport/competitions">
+                <span class="icon"><span class="mif-trophy"></span></span>
+                <span class="caption"><?php echo $sportTxt['COMPETITION_NAV_COMPETITIONS'] ?? 'Compétitions'; ?></span>
             </a>
         </li>
 

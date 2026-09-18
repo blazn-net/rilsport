@@ -38,7 +38,7 @@ class App
                     ]
                 ];
 
-                $candidateClass = ucwords($url[0]);
+                $candidateClass = str_replace('-', '', ucwords($url[0], '-'));
                 $candidateFile  = 'module/' . $this->currentModule . '/controller/' . $candidateClass . '.php';
 
                 if (isset($aliases[$this->currentModule][$url[0]])) {

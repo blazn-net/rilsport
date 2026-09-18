@@ -1333,6 +1333,764 @@ ON CONFLICT (text_code, lang_code) DO UPDATE
 
 
 -- ============================================================
+-- SCHÉMA : t_sport_competition_type (Types de compétitions)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition_type (
+    code       VARCHAR(20)  PRIMARY KEY,
+    text_code  VARCHAR(100) UNIQUE NOT NULL,
+    FOREIGN KEY (text_code) REFERENCES t_sport_text_key(text_code) ON DELETE RESTRICT
+);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_competition_status (Statuts des compétitions)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition_status (
+    id        SERIAL       PRIMARY KEY,
+    text_code VARCHAR(100) UNIQUE NOT NULL,
+    FOREIGN KEY (text_code) REFERENCES t_sport_text_key(text_code) ON DELETE RESTRICT
+);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_competition (Compétition intemporelle)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition (
+    id           SERIAL       PRIMARY KEY,
+    code         VARCHAR(50)  NOT NULL UNIQUE,
+    name         VARCHAR(150) NOT NULL,
+    short_name   VARCHAR(50)  DEFAULT NULL,
+    acronym      VARCHAR(20)  DEFAULT NULL,
+    sport_id     INT          NOT NULL,
+    type_code    VARCHAR(20)  NOT NULL,
+    logo         VARCHAR(255) DEFAULT NULL,
+    country_code VARCHAR(2)   DEFAULT NULL,
+    description  TEXT         DEFAULT NULL,
+    status_id    INT          NOT NULL DEFAULT 1,
+    created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by   INT          DEFAULT NULL,
+    modified_at  TIMESTAMP    DEFAULT NULL,
+    modified_by  INT          DEFAULT NULL,
+    FOREIGN KEY (sport_id)    REFERENCES t_sport_sport(id)              ON DELETE RESTRICT,
+    FOREIGN KEY (type_code)   REFERENCES t_sport_competition_type(code) ON DELETE RESTRICT,
+    FOREIGN KEY (status_id)   REFERENCES t_sport_competition_status(id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_by)  REFERENCES t_user_user(id)                ON DELETE SET NULL,
+    FOREIGN KEY (modified_by) REFERENCES t_user_user(id)                ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_competition_sport    ON t_sport_competition(sport_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_type     ON t_sport_competition(type_code);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_status   ON t_sport_competition(status_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_country  ON t_sport_competition(country_code);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_competition_i18n (Traductions des noms)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition_i18n (
+    competition_id INT          NOT NULL,
+    lang_code      VARCHAR(5)   NOT NULL,
+    name           VARCHAR(150) NOT NULL,
+    description    TEXT         DEFAULT NULL,
+    PRIMARY KEY (competition_id, lang_code),
+    FOREIGN KEY (competition_id) REFERENCES t_sport_competition(id) ON DELETE CASCADE,
+    FOREIGN KEY (lang_code)      REFERENCES t_lang_lang(lang_code)  ON DELETE CASCADE
+);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_competition_edition (Édition / Saison)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition_edition (
+    id                SERIAL       PRIMARY KEY,
+    competition_id    INT          NOT NULL,
+    parent_edition_id INT          DEFAULT NULL,
+    season_id         INT          DEFAULT NULL,
+    code              VARCHAR(50)  NOT NULL UNIQUE,
+    name              VARCHAR(150) NOT NULL,
+    edition_number    INT          DEFAULT NULL,
+    date_start        DATE         DEFAULT NULL,
+    date_end          DATE         DEFAULT NULL,
+    status_id         INT          NOT NULL DEFAULT 1,
+    created_at        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by        INT          DEFAULT NULL,
+    modified_at       TIMESTAMP    DEFAULT NULL,
+    modified_by       INT          DEFAULT NULL,
+    FOREIGN KEY (competition_id)    REFERENCES t_sport_competition(id)         ON DELETE RESTRICT,
+    FOREIGN KEY (parent_edition_id) REFERENCES t_sport_competition_edition(id) ON DELETE SET NULL,
+    FOREIGN KEY (season_id)         REFERENCES t_sport_season(id)              ON DELETE SET NULL,
+    FOREIGN KEY (status_id)         REFERENCES t_sport_competition_status(id)  ON DELETE RESTRICT,
+    FOREIGN KEY (created_by)        REFERENCES t_user_user(id)                 ON DELETE SET NULL,
+    FOREIGN KEY (modified_by)       REFERENCES t_user_user(id)                 ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_competition_edition_competition ON t_sport_competition_edition(competition_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_edition_parent      ON t_sport_competition_edition(parent_edition_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_edition_season      ON t_sport_competition_edition(season_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_edition_status      ON t_sport_competition_edition(status_id);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_competition_phase (Phases d'une édition)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition_phase (
+    id           SERIAL       PRIMARY KEY,
+    edition_id   INT          NOT NULL,
+    code         VARCHAR(50)  NOT NULL,
+    name         VARCHAR(150) NOT NULL,
+    phase_type   VARCHAR(20)  NOT NULL DEFAULT 'league',
+    phase_order  INT          NOT NULL DEFAULT 1,
+    date_start   DATE         DEFAULT NULL,
+    date_end     DATE         DEFAULT NULL,
+    status_id    INT          NOT NULL DEFAULT 1,
+    created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by   INT          DEFAULT NULL,
+    modified_at  TIMESTAMP    DEFAULT NULL,
+    modified_by  INT          DEFAULT NULL,
+    FOREIGN KEY (edition_id)  REFERENCES t_sport_competition_edition(id) ON DELETE CASCADE,
+    FOREIGN KEY (status_id)   REFERENCES t_sport_competition_status(id)  ON DELETE RESTRICT,
+    FOREIGN KEY (created_by)  REFERENCES t_user_user(id)                 ON DELETE SET NULL,
+    FOREIGN KEY (modified_by) REFERENCES t_user_user(id)                 ON DELETE SET NULL,
+    CONSTRAINT uk_sport_competition_phase_edition_code UNIQUE (edition_id, code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_competition_phase_edition ON t_sport_competition_phase(edition_id);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_competition_group (Groupes / Poules / Conférences)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition_group (
+    id              SERIAL       PRIMARY KEY,
+    phase_id        INT          NOT NULL,
+    parent_group_id INT          DEFAULT NULL,
+    code            VARCHAR(20)  NOT NULL,
+    name            VARCHAR(100) NOT NULL,
+    group_order     INT          NOT NULL DEFAULT 1,
+    status_id       INT          NOT NULL DEFAULT 1,
+    created_at      TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by      INT          DEFAULT NULL,
+    modified_at     TIMESTAMP    DEFAULT NULL,
+    modified_by     INT          DEFAULT NULL,
+    FOREIGN KEY (phase_id)        REFERENCES t_sport_competition_phase(id)  ON DELETE CASCADE,
+    FOREIGN KEY (parent_group_id) REFERENCES t_sport_competition_group(id)  ON DELETE SET NULL,
+    FOREIGN KEY (status_id)       REFERENCES t_sport_competition_status(id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_by)      REFERENCES t_user_user(id)                ON DELETE SET NULL,
+    FOREIGN KEY (modified_by)     REFERENCES t_user_user(id)                ON DELETE SET NULL,
+    CONSTRAINT uk_sport_competition_group_phase_code UNIQUE (phase_id, code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_competition_group_phase  ON t_sport_competition_group(phase_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_group_parent ON t_sport_competition_group(parent_group_id);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_competition_round (Journées / Tours / Étapes)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition_round (
+    id          SERIAL       PRIMARY KEY,
+    phase_id    INT          NOT NULL,
+    group_id    INT          DEFAULT NULL,
+    code        VARCHAR(50)  NOT NULL,
+    name        VARCHAR(150) NOT NULL,
+    round_order INT          NOT NULL DEFAULT 1,
+    round_type  VARCHAR(20)  NOT NULL DEFAULT 'regular',
+    venue_name  VARCHAR(150) DEFAULT NULL,
+    venue_id    INT          DEFAULT NULL,
+    date_start  DATE         DEFAULT NULL,
+    date_end    DATE         DEFAULT NULL,
+    status_id   INT          NOT NULL DEFAULT 1,
+    created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by  INT          DEFAULT NULL,
+    modified_at TIMESTAMP    DEFAULT NULL,
+    modified_by INT          DEFAULT NULL,
+    FOREIGN KEY (phase_id)    REFERENCES t_sport_competition_phase(id)  ON DELETE CASCADE,
+    FOREIGN KEY (group_id)    REFERENCES t_sport_competition_group(id)  ON DELETE SET NULL,
+    FOREIGN KEY (status_id)   REFERENCES t_sport_competition_status(id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_by)  REFERENCES t_user_user(id)                ON DELETE SET NULL,
+    FOREIGN KEY (modified_by) REFERENCES t_user_user(id)                ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_competition_round_phase ON t_sport_competition_round(phase_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_round_group ON t_sport_competition_round(group_id);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_competition_entry (Inscriptions des équipes)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_competition_entry (
+    id          SERIAL    PRIMARY KEY,
+    edition_id  INT       NOT NULL,
+    group_id    INT       DEFAULT NULL,
+    team_id     INT       NOT NULL,
+    entry_order INT       DEFAULT NULL,
+    status_id   INT       NOT NULL DEFAULT 1,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by  INT       DEFAULT NULL,
+    modified_at TIMESTAMP DEFAULT NULL,
+    modified_by INT       DEFAULT NULL,
+    FOREIGN KEY (edition_id)  REFERENCES t_sport_competition_edition(id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id)    REFERENCES t_sport_competition_group(id)   ON DELETE SET NULL,
+    FOREIGN KEY (team_id)     REFERENCES t_sport_team(id)                ON DELETE RESTRICT,
+    FOREIGN KEY (status_id)   REFERENCES t_sport_competition_status(id)  ON DELETE RESTRICT,
+    FOREIGN KEY (created_by)  REFERENCES t_user_user(id)                 ON DELETE SET NULL,
+    FOREIGN KEY (modified_by) REFERENCES t_user_user(id)                 ON DELETE SET NULL,
+    CONSTRAINT uk_sport_competition_entry_edition_team UNIQUE (edition_id, team_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_competition_entry_edition ON t_sport_competition_entry(edition_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_entry_group   ON t_sport_competition_entry(group_id);
+CREATE INDEX IF NOT EXISTS idx_sport_competition_entry_team    ON t_sport_competition_entry(team_id);
+
+
+-- ============================================================
+-- DONNÉES : Types de compétitions
+-- (les text_code doivent être insérés dans t_sport_text_key avant)
+-- ============================================================
+
+INSERT INTO t_sport_text_key (text_code) VALUES
+('COMPETITION_TYPE_LEAGUE'),
+('COMPETITION_TYPE_CUP'),
+('COMPETITION_TYPE_TOURNAMENT'),
+('COMPETITION_TYPE_RANKING'),
+('COMPETITION_TYPE_OTHER'),
+('COMPETITION_STATUS_ACTIVE'),
+('COMPETITION_STATUS_INACTIVE'),
+('COMPETITION_STATUS_ARCHIVED'),
+('COMPETITION_COMPETITIONS_MGT'),
+('COMPETITION_EDITIONS_MGT'),
+('COMPETITION_NAV_COMPETITIONS'),
+('COMPETITION_NAV_EDITIONS'),
+('COMPETITION_ADD_BTN'),
+('COMPETITION_ADD_EDITION_BTN'),
+('COMPETITION_EDIT_TITLE'),
+('COMPETITION_ADD_TITLE'),
+('COMPETITION_VIEW_TITLE'),
+('COMPETITION_EDITION_EDIT_TITLE'),
+('COMPETITION_EDITION_ADD_TITLE'),
+('COMPETITION_EDITION_VIEW_TITLE'),
+('COMPETITION_CODE'),
+('COMPETITION_NAME'),
+('COMPETITION_TABLE_NAME'),
+('COMPETITION_SHORT_NAME'),
+('COMPETITION_ACRONYM'),
+('COMPETITION_SPORT'),
+('COMPETITION_TYPE'),
+('COMPETITION_LOGO'),
+('COMPETITION_COUNTRY'),
+('COMPETITION_DESCRIPTION'),
+('COMPETITION_STATUS'),
+('COMPETITION_EDITION_CODE'),
+('COMPETITION_EDITION_NAME'),
+('COMPETITION_EDITION_TABLE_NAME'),
+('COMPETITION_EDITION_COMPETITION'),
+('COMPETITION_EDITION_SEASON'),
+('COMPETITION_EDITION_PARENT'),
+('COMPETITION_EDITION_NUMBER'),
+('COMPETITION_EDITION_DATE_START'),
+('COMPETITION_EDITION_DATE_END'),
+('COMPETITION_EDITION_STATUS'),
+('COMPETITION_EDITION_PHASES'),
+('COMPETITION_EDITION_ENTRIES'),
+('COMPETITION_PHASE_NAME'),
+('COMPETITION_PHASE_TYPE'),
+('COMPETITION_PHASE_TYPE_LEAGUE'),
+('COMPETITION_PHASE_TYPE_KNOCKOUT'),
+('COMPETITION_PHASE_TYPE_RANKING'),
+('COMPETITION_GROUP_CODE'),
+('COMPETITION_GROUP_NAME'),
+('COMPETITION_ROUND_NAME'),
+('COMPETITION_ROUND_TYPE'),
+('COMPETITION_ROUND_TYPE_REGULAR'),
+('COMPETITION_ROUND_TYPE_FINAL'),
+('COMPETITION_ROUND_TYPE_SEMIFINAL'),
+('COMPETITION_ROUND_TYPE_QUARTERFINAL'),
+('COMPETITION_ROUND_TYPE_PLAYOFF'),
+('COMPETITION_ENTRY_TEAM'),
+('COMPETITION_ENTRY_GROUP'),
+('COMPETITION_MSG_ADDED'),
+('COMPETITION_MSG_UPDATED'),
+('COMPETITION_MSG_DEACTIVATED'),
+('COMPETITION_MSG_DELETED'),
+('COMPETITION_ERR_MISSING_FIELDS'),
+('COMPETITION_ERR_CODE_EXISTS'),
+('COMPETITION_DELETE_CONFIRM'),
+('COMPETITION_EDITION_MSG_ADDED'),
+('COMPETITION_EDITION_MSG_UPDATED'),
+('COMPETITION_EDITION_MSG_DEACTIVATED'),
+('COMPETITION_EDITION_MSG_DELETED'),
+('COMPETITION_EDITION_ERR_MISSING_FIELDS'),
+('COMPETITION_EDITION_ERR_CODE_EXISTS'),
+('COMPETITION_EDITION_DELETE_CONFIRM')
+ON CONFLICT (text_code) DO NOTHING;
+
+
+-- ============================================================
+-- DONNÉES : Types de compétitions
+-- ============================================================
+
+INSERT INTO t_sport_competition_type (code, text_code) VALUES
+('league',     'COMPETITION_TYPE_LEAGUE'),
+('cup',        'COMPETITION_TYPE_CUP'),
+('tournament', 'COMPETITION_TYPE_TOURNAMENT'),
+('ranking',    'COMPETITION_TYPE_RANKING'),
+('other',      'COMPETITION_TYPE_OTHER')
+ON CONFLICT (code) DO UPDATE SET text_code = EXCLUDED.text_code;
+
+
+-- ============================================================
+-- DONNÉES : Statuts des compétitions
+-- ============================================================
+
+INSERT INTO t_sport_competition_status (id, text_code) VALUES
+(1, 'COMPETITION_STATUS_ACTIVE'),
+(2, 'COMPETITION_STATUS_INACTIVE'),
+(3, 'COMPETITION_STATUS_ARCHIVED')
+ON CONFLICT (id) DO UPDATE SET text_code = EXCLUDED.text_code;
+
+
+-- ============================================================
+-- DONNÉES : Métadonnées objets / pages / tables compétitions
+-- ============================================================
+
+INSERT INTO t_sport_object (module_id, code)
+SELECT id, 'competition' FROM t_system_module WHERE code = 'sport'
+ON CONFLICT (module_id, code) DO NOTHING;
+
+INSERT INTO t_sport_object (module_id, code)
+SELECT id, 'competition_edition' FROM t_system_module WHERE code = 'sport'
+ON CONFLICT (module_id, code) DO NOTHING;
+
+INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
+SELECT o.id, 'fr', 'Compétition'
+FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
+SELECT o.id, 'en', 'Competition'
+FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
+SELECT o.id, 'es', 'Competición'
+FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
+SELECT o.id, 'fr', 'Édition de compétition'
+FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
+SELECT o.id, 'en', 'Competition Edition'
+FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO t_sport_object_i18n (object_id, lang_code, name)
+SELECT o.id, 'es', 'Edición de competición'
+FROM t_sport_object o JOIN t_system_module m ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (object_id, lang_code) DO UPDATE SET name = EXCLUDED.name;
+
+-- Pages competition
+INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
+SELECT m.id, o.id, 'competitions', 'list', '/sport/competitions'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
+
+INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
+SELECT m.id, o.id, 'competition', 'form', '/sport/competition'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
+
+-- Pages competition-edition
+INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
+SELECT m.id, o.id, 'competition-editions', 'list', '/sport/competition-editions'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
+
+INSERT INTO t_sport_page (module_id, object_id, code, page_type, url_path)
+SELECT m.id, o.id, 'competition-edition', 'form', '/sport/competition-edition'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (module_id, code) DO UPDATE SET page_type = EXCLUDED.page_type, url_path = EXCLUDED.url_path;
+
+-- Tables
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition_type'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition_status'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition_i18n'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition_edition'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition_phase'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition_group'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition_round'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+INSERT INTO t_sport_table (module_id, object_id, table_name)
+SELECT m.id, o.id, 't_sport_competition_entry'
+FROM t_system_module m JOIN t_sport_object o ON o.module_id = m.id
+WHERE m.code = 'sport' AND o.code = 'competition_edition'
+ON CONFLICT (table_name) DO UPDATE SET module_id = EXCLUDED.module_id;
+
+
+-- ============================================================
+-- DONNÉES : Traductions UI compétitions (fr / en / es)
+-- ============================================================
+
+INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
+
+('COMPETITION_TYPE_LEAGUE',     'fr', 'Championnat'),
+('COMPETITION_TYPE_LEAGUE',     'en', 'League'),
+('COMPETITION_TYPE_LEAGUE',     'es', 'Liga'),
+
+('COMPETITION_TYPE_CUP',        'fr', 'Coupe'),
+('COMPETITION_TYPE_CUP',        'en', 'Cup'),
+('COMPETITION_TYPE_CUP',        'es', 'Copa'),
+
+('COMPETITION_TYPE_TOURNAMENT', 'fr', 'Tournoi'),
+('COMPETITION_TYPE_TOURNAMENT', 'en', 'Tournament'),
+('COMPETITION_TYPE_TOURNAMENT', 'es', 'Torneo'),
+
+('COMPETITION_TYPE_RANKING',    'fr', 'Classement / Challenge'),
+('COMPETITION_TYPE_RANKING',    'en', 'Ranking / Challenge'),
+('COMPETITION_TYPE_RANKING',    'es', 'Clasificación / Desafío'),
+
+('COMPETITION_TYPE_OTHER',      'fr', 'Autre'),
+('COMPETITION_TYPE_OTHER',      'en', 'Other'),
+('COMPETITION_TYPE_OTHER',      'es', 'Otro'),
+
+('COMPETITION_STATUS_ACTIVE',   'fr', 'Active'),
+('COMPETITION_STATUS_ACTIVE',   'en', 'Active'),
+('COMPETITION_STATUS_ACTIVE',   'es', 'Activa'),
+
+('COMPETITION_STATUS_INACTIVE', 'fr', 'Inactive'),
+('COMPETITION_STATUS_INACTIVE', 'en', 'Inactive'),
+('COMPETITION_STATUS_INACTIVE', 'es', 'Inactiva'),
+
+('COMPETITION_STATUS_ARCHIVED', 'fr', 'Archivée'),
+('COMPETITION_STATUS_ARCHIVED', 'en', 'Archived'),
+('COMPETITION_STATUS_ARCHIVED', 'es', 'Archivada'),
+
+('COMPETITION_COMPETITIONS_MGT','fr', 'Compétitions'),
+('COMPETITION_COMPETITIONS_MGT','en', 'Competitions'),
+('COMPETITION_COMPETITIONS_MGT','es', 'Competiciones'),
+
+('COMPETITION_EDITIONS_MGT',    'fr', 'Éditions'),
+('COMPETITION_EDITIONS_MGT',    'en', 'Editions'),
+('COMPETITION_EDITIONS_MGT',    'es', 'Ediciones'),
+
+('COMPETITION_NAV_COMPETITIONS','fr', 'Compétitions'),
+('COMPETITION_NAV_COMPETITIONS','en', 'Competitions'),
+('COMPETITION_NAV_COMPETITIONS','es', 'Competiciones'),
+
+('COMPETITION_NAV_EDITIONS',    'fr', 'Éditions'),
+('COMPETITION_NAV_EDITIONS',    'en', 'Editions'),
+('COMPETITION_NAV_EDITIONS',    'es', 'Ediciones'),
+
+('COMPETITION_ADD_BTN',         'fr', 'Nouvelle compétition'),
+('COMPETITION_ADD_BTN',         'en', 'New Competition'),
+('COMPETITION_ADD_BTN',         'es', 'Nueva competición'),
+
+('COMPETITION_ADD_EDITION_BTN', 'fr', 'Nouvelle édition'),
+('COMPETITION_ADD_EDITION_BTN', 'en', 'New Edition'),
+('COMPETITION_ADD_EDITION_BTN', 'es', 'Nueva edición'),
+
+('COMPETITION_EDIT_TITLE',      'fr', 'Modifier la compétition'),
+('COMPETITION_EDIT_TITLE',      'en', 'Edit Competition'),
+('COMPETITION_EDIT_TITLE',      'es', 'Editar competición'),
+
+('COMPETITION_ADD_TITLE',       'fr', 'Créer une compétition'),
+('COMPETITION_ADD_TITLE',       'en', 'Create Competition'),
+('COMPETITION_ADD_TITLE',       'es', 'Crear competición'),
+
+('COMPETITION_VIEW_TITLE',      'fr', 'Fiche compétition'),
+('COMPETITION_VIEW_TITLE',      'en', 'Competition details'),
+('COMPETITION_VIEW_TITLE',      'es', 'Ficha de competición'),
+
+('COMPETITION_EDITION_EDIT_TITLE','fr', 'Modifier l''édition'),
+('COMPETITION_EDITION_EDIT_TITLE','en', 'Edit Edition'),
+('COMPETITION_EDITION_EDIT_TITLE','es', 'Editar edición'),
+
+('COMPETITION_EDITION_ADD_TITLE', 'fr', 'Créer une édition'),
+('COMPETITION_EDITION_ADD_TITLE', 'en', 'Create Edition'),
+('COMPETITION_EDITION_ADD_TITLE', 'es', 'Crear edición'),
+
+('COMPETITION_EDITION_VIEW_TITLE','fr', 'Fiche édition'),
+('COMPETITION_EDITION_VIEW_TITLE','en', 'Edition details'),
+('COMPETITION_EDITION_VIEW_TITLE','es', 'Ficha de edición'),
+
+('COMPETITION_CODE',             'fr', 'Code / Identifiant'),
+('COMPETITION_CODE',             'en', 'Code / Slug'),
+('COMPETITION_CODE',             'es', 'Código / Slug'),
+
+('COMPETITION_NAME',             'fr', 'Nom officiel'),
+('COMPETITION_NAME',             'en', 'Official Name'),
+('COMPETITION_NAME',             'es', 'Nombre oficial'),
+
+('COMPETITION_TABLE_NAME',       'fr', 'Nom'),
+('COMPETITION_TABLE_NAME',       'en', 'Name'),
+('COMPETITION_TABLE_NAME',       'es', 'Nombre'),
+
+('COMPETITION_SHORT_NAME',       'fr', 'Nom abrégé'),
+('COMPETITION_SHORT_NAME',       'en', 'Short name'),
+('COMPETITION_SHORT_NAME',       'es', 'Nombre abreviado'),
+
+('COMPETITION_ACRONYM',          'fr', 'Sigle / Acronyme'),
+('COMPETITION_ACRONYM',          'en', 'Acronym'),
+('COMPETITION_ACRONYM',          'es', 'Acrónimo'),
+
+('COMPETITION_SPORT',            'fr', 'Sport'),
+('COMPETITION_SPORT',            'en', 'Sport'),
+('COMPETITION_SPORT',            'es', 'Deporte'),
+
+('COMPETITION_TYPE',             'fr', 'Type de compétition'),
+('COMPETITION_TYPE',             'en', 'Competition type'),
+('COMPETITION_TYPE',             'es', 'Tipo de competición'),
+
+('COMPETITION_LOGO',             'fr', 'Logo'),
+('COMPETITION_LOGO',             'en', 'Logo'),
+('COMPETITION_LOGO',             'es', 'Logo'),
+
+('COMPETITION_COUNTRY',          'fr', 'Pays'),
+('COMPETITION_COUNTRY',          'en', 'Country'),
+('COMPETITION_COUNTRY',          'es', 'País'),
+
+('COMPETITION_DESCRIPTION',      'fr', 'Description'),
+('COMPETITION_DESCRIPTION',      'en', 'Description'),
+('COMPETITION_DESCRIPTION',      'es', 'Descripción'),
+
+('COMPETITION_STATUS',           'fr', 'Statut'),
+('COMPETITION_STATUS',           'en', 'Status'),
+('COMPETITION_STATUS',           'es', 'Estado'),
+
+('COMPETITION_EDITION_CODE',     'fr', 'Code / Identifiant'),
+('COMPETITION_EDITION_CODE',     'en', 'Code / Slug'),
+('COMPETITION_EDITION_CODE',     'es', 'Código / Slug'),
+
+('COMPETITION_EDITION_NAME',     'fr', 'Nom de l''édition'),
+('COMPETITION_EDITION_NAME',     'en', 'Edition name'),
+('COMPETITION_EDITION_NAME',     'es', 'Nombre de la edición'),
+
+('COMPETITION_EDITION_TABLE_NAME','fr', 'Édition'),
+('COMPETITION_EDITION_TABLE_NAME','en', 'Edition'),
+('COMPETITION_EDITION_TABLE_NAME','es', 'Edición'),
+
+('COMPETITION_EDITION_COMPETITION','fr', 'Compétition'),
+('COMPETITION_EDITION_COMPETITION','en', 'Competition'),
+('COMPETITION_EDITION_COMPETITION','es', 'Competición'),
+
+('COMPETITION_EDITION_SEASON',   'fr', 'Saison'),
+('COMPETITION_EDITION_SEASON',   'en', 'Season'),
+('COMPETITION_EDITION_SEASON',   'es', 'Temporada'),
+
+('COMPETITION_EDITION_PARENT',   'fr', 'Édition parente (sous-compétition)'),
+('COMPETITION_EDITION_PARENT',   'en', 'Parent edition (sub-competition)'),
+('COMPETITION_EDITION_PARENT',   'es', 'Edición padre (sub-competición)'),
+
+('COMPETITION_EDITION_NUMBER',   'fr', 'Numéro d''édition'),
+('COMPETITION_EDITION_NUMBER',   'en', 'Edition number'),
+('COMPETITION_EDITION_NUMBER',   'es', 'Número de edición'),
+
+('COMPETITION_EDITION_DATE_START','fr', 'Début'),
+('COMPETITION_EDITION_DATE_START','en', 'Start date'),
+('COMPETITION_EDITION_DATE_START','es', 'Fecha de inicio'),
+
+('COMPETITION_EDITION_DATE_END', 'fr', 'Fin'),
+('COMPETITION_EDITION_DATE_END', 'en', 'End date'),
+('COMPETITION_EDITION_DATE_END', 'es', 'Fecha de fin'),
+
+('COMPETITION_EDITION_STATUS',   'fr', 'Statut'),
+('COMPETITION_EDITION_STATUS',   'en', 'Status'),
+('COMPETITION_EDITION_STATUS',   'es', 'Estado'),
+
+('COMPETITION_EDITION_PHASES',   'fr', 'Phases'),
+('COMPETITION_EDITION_PHASES',   'en', 'Phases'),
+('COMPETITION_EDITION_PHASES',   'es', 'Fases'),
+
+('COMPETITION_EDITION_ENTRIES',  'fr', 'Équipes inscrites'),
+('COMPETITION_EDITION_ENTRIES',  'en', 'Registered teams'),
+('COMPETITION_EDITION_ENTRIES',  'es', 'Equipos inscritos'),
+
+('COMPETITION_PHASE_NAME',       'fr', 'Phase'),
+('COMPETITION_PHASE_NAME',       'en', 'Phase'),
+('COMPETITION_PHASE_NAME',       'es', 'Fase'),
+
+('COMPETITION_PHASE_TYPE',       'fr', 'Type de phase'),
+('COMPETITION_PHASE_TYPE',       'en', 'Phase type'),
+('COMPETITION_PHASE_TYPE',       'es', 'Tipo de fase'),
+
+('COMPETITION_PHASE_TYPE_LEAGUE',   'fr', 'Championnat (points)'),
+('COMPETITION_PHASE_TYPE_LEAGUE',   'en', 'League (points)'),
+('COMPETITION_PHASE_TYPE_LEAGUE',   'es', 'Liga (puntos)'),
+
+('COMPETITION_PHASE_TYPE_KNOCKOUT', 'fr', 'Élimination directe'),
+('COMPETITION_PHASE_TYPE_KNOCKOUT', 'en', 'Knockout'),
+('COMPETITION_PHASE_TYPE_KNOCKOUT', 'es', 'Eliminación directa'),
+
+('COMPETITION_PHASE_TYPE_RANKING',  'fr', 'Classement'),
+('COMPETITION_PHASE_TYPE_RANKING',  'en', 'Ranking'),
+('COMPETITION_PHASE_TYPE_RANKING',  'es', 'Clasificación'),
+
+('COMPETITION_GROUP_CODE',       'fr', 'Code groupe'),
+('COMPETITION_GROUP_CODE',       'en', 'Group code'),
+('COMPETITION_GROUP_CODE',       'es', 'Código de grupo'),
+
+('COMPETITION_GROUP_NAME',       'fr', 'Groupe'),
+('COMPETITION_GROUP_NAME',       'en', 'Group'),
+('COMPETITION_GROUP_NAME',       'es', 'Grupo'),
+
+('COMPETITION_ROUND_NAME',       'fr', 'Journée / Tour'),
+('COMPETITION_ROUND_NAME',       'en', 'Round / Stage'),
+('COMPETITION_ROUND_NAME',       'es', 'Jornada / Ronda'),
+
+('COMPETITION_ROUND_TYPE',               'fr', 'Type de tour'),
+('COMPETITION_ROUND_TYPE',               'en', 'Round type'),
+('COMPETITION_ROUND_TYPE',               'es', 'Tipo de ronda'),
+
+('COMPETITION_ROUND_TYPE_REGULAR',       'fr', 'Journée ordinaire'),
+('COMPETITION_ROUND_TYPE_REGULAR',       'en', 'Regular matchday'),
+('COMPETITION_ROUND_TYPE_REGULAR',       'es', 'Jornada ordinaria'),
+
+('COMPETITION_ROUND_TYPE_FINAL',         'fr', 'Finale'),
+('COMPETITION_ROUND_TYPE_FINAL',         'en', 'Final'),
+('COMPETITION_ROUND_TYPE_FINAL',         'es', 'Final'),
+
+('COMPETITION_ROUND_TYPE_SEMIFINAL',     'fr', 'Demi-finale'),
+('COMPETITION_ROUND_TYPE_SEMIFINAL',     'en', 'Semifinal'),
+('COMPETITION_ROUND_TYPE_SEMIFINAL',     'es', 'Semifinal'),
+
+('COMPETITION_ROUND_TYPE_QUARTERFINAL',  'fr', 'Quart de finale'),
+('COMPETITION_ROUND_TYPE_QUARTERFINAL',  'en', 'Quarterfinal'),
+('COMPETITION_ROUND_TYPE_QUARTERFINAL',  'es', 'Cuarto de final'),
+
+('COMPETITION_ROUND_TYPE_PLAYOFF',       'fr', 'Barrage'),
+('COMPETITION_ROUND_TYPE_PLAYOFF',       'en', 'Playoff'),
+('COMPETITION_ROUND_TYPE_PLAYOFF',       'es', 'Playoff'),
+
+('COMPETITION_ENTRY_TEAM',       'fr', 'Équipe'),
+('COMPETITION_ENTRY_TEAM',       'en', 'Team'),
+('COMPETITION_ENTRY_TEAM',       'es', 'Equipo'),
+
+('COMPETITION_ENTRY_GROUP',      'fr', 'Groupe / Poule'),
+('COMPETITION_ENTRY_GROUP',      'en', 'Group / Pool'),
+('COMPETITION_ENTRY_GROUP',      'es', 'Grupo / Grupo'),
+
+('COMPETITION_MSG_ADDED',        'fr', 'Compétition créée avec succès.'),
+('COMPETITION_MSG_ADDED',        'en', 'Competition created successfully.'),
+('COMPETITION_MSG_ADDED',        'es', 'Competición creada con éxito.'),
+
+('COMPETITION_MSG_UPDATED',      'fr', 'Compétition mise à jour avec succès.'),
+('COMPETITION_MSG_UPDATED',      'en', 'Competition updated successfully.'),
+('COMPETITION_MSG_UPDATED',      'es', 'Competición actualizada con éxito.'),
+
+('COMPETITION_MSG_DEACTIVATED',  'fr', 'Compétition désactivée.'),
+('COMPETITION_MSG_DEACTIVATED',  'en', 'Competition deactivated.'),
+('COMPETITION_MSG_DEACTIVATED',  'es', 'Competición desactivada.'),
+
+('COMPETITION_MSG_DELETED',      'fr', 'Compétition supprimée.'),
+('COMPETITION_MSG_DELETED',      'en', 'Competition deleted.'),
+('COMPETITION_MSG_DELETED',      'es', 'Competición eliminada.'),
+
+('COMPETITION_ERR_MISSING_FIELDS','fr', 'Veuillez remplir tous les champs obligatoires (Code, Nom, Sport, Type).'),
+('COMPETITION_ERR_MISSING_FIELDS','en', 'Please fill in all required fields (Code, Name, Sport, Type).'),
+('COMPETITION_ERR_MISSING_FIELDS','es', 'Complete todos los campos obligatorios (Código, Nombre, Deporte, Tipo).'),
+
+('COMPETITION_ERR_CODE_EXISTS',  'fr', 'Une compétition avec ce code existe déjà.'),
+('COMPETITION_ERR_CODE_EXISTS',  'en', 'A competition with this code already exists.'),
+('COMPETITION_ERR_CODE_EXISTS',  'es', 'Ya existe una competición con este código.'),
+
+('COMPETITION_DELETE_CONFIRM',   'fr', 'Voulez-vous vraiment désactiver cette compétition ?'),
+('COMPETITION_DELETE_CONFIRM',   'en', 'Are you sure you want to deactivate this competition?'),
+('COMPETITION_DELETE_CONFIRM',   'es', '¿Está seguro de que desea desactivar esta competición?'),
+
+('COMPETITION_EDITION_MSG_ADDED',       'fr', 'Édition créée avec succès.'),
+('COMPETITION_EDITION_MSG_ADDED',       'en', 'Edition created successfully.'),
+('COMPETITION_EDITION_MSG_ADDED',       'es', 'Edición creada con éxito.'),
+
+('COMPETITION_EDITION_MSG_UPDATED',     'fr', 'Édition mise à jour avec succès.'),
+('COMPETITION_EDITION_MSG_UPDATED',     'en', 'Edition updated successfully.'),
+('COMPETITION_EDITION_MSG_UPDATED',     'es', 'Edición actualizada con éxito.'),
+
+('COMPETITION_EDITION_MSG_DEACTIVATED', 'fr', 'Édition désactivée.'),
+('COMPETITION_EDITION_MSG_DEACTIVATED', 'en', 'Edition deactivated.'),
+('COMPETITION_EDITION_MSG_DEACTIVATED', 'es', 'Edición desactivada.'),
+
+('COMPETITION_EDITION_MSG_DELETED',     'fr', 'Édition supprimée.'),
+('COMPETITION_EDITION_MSG_DELETED',     'en', 'Edition deleted.'),
+('COMPETITION_EDITION_MSG_DELETED',     'es', 'Edición eliminada.'),
+
+('COMPETITION_EDITION_ERR_MISSING_FIELDS','fr', 'Veuillez remplir tous les champs obligatoires (Compétition, Code, Nom).'),
+('COMPETITION_EDITION_ERR_MISSING_FIELDS','en', 'Please fill in all required fields (Competition, Code, Name).'),
+('COMPETITION_EDITION_ERR_MISSING_FIELDS','es', 'Complete todos los campos obligatorios (Competición, Código, Nombre).'),
+
+('COMPETITION_EDITION_ERR_CODE_EXISTS', 'fr', 'Une édition avec ce code existe déjà.'),
+('COMPETITION_EDITION_ERR_CODE_EXISTS', 'en', 'An edition with this code already exists.'),
+('COMPETITION_EDITION_ERR_CODE_EXISTS', 'es', 'Ya existe una edición con este código.'),
+
+('COMPETITION_EDITION_DELETE_CONFIRM',  'fr', 'Voulez-vous vraiment désactiver cette édition ?'),
+('COMPETITION_EDITION_DELETE_CONFIRM',  'en', 'Are you sure you want to deactivate this edition?'),
+('COMPETITION_EDITION_DELETE_CONFIRM',  'es', '¿Está seguro de que desea desactivar esta edición?')
+
+ON CONFLICT (text_code, lang_code) DO UPDATE
+    SET text_label = EXCLUDED.text_label;
+
+
+-- ============================================================
 -- SYNCHRONISATION DES SÉQUENCES
 -- ============================================================
 
@@ -1344,3 +2102,10 @@ SELECT setval('t_sport_club_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_club)
 SELECT setval('t_sport_section_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_section), 1));
 SELECT setval('t_sport_team_status_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_team_status), 1));
 SELECT setval('t_sport_team_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_team), 1));
+SELECT setval('t_sport_competition_status_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_status), 1));
+SELECT setval('t_sport_competition_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition), 1));
+SELECT setval('t_sport_competition_edition_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_edition), 1));
+SELECT setval('t_sport_competition_phase_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_phase), 1));
+SELECT setval('t_sport_competition_group_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_group), 1));
+SELECT setval('t_sport_competition_round_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_round), 1));
+SELECT setval('t_sport_competition_entry_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_entry), 1));
