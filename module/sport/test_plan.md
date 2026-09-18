@@ -23,17 +23,20 @@ Il intègre les exigences impératives :
 | **Tablette** | 768px – 1024px | Tiroir rétractable fluide, adaptation des grilles et colonnes. |
 | **Desktop** | ≥ 1200px | Navigation latérale ouverte, tableaux complets en colonnes standard. |
 
+> ℹ️ **Note d'architecture** : La mécanique globale du conteneur d'interface (bouton hamburger, repli/dépli du tiroir `NavView`, sélecteur de langue) relève du module technique `system` et est testée dans [module/system/test_plan.md](file:///c:/wamp64/www/rilsport/module/system/test_plan.md).  
+> Ce document se concentre exclusivement sur les composants, fiches, tableaux et liens propres au module **Sport**.
+
 ---
 
 ## 2. Matrice de Conformité aux Règles d'Interface (`architecture_rules.md` § 4)
 
-Ces 4 règles fondamentales s'appliquent à **toutes les entités** du module :
+Ces 4 règles fondamentales s'appliquent à **toutes les entités du module Sport** :
 
-- [ ] **4.A — Liens de navigation (`navview.php`)**
-  - [ ] Chaque page List possède son lien dans le menu de navigation.
+- [ ] **4.A — Liens de navigation du module Sport (`navview.php`)**
+  - [ ] Les 6 pages List du module possèdent leur lien : `Sports`, `Saisons`, `Clubs`, `Équipes`, `Personnes / Acteurs`, `Compétitions`.
   - [ ] Nommage au **pluriel direct** : `Sports`, `Saisons`, `Clubs`, `Équipes`, `Personnes / Acteurs`, `Compétitions`.
   - [ ] **Interdiction** des intitulés du type « Gestion [Objet] ».
-  - [ ] Marqueur d'état actif (`class="active"`) fonctionnel sur l'URL correspondante.
+  - [ ] Marqueur d'état actif (`class="active"`) surbrillé en rouge lors de la consultation des routes sport.
 
 - [ ] **4.B — Dualité Consultation (`View`) vs Formulaire (`Form` / `Edit`)**
   - [ ] **Mode View** : Affichage pur en libellés, badges, cartes HTML.
@@ -52,16 +55,15 @@ Ces 4 règles fondamentales s'appliquent à **toutes les entités** du module :
 
 ---
 
-## 3. Matrice Mobile First (`[20260908-2319]`)
+## 3. Matrice Mobile First du Module Sport (`[20260908-2319]`)
 
 | ID | Thème | Test à exécuter sur mobile (≤ 414px) | Résultat attendu | Statut |
 |---|---|---|---|:---:|
-| **MOB-01** | **Volet NavView** | Cliquer sur le bouton hamburger (`mif-menu`). | Le volet s'ouvre au-dessus du contenu sans casser le layout. Un clic hors du volet le referme. | [ ] |
-| **MOB-02** | **Sélecteur de Langue** | Cliquer sur les boutons de langues (`FR`, `EN`, `ES`) dans le volet mobile. | Boutons confortables au toucher (≥ 44px), rechargement immédiat dans la langue choisie. | [ ] |
-| **MOB-03** | **Tableaux en cartes** | Ouvrir chaque page List (`/sport/sports`, `/sport/clubs`, etc.). | `thead` masqué, chaque ligne devient une carte avec ombre/bordure (`.table-responsive-cards`), libellés visibles via `td::before { content: attr(data-label) }`, **aucun scroll horizontal global**. | [ ] |
-| **MOB-04** | **Recherche Metro UI** | Utiliser la barre de recherche au-dessus d'un tableau sur mobile. | Champ 100% largeur, filtrage réactif, clavier virtuel sans saut d'écran indésirable. | [ ] |
-| **MOB-05** | **Formulaires (Edit/Add)** | Ouvrir un formulaire de création / édition sur mobile. | Champs (`input`, `select`, `textarea`) à 100% de largeur, lisibles, boutons d'action visibles et empilés proprement. | [ ] |
-| **MOB-06** | **Fiches (View)** | Consulter une fiche d'objet (ex: `/sport/club/1`). | Badges, logos, coordonnées et accordéons d'audit s'adaptent verticalement sans troncature. | [ ] |
+| **MOB-SPT-01** | **Tableaux en cartes** | Ouvrir chaque page List (`/sport/sports`, `/sport/clubs`, etc.). | `thead` masqué, chaque ligne devient une carte avec ombre/bordure (`.table-responsive-cards`), libellés visibles via `td::before { content: attr(data-label) }`, **aucun scroll horizontal global**. | [ ] |
+| **MOB-SPT-02** | **Recherche Metro UI** | Utiliser la barre de recherche au-dessus d'un tableau du module sport. | Champ 100% largeur, filtrage réactif des cartes, clavier virtuel sans saut d'écran indésirable. | [ ] |
+| **MOB-SPT-03** | **Formulaires (Edit/Add)** | Ouvrir un formulaire de création / édition du module sport sur smartphone. | Champs (`input`, `select`, `textarea`) à 100% de largeur, lisibles, boutons d'action visibles et empilés proprement. | [ ] |
+| **MOB-SPT-04** | **Fiches (View)** | Consulter une fiche d'objet (ex: `/sport/club/1`, `/sport/sport/1`). | Badges, logos, coordonnées et accordéons d'audit s'adaptent verticalement sans troncature. | [ ] |
+| **MOB-SPT-05** | **Accès tactile aux entités** | Depuis le volet mobile ouvert, cliquer sur un lien du module sport. | La cible tactile est aisée (hauteur ≥ 44px), la page se charge et le volet se referme proprement. | [ ] |
 
 ---
 

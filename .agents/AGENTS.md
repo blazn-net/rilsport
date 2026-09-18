@@ -17,15 +17,26 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 
 ---
 
-## 2. Règles d'Architecture et MVC
+## 2. Règles d'Architecture, Interface et Navigation
 
-- **1 module = N objets**.
+- **1 module = N objets**. Structure standard : `controller/`, `model/`, `view/`, `database/[nom].sql`, `md_dependencies.md`, `test_plan.md`.
 - **1 objet = 1 page List + 1 page Form**.
-- **1 page List = 1 lien obligatoire dans `module/system/view/navview.php`**.
-- **Modes de Fiche** :
-  - **Consultation (`View`)** : Textes et badges HTML purs, jamais de balises `<input>`/`<select>` readonly ou disabled.
-  - **Formulaire (`Form` / `Edit`)** : Éléments de formulaire interactifs réservés aux utilisateurs avec privilèges d'édition.
-- **Visibilité des Statuts** : Visibles uniquement pour les administrateurs (colonne "Statut" masquée sur les pages List pour les non-admins).
+- **Liens de navigation (`navview.php`)** :
+  - Toute page List impose un lien dans `module/system/view/navview.php`.
+  - Intitulé impératif au **pluriel direct** de l'objet (ex: `Sports`, `Clubs`, `Utilisateurs`) et **JAMAIS** la mention « Gestion [Objet] ».
+- **Dualité des Fiches : Consultation (`View`) vs Formulaire (`Form` / `Edit`)** :
+  - **Consultation (`View`)** : Textes et badges HTML purs, **interdiction formelle** de balises `<input>`, `<select>`, `<textarea>` (même `readonly` ou `disabled`), aucun bouton de soumission.
+  - **Formulaire (`Form` / `Edit`)** : Éléments interactifs réservés aux utilisateurs avec privilèges d'édition (Admins).
+- **Accès aux Fiches et Colonne Actions (Point [20260908-2304])** :
+  - Le lien sur le nom de l'objet dans la liste ouvre **toujours** la fiche en mode **Consultation (`View`)** pour tous (visiteurs et admins).
+  - La colonne **Actions** est visible **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`), totalement masquée pour les non-admins.
+  - Le mode Édition est accessible aux admins via le crayon `mif-pencil` de la colonne Actions ou via le bouton « Modifier » en haut de la fiche `View`.
+- **Visibilité des Statuts (Point [20260908-2330])** : Visibles **uniquement pour les administrateurs** (colonne "Statut" en liste et badge statut en fiche masqués pour les non-admins).
+- **Mobile First obligatoire (Point [20260908-2319])** :
+  - Tout écran (`List`, `View`, `Form`) est conçu et testé en priorité sur mobile étroit (≤ 414px).
+  - Tous les tableaux utilisent `.table-responsive-cards` avec l'attribut `data-label="..."` obligatoire sur chaque `<td>`.
+  - Zéro débordement/scroll horizontal global (`overflow-x`).
+  - Cibles tactiles ≥ 44px, volet `NavView` replié en hamburger et fermeture au tap extérieur.
 
 ---
 

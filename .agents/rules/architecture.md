@@ -36,3 +36,10 @@ Tout module sous `module/[nom]/` comprend :
 - **Lien sur le nom de l'objet** : Ouvre systématiquement la fiche en mode consultation (`View`), pour tous les utilisateurs (visiteurs comme administrateurs).
 - **Colonne Actions** : Visible **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`). Masquée pour les visiteurs et utilisateurs non-administrateurs.
 - **Accès au mode Édition (`Edit`)** : Réservé aux administrateurs via le bouton Modifier (crayon) de la colonne Actions ou depuis la fiche en mode View.
+
+## 6. Mobile First (Point [20260908-2319])
+- Tout écran (`List`, `View`, `Form`) est conçu et testé en priorité sur mobile (viewport ≤ 414px).
+- Tableaux en cartes `.table-responsive-cards` avec attribut `data-label` obligatoire sur chaque `<td>`.
+- Zéro scroll/débordement horizontal global (`overflow-x`).
+- Cibles tactiles ≥ 44px, volet `NavView` replié en hamburger sur mobile.
+

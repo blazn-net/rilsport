@@ -83,6 +83,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
 
 ### P1 (Haute priorité)
 - [ ] [20260908-2319] Mobile first !
+- [ ] [20260919-1349] Sécurité des textbox
 - [ ] [20260908-2320] Gestion des permissions/rôles (rôle fonctionnel, applicatif, global, local)
 - [ ] [20260908-2321] Gestion du menu : en cours (C:\Users\smusl\.gemini\antigravity-ide\brain\950e7931-d767-4c3d-9ac6-7b0398a37c92\implementation_plan.md)
     - [ ] [20260908-2322] Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés

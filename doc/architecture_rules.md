@@ -88,3 +88,11 @@ Sur le tableau d'une page List :
 ### D. Visibilité des Statuts (Point [20260908-2330])
 - **Règle générale** : Les statuts des entités ne doivent être visibles que pour les administrateurs (`!empty($data['isAdmin'])`), sauf exceptions métier dûment justifiées.
 - **Pages List** : La colonne "Statut" du tableau ne s'affiche que si l'utilisateur possède les privilèges d'administrateur. Les visiteurs et utilisateurs non-administrateurs ne voient pas cette colonne.
+
+### E. Mobile First (Point [20260908-2319])
+- **Priorité absolue au mobile** : Tout écran (List, View, Form) doit être conçu, testé et utilisable en priorité sur écran mobile étroit (≤ 414px) avant le desktop.
+- **Tableaux responsive en cartes** : Tous les tableaux de données utilisent la classe `.table-responsive-cards`. Chaque cellule `<td>` comporte obligatoirement l'attribut `data-label="..."` contenant le libellé traduit de la colonne, permettant un affichage en carte verticale sans tableau tronqué.
+- **Aucun scroll horizontal parasite** : La page ne doit présenter aucun débordement horizontal (`overflow-x`) sur écran mobile.
+- **Ergonomie tactile** : Les boutons, sélecteurs et liens doivent offrir une zone de frappe confortable (hauteur minimale de 44px).
+- **Navigation mobile** : Le volet latéral NavView doit se replier en menu hamburger et se fermer automatiquement au clic en dehors.
+
