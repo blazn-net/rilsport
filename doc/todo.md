@@ -89,6 +89,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] [20260908-2322] Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
     - [ ] [20260908-2323] Le
 - [ ] [20260908-2324] Vérifier que chaque objet a ses pages "List" et "Form"
+- [ ] [20260920-2202] Pages List : les champs de recherche doivent être dans l'url
 
 ### P2
 - [ ] [20260908-2325] Module blog/news/forum
