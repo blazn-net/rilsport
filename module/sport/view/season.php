@@ -12,9 +12,16 @@
                 }
             ?>
         </h2>
-        <a href="<?php echo URLROOT; ?>/sport/seasons" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'Retour à la liste'); ?>">
-            <span class="mif-arrow-left"></span> <?php echo $data['txt']['USER_BTN_BACK'] ?? 'Retour à la liste'; ?>
-        </a>
+        <div class="d-flex flex-align-center" style="gap: 10px;">
+            <?php if ($data['mode'] === 'view' && !empty($data['isAdmin']) && isset($data['season']->id)): ?>
+                <a href="<?php echo URLROOT; ?>/sport/season/edit/<?php echo htmlspecialchars($data['season']->id); ?>" class="button info" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'); ?>">
+                    <span class="mif-pencil"></span> <span class="btn-text"><?php echo $data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'; ?></span>
+                </a>
+            <?php endif; ?>
+            <a href="<?php echo URLROOT; ?>/sport/seasons" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'Retour à la liste'); ?>">
+                <span class="mif-arrow-left"></span> <span class="btn-text"><?php echo $data['txt']['USER_BTN_BACK'] ?? 'Retour à la liste'; ?></span>
+            </a>
+        </div>
     </div>
 
     <?php if (!empty($data['message'])): ?>
@@ -50,14 +57,14 @@
 
             <div class="row mb-4">
                 <div class="cell-md-6">
-                    <h5 class="text-bold mb-1"><?php echo $data['txt']['SPORT_SEASON_DATE_START'] ?? 'Date de début'; ?></h5>
+                    <h5 class="text-bold mb-1"><?php echo $data['txt']['SPORT_SEASON_DATE_START'] ?? 'Début'; ?></h5>
                     <p class="text-leader">
                         <span class="mif-event-available fg-green mr-1"></span>
                         <?php echo isset($data['season']->date_start) ? htmlspecialchars(date('d/m/Y', strtotime($data['season']->date_start))) : '-'; ?>
                     </p>
                 </div>
                 <div class="cell-md-6">
-                    <h5 class="text-bold mb-1"><?php echo $data['txt']['SPORT_SEASON_DATE_END'] ?? 'Date de fin'; ?></h5>
+                    <h5 class="text-bold mb-1"><?php echo $data['txt']['SPORT_SEASON_DATE_END'] ?? 'Fin'; ?></h5>
                     <p class="text-leader">
                         <span class="mif-event-busy fg-red mr-1"></span>
                         <?php echo isset($data['season']->date_end) ? htmlspecialchars(date('d/m/Y', strtotime($data['season']->date_end))) : '-'; ?>
@@ -103,13 +110,13 @@
             <div class="row mt-3">
                 <div class="cell-md-6">
                     <div class="form-group">
-                        <label><?php echo $data['txt']['SPORT_SEASON_START_LABEL'] ?? 'Date de début'; ?></label>
+                        <label><?php echo $data['txt']['SPORT_SEASON_START_LABEL'] ?? 'Début'; ?></label>
                         <input type="date" name="date_start" data-role="input" value="<?php echo htmlspecialchars($data['season']->date_start ?? ''); ?>" required>
                     </div>
                 </div>
                 <div class="cell-md-6">
                     <div class="form-group">
-                        <label><?php echo $data['txt']['SPORT_SEASON_END_LABEL'] ?? 'Date de fin'; ?></label>
+                        <label><?php echo $data['txt']['SPORT_SEASON_END_LABEL'] ?? 'Fin'; ?></label>
                         <input type="date" name="date_end" data-role="input" value="<?php echo htmlspecialchars($data['season']->date_end ?? ''); ?>" required>
                     </div>
                 </div>
@@ -143,7 +150,9 @@
             <?php endif; ?>
 
             <div class="form-group mt-4">
-                <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'Mettre à jour') : ($data['txt']['USER_BTN_SAVE'] ?? 'Enregistrer')); ?>"><?php echo ($data['mode'] === 'edit') ? ($data['txt']['USER_BTN_UPDATE'] ?? 'Mettre à jour') : ($data['txt']['USER_BTN_SAVE'] ?? 'Enregistrer'); ?></button>
+                <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'Mettre à jour') : ($data['txt']['USER_BTN_SAVE'] ?? 'Enregistrer')); ?>">
+                    <span class="mif-floppy-disk mr-1"></span><span class="btn-text"><?php echo ($data['mode'] === 'edit') ? ($data['txt']['USER_BTN_UPDATE'] ?? 'Mettre à jour') : ($data['txt']['USER_BTN_SAVE'] ?? 'Enregistrer'); ?></span>
+                </button>
             </div>
         </form>
     <?php endif; ?>

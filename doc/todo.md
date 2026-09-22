@@ -27,7 +27,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [-] [20260908-2245] acteurs : joueurs/arbitres/officiels/autres...  
         - [ ] [20260908-2246] un acteur peut avoir plusieurs rôles. Les roles dépendent des matchs  
     - [-] [20260908-2247] compétition, multi compétition (sport event), championnats (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
-        - [x] [20260918-1800] Modèle BDD : 9 tables `t_sport_competition*` (type, status, competition, i18n, edition, phase, group, round, entry)
+        - [x] `[20260918-1800]` Modèle BDD : 9 tables `t_sport_competition*` (type, status, competition, i18n, edition, phase, group, round, entry)
         - [x] [20260918-1810] MVC Compétitions : Model + Controllers + Vues (list + fiche)
         - [x] [20260918-1820] MVC Éditions : Model + Controllers + Vues (list + fiche avec phases/équipes/sous-éditions)
         - [x] [20260918-1830] Navigation + fix routeur kebab-case (App.php)
@@ -90,6 +90,7 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [ ] [20260908-2323] Le
 - [ ] [20260908-2324] Vérifier que chaque objet a ses pages "List" et "Form"
 - [ ] [20260920-2202] Pages List : les champs de recherche doivent être dans l'url
+- [-] [20260920-2318] Faire une classe/template parente pour les pages list et form (Pilote réalisé avec module/system/view/common/list_template.php sur Saisons)
 
 ### P2
 - [ ] [20260908-2325] Module blog/news/forum
@@ -115,6 +116,9 @@ Liste des futures tâches à réaliser pour le projet rilsport :
     - [IMPORTANT] Comment faire pour ne pas surcharger la base de données ?
     - [IMPORTANT] Comment vérifier la validité des données ?
 - [ ] [20260908-2325] Tester les pages par l'IA
+    - [ ] [20260920-2330] Audit statique automatique des vues (script PHP/CLI de validation des règles §4 architecture_rules et mobile first sur tous les fichiers PHP)
+    - [ ] [20260920-2331] Tests E2E et visuels par l'IA via `browser_subagent` (navigation réelle, responsive mobile ≤ 414px, rôles visiteur vs admin)
+    - [ ] [20260920-2332] Restitution et mise à jour automatique des cahiers de recette (mise à jour des cases [x] et relevé d'anomalies dans `test_plan.md`)
 
 ## Question / Idées
 

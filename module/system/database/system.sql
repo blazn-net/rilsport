@@ -240,7 +240,10 @@ INSERT INTO t_system_text_key (text_code) VALUES
 ('SYS_MY_PROFILE'), ('SYS_COPYRIGHT'), ('SYS_ERR_INVALID_MODEL_FORMAT'),
 ('SYS_ERR_VIEW_NOT_FOUND'), ('SYS_ERR_CONTROLLER_NOT_FOUND'), ('SYS_BTN_EDIT'),
 ('SYS_BTN_DISABLE'), ('SYS_BTN_DELETE'), ('SYS_MENU'),
-('SYS_MODULE_TITLE'), ('SYS_OBJECT_TITLE'), ('SYS_PAGE_TITLE'), ('SYS_TABLE_TITLE'), ('SYS_COLUMN_TITLE')
+('SYS_MODULE_TITLE'), ('SYS_OBJECT_TITLE'), ('SYS_PAGE_TITLE'), ('SYS_TABLE_TITLE'), ('SYS_COLUMN_TITLE'),
+('SYS_BTN_ADD'), ('SYS_BTN_ACTIVATE'), ('SYS_MSG_ACTIVATED'), ('SYS_SEARCH_PLACEHOLDER'),
+('SYS_COL_CODE'), ('SYS_COL_NAME'), ('SYS_COL_STATUS'), ('SYS_COL_ACTIONS'),
+('SYS_CONFIRM_ACTIVATE'), ('SYS_CONFIRM_DISABLE'), ('SYS_CONFIRM_DELETE')
 ON CONFLICT (text_code) DO NOTHING;
 
 INSERT INTO t_system_text (text_code, lang_code, text_label) VALUES
@@ -313,7 +316,40 @@ INSERT INTO t_system_text (text_code, lang_code, text_label) VALUES
 ('SYS_TABLE_TITLE',             'es', 'Gestión de Tablas'),
 ('SYS_COLUMN_TITLE',            'fr', 'Gestion des Colonnes'),
 ('SYS_COLUMN_TITLE',            'en', 'Column Management'),
-('SYS_COLUMN_TITLE',            'es', 'Gestión de Columnas')
+('SYS_COLUMN_TITLE',            'es', 'Gestión de Columnas'),
+('SYS_BTN_ADD',                 'fr', 'Ajouter'),
+('SYS_BTN_ADD',                 'en', 'Add'),
+('SYS_BTN_ADD',                 'es', 'Añadir'),
+('SYS_BTN_ACTIVATE',            'fr', 'Réactiver'),
+('SYS_BTN_ACTIVATE',            'en', 'Activate'),
+('SYS_BTN_ACTIVATE',            'es', 'Reactivar'),
+('SYS_MSG_ACTIVATED',           'fr', 'Élément réactivé avec succès.'),
+('SYS_MSG_ACTIVATED',           'en', 'Item reactivated successfully.'),
+('SYS_MSG_ACTIVATED',           'es', 'Elemento reactivado con éxito.'),
+('SYS_SEARCH_PLACEHOLDER',      'fr', 'Rechercher...'),
+('SYS_SEARCH_PLACEHOLDER',      'en', 'Search...'),
+('SYS_SEARCH_PLACEHOLDER',      'es', 'Buscar...'),
+('SYS_COL_CODE',                'fr', 'Code'),
+('SYS_COL_CODE',                'en', 'Code'),
+('SYS_COL_CODE',                'es', 'Código'),
+('SYS_COL_NAME',                'fr', 'Nom'),
+('SYS_COL_NAME',                'en', 'Name'),
+('SYS_COL_NAME',                'es', 'Nombre'),
+('SYS_COL_STATUS',              'fr', 'Statut'),
+('SYS_COL_STATUS',              'en', 'Status'),
+('SYS_COL_STATUS',              'es', 'Estado'),
+('SYS_COL_ACTIONS',             'fr', 'Actions'),
+('SYS_COL_ACTIONS',             'en', 'Actions'),
+('SYS_COL_ACTIONS',             'es', 'Acciones'),
+('SYS_CONFIRM_ACTIVATE',        'fr', 'Voulez-vous vraiment réactiver cet élément ?'),
+('SYS_CONFIRM_ACTIVATE',        'en', 'Do you really want to reactivate this item?'),
+('SYS_CONFIRM_ACTIVATE',        'es', '¿Realmente desea reactivar este elemento?'),
+('SYS_CONFIRM_DISABLE',         'fr', 'Voulez-vous vraiment désactiver cet élément ?'),
+('SYS_CONFIRM_DISABLE',         'en', 'Do you really want to disable this item?'),
+('SYS_CONFIRM_DISABLE',         'es', '¿Realmente desea desactivar este elemento?'),
+('SYS_CONFIRM_DELETE',          'fr', 'Voulez-vous vraiment supprimer définitivement cet élément ?'),
+('SYS_CONFIRM_DELETE',          'en', 'Do you really want to permanently delete this item?'),
+('SYS_CONFIRM_DELETE',          'es', '¿Realmente desea eliminar permanentemente este elemento?')
 
 ON CONFLICT (text_code, lang_code) DO UPDATE
     SET text_label = EXCLUDED.text_label;

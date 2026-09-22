@@ -49,7 +49,7 @@
     </div>
 
     <!-- Tableau -->
-    <table class="table striped table-border mt-3 w-100 table-responsive-cards" data-role="table"
+    <div class="table-scroll-wrapper"><table class="table striped table-border mt-3 w-100 " data-role="table"
            data-rows="25" data-rows-steps="10,25,50" data-show-search="true">
         <thead>
             <tr>
@@ -106,4 +106,7 @@
             <?php endif; ?>
         </tbody>
     </table>
+    </div><!-- /.table-scroll-wrapper -->
 </main>
+
+

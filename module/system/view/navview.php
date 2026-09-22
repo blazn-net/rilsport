@@ -6,32 +6,57 @@
         </button>
         <a href="<?php echo URLROOT; ?>/" class="d-flex flex-align-center text-logo bg-transparent"
             style="width: calc(100% - 54px);">
-            <div class="avatar bg-white border-radius-half d-flex flex-justify-center flex-align-center mr-2"
-                style="width: 30px; height: 30px; min-width: 30px;">
-                <span class="mif-earth mif-2x fg-dark"></span>
+            <div class="enlarge-1 text-weight-9 text-ellipsis fg-default">
+                <?php echo $data['txt']['SYS_HOME'] ?? 'SYS_HOME'; ?>
             </div>
-            <div class="enlarge-1 text-weight-9 text-ellipsis fg-default"><?php echo SITENAME; ?></div>
         </a>
     </div>
 
-    <!-- Sélecteur de langue -->
-    <div class="p-2 border-bottom bd-light">
-        <div class="d-flex flex-justify-around flex-wrap" style="gap: 5px;">
-            <?php
-            $systemLangs = \Core\Language::getSystemLanguages();
-            $currentLang = $_SESSION['lang'] ?? DEFAULT_LANG;
-            foreach ($systemLangs as $lang):
-                $isActive = ($currentLang === $lang['lang_code']);
-                $btnClass = $isActive ? 'primary' : 'light';
-                ?>
-                <a href="?lang=<?php echo htmlspecialchars($lang['lang_code']); ?>"
-                    class="button flex-1 <?php echo $btnClass; ?>" style="min-width: 45px; padding: 2px 5px;"
-                    title="<?php echo htmlspecialchars($lang['lang_name'] ?? strtoupper($lang['lang_code'])); ?>">
+    <!-- Sélecteur de langue sous forme de liste déroulante -->
+    <div class="lang-selector-box border-bottom bd-light">
+        <?php
+        $systemLangs = \Core\Language::getSystemLanguages();
+        $currentLang = $_SESSION['lang'] ?? DEFAULT_LANG;
+        $activeLang = null;
+        foreach ($systemLangs as $lang) {
+            if ($lang['lang_code'] === $currentLang) {
+                $activeLang = $lang;
+                break;
+            }
+        }
+        if (!$activeLang && !empty($systemLangs)) {
+            $activeLang = $systemLangs[0];
+        }
+        ?>
+        <div class="dropdown-button">
+            <button class="button dropdown-toggle lang-btn" type="button"
+                title="<?php echo htmlspecialchars($activeLang['lang_name'] ?? 'Langue'); ?>">
+                <span class="lang-flag">
                     <span
-                        class="<?php echo !empty($lang['lang_flag']) ? 'fi ' . htmlspecialchars($lang['lang_flag']) : 'mif-earth'; ?>"></span>
-                    <?php echo htmlspecialchars(strtoupper($lang['lang_code'])); ?>
-                </a>
-            <?php endforeach; ?>
+                        class="<?php echo !empty($activeLang['lang_flag']) ? 'fi ' . htmlspecialchars($activeLang['lang_flag']) : 'mif-earth'; ?>"></span>
+                </span>
+                <span class="lang-name">
+                    <?php echo htmlspecialchars($activeLang['lang_name'] ?? strtoupper($activeLang['lang_code'])); ?>
+                </span>
+                <span class="mif-chevron-down ml-auto lang-chevron"></span>
+            </button>
+            <ul class="d-menu" data-role="dropdown">
+                <?php foreach ($systemLangs as $lang):
+                    $isSelected = ($currentLang === $lang['lang_code']);
+                    ?>
+                    <li class="<?php echo $isSelected ? 'active' : ''; ?>">
+                        <a href="?lang=<?php echo htmlspecialchars($lang['lang_code']); ?>"
+                            class="d-flex flex-align-center">
+                            <span
+                                class="<?php echo !empty($lang['lang_flag']) ? 'fi ' . htmlspecialchars($lang['lang_flag']) : 'mif-earth'; ?> mr-2"></span>
+                            <span><?php echo htmlspecialchars($lang['lang_name'] ?? strtoupper($lang['lang_code'])); ?></span>
+                            <?php if ($isSelected): ?>
+                                <span class="mif-checkmark ml-auto fg-primary pl-2"></span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
         </div>
     </div>
 
@@ -57,14 +82,6 @@
 
     <ul class="navview-menu pad-second-level" id="side-menu">
 
-        <!-- Accueil (en 1er, sans le header Navigation) -->
-        <li class="<?php echo $isHomeActive ? 'active' : ''; ?>">
-            <a href="<?php echo URLROOT; ?>/">
-                <span class="icon"><span class="mif-home"></span></span>
-                <span class="caption"><?php echo $data['txt']['SYS_HOME'] ?? 'SYS_HOME'; ?></span>
-            </a>
-        </li>
-
         <!-- Compétitions -->
         <li class="<?php echo $isCompetitionsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/competitions">
@@ -75,7 +92,7 @@
             </a>
         </li>
 
-        <!-- Clubs (au même niveau qu'Accueil) -->
+        <!-- Clubs -->
         <li class="<?php echo $isClubsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/clubs">
                 <span class="icon"><span class="mif-security"></span></span>
@@ -83,7 +100,7 @@
             </a>
         </li>
 
-        <!-- Équipes (au même niveau qu'Accueil et Clubs) -->
+        <!-- Équipes -->
         <li class="<?php echo $isTeamsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/teams">
                 <span class="icon"><span class="mif-groups"></span></span>
@@ -91,7 +108,7 @@
             </a>
         </li>
 
-        <!-- Personnes / Acteurs (au même niveau qu'Accueil, Clubs et Équipes) -->
+        <!-- Personnes / Acteurs -->
         <li class="<?php echo $isPersonsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/persons">
                 <span class="icon"><span class="mif-contacts"></span></span>
@@ -189,7 +206,7 @@
             </li>
             <li class="<?php echo $isRegisterActive ? 'active' : ''; ?>">
                 <a href="<?php echo URLROOT; ?>/user/register">
-                    <span class="icon"><span class="mif-user-plus"></span></span>
+                    <span class="icon"><span class="mif-add-person"></span></span>
                     <span class="caption"><?php echo $data['txt']['SYS_REGISTER'] ?? 'SYS_REGISTER'; ?></span>
                 </a>
             </li>
@@ -200,11 +217,13 @@
 <!-- Zone de Contenu Principal (navview-content) -->
 <div class="navview-content d-flex flex-column min-vh-100">
     <div class="app-bar bg-dark pos-relative z-1 flex-align-center" data-role="appbar" id="app-bar-1">
-        <button class="pull-button bg-transparent fg-white bd-none p-2 ml-2 c-pointer d-none-md"
-            title="<?php echo htmlspecialchars($data['txt']['SYS_MENU'] ?? 'Menu'); ?>">
-            <span class="mif-menu mif-2x"></span>
-        </button>
+        <a href="<?php echo URLROOT; ?>/"
+            class="button square bg-transparent fg-white bd-white border-radius-4 p-2 ml-2 d-flex flex-align-center flex-justify-center"
+            style="width: 38px; height: 38px; text-decoration: none;"
+            title="<?php echo htmlspecialchars($data['txt']['SYS_HOME'] ?? 'Accueil'); ?>">
+            <span class="mif-security mif-2x"></span>
+        </a>
         <h1 class="m-0 enlarge-1 pl-3 text-weight-normal">
-            <a href="<?php echo URLROOT; ?>" class="fg-white" style="text-decoration:none;"><?php echo SITENAME; ?></a>
+            <a href="<?php echo URLROOT; ?>/" class="fg-white" style="text-decoration:none;"><?php echo SITENAME; ?></a>
         </h1>
     </div>

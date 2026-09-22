@@ -42,71 +42,201 @@ main p {
     display: none !important;
 }
 
-/* Responsive Table Cards (Global) */
+/* Responsive Table — scroll horizontal (remplace le mode carte) */
+/* Dans Metro UI data-role="table" :
+   .table-component (container 100% largeur)
+     > .table-search (recherche reste fixe à 100% largeur)
+     > .table-wrap (C'EST ICI que le scroll horizontal doit avoir lieu)
+       > .table-container
+         > table
+     > .table-bottominfo / pagination (reste fixe à 100% largeur)
+*/
+
+.table-scroll-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+}
+
+.table-component {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+}
+
+/* Le conteneur du tableau généré par Metro UI : .table-container */
+.table-container,
+.table-component .table-container,
+.horizontal-scroll,
+.table-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin: 10px 0 !important;
+    padding-bottom: 6px !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: #0078d4 #e9ecef !important;
+}
+
+/* La <table> doit prendre sa largeur naturelle (toutes colonnes visibles sans repli) */
+.table-container table,
+.table-component table,
+.table-wrap table,
+table[data-role="table"] {
+    min-width: 580px !important;
+    width: max-content !important;
+    white-space: nowrap !important;
+}
+
+/* Ascenseur horizontal bien visible (permanent, bleu #0078d4 sur piste #e9ecef) */
+.table-container::-webkit-scrollbar,
+.horizontal-scroll::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar {
+    height: 10px !important;
+    display: block !important;
+}
+
+.table-container::-webkit-scrollbar-track,
+.horizontal-scroll::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track {
+    background: #e9ecef !important;
+    border-radius: 5px !important;
+}
+
+.table-container::-webkit-scrollbar-thumb,
+.horizontal-scroll::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb {
+    background: #0078d4 !important;
+    border-radius: 5px !important;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover,
+.horizontal-scroll::-webkit-scrollbar-thumb:hover,
+.table-wrap::-webkit-scrollbar-thumb:hover {
+    background: #005a9e !important;
+}
+
+/* Ascenseur horizontal visuel permanent avec boutons de défilement (garanti visible et tactile sur mobile et desktop) */
+.table-scroll-controls {
+    width: 100%;
+    margin: 8px 0 10px 0;
+    user-select: none;
+    display: none; /* Affiché dynamiquement par JS dès que scrollWidth > clientWidth */
+}
+
+.table-scroll-controls .scroll-btn-left,
+.table-scroll-controls .scroll-btn-right {
+    min-width: 34px !important;
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    background: #f8f9fa;
+    color: #333;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    font-size: 1.1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.table-scroll-controls .scroll-btn-left:hover,
+.table-scroll-controls .scroll-btn-right:hover {
+    background: #e2e6ea;
+    border-color: #adb5bd;
+}
+
+.table-scroll-controls .custom-table-scrollbar {
+    height: 12px;
+    background: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+    touch-action: none;
+}
+
+.table-scroll-controls .custom-table-thumb {
+    height: 100%;
+    background: #0078d4;
+    border-radius: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: grab;
+    transition: background-color 0.15s;
+}
+
+.table-scroll-controls .custom-table-thumb:hover,
+.table-scroll-controls .custom-table-thumb:active {
+    background: #005a9e;
+    cursor: grabbing;
+}
+
+/* Sur mobile : réduire la taille de la police dans les tableaux */
 @media screen and (max-width: 768px) {
-    .table-responsive-cards thead {
+    .table-scroll-wrapper table td,
+    .table-scroll-wrapper table th {
+        font-size: 0.875rem;
+        padding: 6px 10px !important;
+    }
+}
+
+/* ==========================================================================
+   Mode Mobile (S / M : 360px – 414px, et jusqu'à 576px)
+   Les boutons n'affichent que leur icône (aucun texte)
+   ========================================================================== */
+@media screen and (max-width: 576px) {
+    /* 1. Masquer les textes balisés dans les boutons */
+    .button .btn-text,
+    .button .btn-label {
         display: none !important;
     }
-    .table-responsive-cards tbody,
-    .table-responsive-cards tr,
-    .table-responsive-cards td {
-        display: block !important;
-        width: 100% !important;
-    }
-    /* Masquer absolument toutes les cellules générées par Metro UI qui n'ont pas de label */
-    .table-responsive-cards td:not([data-label]),
-    .table-responsive-cards th.check-cell,
-    .table-responsive-cards td.check-cell,
-    .table-responsive-cards th.rownum-cell,
-    .table-responsive-cards td.rownum-cell {
-        display: none !important;
-    }
-    .table-responsive-cards tr {
-        margin-bottom: 1.5rem !important;
-        border: 1px solid #e0e0e0 !important;
-        border-radius: 5px !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .table-responsive-cards td {
-        display: flex !important;
-        justify-content: space-between !important;
+
+    /* 2. Tout bouton contenant une icône masque le texte direct et centre l'icône */
+    .button:not(.lang-btn):has([class*="mif-"]),
+    .button:not(.lang-btn):has(.fi) {
+        font-size: 0 !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        min-width: 36px !important;
+        height: 36px !important;
+        display: inline-flex !important;
         align-items: center !important;
-        text-align: right !important;
-        border: none !important;
-        border-bottom: 1px solid #eee !important;
-        padding: 10px 15px !important;
-        white-space: normal !important;
-        word-wrap: break-word !important;
+        justify-content: center !important;
+        gap: 0 !important;
     }
-    .table-responsive-cards td:last-child {
-        border-bottom: none !important;
+
+    /* Rétablir la taille de police de l'icône */
+    .button:not(.lang-btn):has([class*="mif-"]) [class*="mif-"],
+    .button:not(.lang-btn):has(.fi) .fi {
+        font-size: 1.15rem !important;
+        margin: 0 !important;
+        line-height: 1 !important;
     }
-    .table-responsive-cards td::before {
-        content: attr(data-label);
-        font-weight: bold !important;
-        text-align: left !important;
-        flex-basis: 40% !important;
-        flex-shrink: 0 !important;
-        padding-right: 10px;
-        color: #555;
-    }
+}
+
+/* main ne doit jamais scroller horizontalement */
+main {
+    overflow-x: hidden !important;
 }
 
 /* Customisation complète du menu latéral NavView (Page active rouge #d9534f + suppression de tout le bleu) */
 
-/* 1. Suppression absolue de tous les indicateurs/barres bleues par défaut de Metro UI */
+/* 1. Suppression absolue des indicateurs/barres bleues par défaut de Metro UI (sans impacter les flèches a::after) */
 .navview .navview-menu li::before,
 .navview .navview-menu li::after,
-.navview .navview-menu li > a::before,
-.navview .navview-menu li > a::after,
 .navview-menu li::before,
 .navview-menu li::after,
-.navview-menu li > a::before,
-.navview-menu li > a::after,
 .navview-menu li.active::before,
-.navview-menu li.active::after,
-.navview-menu li.active > a::before,
-.navview-menu li.active > a::after {
+.navview-menu li.active::after {
     display: none !important;
     background-color: transparent !important;
     border-color: transparent !important;
@@ -115,7 +245,32 @@ main p {
     border: none !important;
 }
 
-/* 2. Élément de menu actif : fond rouge #d9534f (identique au bouton FR .button.primary) */
+/* 2. Indicateur triangle pour les sous-menus (dropdown-toggle), comme dans Panda Metro UI */
+.navview-pane .navview-menu a.dropdown-toggle::after,
+.navview .navview-menu a.dropdown-toggle::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-style: solid !important;
+    border-width: 0 0 8px 8px !important;
+    border-color: transparent transparent var(--navview-dropdown-toggle-color, #191919) transparent !important;
+    z-index: 2 !important;
+    transform: rotate(0deg) !important;
+    transition: all .2s ease !important;
+}
+
+/* Triangle quand le sous-menu est ouvert */
+.navview-pane .navview-menu a.dropdown-toggle.active-toggle::after,
+.navview .navview-menu a.dropdown-toggle.active-toggle::after {
+    border-color: transparent transparent #d9534f transparent !important;
+}
+
+/* 3. Élément de menu actif : fond rouge #d9534f (identique au bouton FR .button.primary) */
 .navview .navview-menu li.active > a,
 .navview-menu li.active > a {
     background-color: #d9534f !important;
@@ -124,15 +279,17 @@ main p {
     border-radius: 4px !important;
 }
 
-/* 3. Icônes, textes et flèches de l'élément actif en blanc */
+/* 4. Icônes, textes et triangle de l'élément actif en blanc */
 .navview .navview-menu li.active > a .icon,
 .navview .navview-menu li.active > a .caption,
 .navview-menu li.active > a .icon,
-.navview-menu li.active > a .caption,
+.navview-menu li.active > a .caption {
+    color: #ffffff !important;
+}
+
 .navview-menu li.active > a.dropdown-toggle::after,
 .navview .navview-menu li.active > a.dropdown-toggle::after {
-    color: #ffffff !important;
-    border-color: #ffffff !important;
+    border-color: transparent transparent #ffffff transparent !important;
 }
 
 /* 4. Éléments inactifs : icônes et textes foncés sans aucun bleu */
@@ -154,6 +311,201 @@ main p {
 .navview-menu li:not(.active) > a:hover .caption {
     color: #d9534f !important;
 }
+
+.navview .navview-menu li:not(.active) > a:hover.dropdown-toggle::after,
+.navview-menu li:not(.active) > a:hover.dropdown-toggle::after,
+.navview-pane a.dropdown-toggle:hover::after {
+    border-color: transparent transparent #d9534f transparent !important;
+}
+
+/* 6. Sélecteur de langue sous forme de liste déroulante */
+.lang-selector-box {
+    position: relative;
+    padding: 6px 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.lang-selector-box .dropdown-button {
+    position: relative;
+    width: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+}
+
+/* Bouton compact par défaut (centré pour la barre latérale repliée de 48px) */
+.lang-selector-box .lang-btn {
+    height: 38px !important;
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    line-height: 38px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d9d9d9 !important;
+    border-radius: 4px !important;
+    color: #333333 !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    gap: 0 !important;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all .2s ease;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.lang-selector-box .lang-btn:hover {
+    border-color: #d9534f !important;
+    background-color: rgba(217, 83, 79, 0.05) !important;
+}
+
+/* Neutraliser absolument tout chevron ou caret automatique (SVG Metro UI ou pseudo-élément) */
+.lang-selector-box .dropdown-caret,
+.lang-selector-box svg.dropdown-caret,
+.lang-selector-box svg,
+.lang-selector-box .lang-btn::before,
+.lang-selector-box .lang-btn::after,
+.lang-selector-box .dropdown-toggle::before,
+.lang-selector-box .dropdown-toggle::after,
+.navview-pane .lang-selector-box .dropdown-toggle::before,
+.navview-pane .lang-selector-box .dropdown-toggle::after {
+    display: none !important;
+    content: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    border: none !important;
+    position: absolute !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Drapeau parfaitement centré */
+.lang-selector-box .lang-btn .lang-flag {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+}
+
+.lang-selector-box .lang-btn .lang-flag .fi {
+    display: inline-block !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    margin: 0 auto !important;
+    vertical-align: middle !important;
+}
+
+/* Texte et chevron masqués par défaut en mode compact */
+.lang-selector-box .lang-btn .lang-name,
+.lang-selector-box .lang-btn .lang-chevron {
+    display: none !important;
+}
+
+/* Menu déroulant compact flottant à droite */
+.lang-selector-box .d-menu {
+    border-radius: 6px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15) !important;
+    border: 1px solid #e0e0e0 !important;
+    padding: 4px 0 !important;
+    min-width: 160px !important;
+    width: 160px !important;
+    background-color: #ffffff !important;
+    z-index: 1050 !important;
+    position: fixed !important;
+    left: 54px !important;
+    top: 54px !important;
+}
+
+.lang-selector-box .d-menu li {
+    margin: 0 !important;
+}
+
+.lang-selector-box .d-menu li a {
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    display: flex !important;
+    align-items: center !important;
+    color: #333333 !important;
+    text-decoration: none !important;
+    transition: background-color .15s ease;
+}
+
+.lang-selector-box .d-menu li.active a {
+    font-weight: 600 !important;
+    background-color: rgba(217, 83, 79, 0.1) !important;
+    color: #d9534f !important;
+}
+
+.lang-selector-box .d-menu li a:hover {
+    background-color: rgba(217, 83, 79, 0.15) !important;
+    color: #d9534f !important;
+}
+
+/* === Mode ÉTENDU (Sidebar ouverte : .navview.expanded et non .compacted) === */
+.navview.expanded:not(.compacted) .lang-selector-box {
+    padding: 8px 10px !important;
+}
+
+.navview.expanded:not(.compacted) .lang-selector-box .dropdown-button {
+    width: 100% !important;
+}
+
+.navview.expanded:not(.compacted) .lang-selector-box .lang-btn {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 10px !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
+}
+
+.navview.expanded:not(.compacted) .lang-selector-box .lang-btn .lang-flag {
+    width: 24px !important;
+    height: auto !important;
+    margin: 0 !important;
+    justify-content: flex-start !important;
+}
+
+.navview.expanded:not(.compacted) .lang-selector-box .lang-btn .lang-flag .fi {
+    margin: 0 !important;
+}
+
+.navview.expanded:not(.compacted) .lang-selector-box .lang-btn .lang-name {
+    display: inline-block !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #333333 !important;
+    white-space: nowrap !important;
+}
+
+.navview.expanded:not(.compacted) .lang-selector-box .lang-btn .lang-chevron {
+    display: inline-block !important;
+    margin-left: auto !important;
+    font-size: 12px !important;
+    color: #555555 !important;
+}
+
+.navview.expanded:not(.compacted) .lang-selector-box .d-menu {
+    position: absolute !important;
+    left: 0 !important;
+    top: 100% !important;
+    width: 100% !important;
+}
+
 
 
 

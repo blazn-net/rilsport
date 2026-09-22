@@ -894,6 +894,22 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('SPORT_INACTIVE',            'en', 'Inactive'),
 ('SPORT_INACTIVE',            'es', 'Inactivo'),
 
+('SPORT_SEASON_DATE_START',    'fr', 'Début'),
+('SPORT_SEASON_DATE_START',    'en', 'Start'),
+('SPORT_SEASON_DATE_START',    'es', 'Inicio'),
+
+('SPORT_SEASON_DATE_END',      'fr', 'Fin'),
+('SPORT_SEASON_DATE_END',      'en', 'End'),
+('SPORT_SEASON_DATE_END',      'es', 'Fin'),
+
+('SPORT_SEASON_START_LABEL',   'fr', 'Début'),
+('SPORT_SEASON_START_LABEL',   'en', 'Start date'),
+('SPORT_SEASON_START_LABEL',   'es', 'Fecha de inicio'),
+
+('SPORT_SEASON_END_LABEL',     'fr', 'Fin'),
+('SPORT_SEASON_END_LABEL',     'en', 'End date'),
+('SPORT_SEASON_END_LABEL',     'es', 'Fecha de fin'),
+
 ('SPORT_PERSON_CODE',         'fr', 'Code personne'),
 ('SPORT_PERSON_CODE',         'en', 'Person code'),
 ('SPORT_PERSON_CODE',         'es', 'Código de persona'),

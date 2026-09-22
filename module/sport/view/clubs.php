@@ -57,7 +57,7 @@
     </div>
 
     <!-- Tableau des Clubs -->
-    <table class="table striped table-border mt-3 w-100 table-responsive-cards" data-role="table"
+    <div class="table-scroll-wrapper"><table class="table striped table-border mt-3 w-100 " data-role="table"
         data-show-search="false" data-show-rows-steps="false" data-check="false" data-rownum="false">
         <thead>
             <tr>
@@ -170,4 +170,7 @@
             <?php endif; ?>
         </tbody>
     </table>
+    </div><!-- /.table-scroll-wrapper -->
 </main>
+
+

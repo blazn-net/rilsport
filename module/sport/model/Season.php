@@ -94,6 +94,19 @@ class Season {
         return $this->db->execute();
     }
 
+    public function activateSeason($id, $userId) {
+        $this->db->query("
+            UPDATE t_sport_season 
+            SET status_id = 1, 
+                modified_by = :user, 
+                modified_at = CURRENT_TIMESTAMP 
+            WHERE id = :id
+        ");
+        $this->db->bind(':id', $id);
+        $this->db->bind(':user', $userId);
+        return $this->db->execute();
+    }
+
     public function forceDeleteSeason($id) {
         $this->db->query("DELETE FROM t_sport_season WHERE id = :id");
         $this->db->bind(':id', $id);

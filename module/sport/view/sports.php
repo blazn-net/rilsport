@@ -4,7 +4,7 @@
         <h2><span class="mif-trophy mr-2"></span><?php echo $data['txt']['SPORT_SPORTS_MGT'] ?? 'Sports'; ?></h2>
         <?php if (!empty($data['isAdmin'])): ?>
         <a href="<?php echo URLROOT; ?>/sport/sport" class="button success mt-2 mt-md-0" title="<?php echo htmlspecialchars($data['txt']['SPORT_ADD_SPORT_BTN'] ?? 'Ajouter un sport'); ?>">
-            <span class="mif-plus"></span> <?php echo $data['txt']['SPORT_ADD_SPORT_BTN'] ?? 'Ajouter un sport'; ?>
+            <span class="mif-plus"></span> <span class="btn-text"><?php echo $data['txt']['SPORT_ADD_SPORT_BTN'] ?? 'Ajouter un sport'; ?></span>
         </a>
         <?php endif; ?>
     </div>
@@ -17,7 +17,8 @@
         <div class="remark alert"><?php echo htmlspecialchars($data['error']); ?></div>
     <?php endif; ?>
 
-    <table class="table striped table-border mt-4 w-100 table-responsive-cards" data-role="table"
+    <div class="table-scroll-wrapper"><table class="table striped table-border mt-4 w-100 " data-role="table"
+        data-horizontal-scroll="true"
         data-show-search="true" data-show-rows-steps="false" data-check="false" data-rownum="false"
         data-search-fields="code,name,description">
         <thead>
@@ -81,4 +82,7 @@
             <?php endif; ?>
         </tbody>
     </table>
+    </div><!-- /.table-scroll-wrapper -->
 </main>
+
+

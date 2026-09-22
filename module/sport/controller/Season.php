@@ -10,7 +10,7 @@ class Season extends Controller {
         $this->seasonModel = $this->model('sport/Season');
     }
 
-    public function index($id = null) {
+    public function index($id = null, $action = null) {
         $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
 
@@ -33,11 +33,12 @@ class Season extends Controller {
             }
         }
 
-        $mode = $id ? ($isAdmin ? 'edit' : 'view') : 'add';
+        // Mode : view (consultation simple pour tous) ou edit/add (formulaire interactif)
+        $mode = $id ? (($action === 'edit' && $isAdmin) ? 'edit' : 'view') : 'add';
 
         $data = [
             'txt'     => $txt,
-            'title'   => ($id ? ($isAdmin ? ($txt['SPORT_EDIT_SEASON_TITLE'] ?? 'Modifier la saison') : 'Fiche de la saison') : ($txt['SPORT_ADD_SEASON_TITLE'] ?? 'Ajouter une saison')) . ' - ' . SITENAME,
+            'title'   => ($id ? ($mode === 'edit' ? ($txt['SPORT_EDIT_SEASON_TITLE'] ?? 'Modifier la saison') : 'Fiche de la saison : ' . ($seasonData['name'] ?? '')) : ($txt['SPORT_ADD_SEASON_TITLE'] ?? 'Ajouter une saison')) . ' - ' . SITENAME,
             'season'  => $seasonData ? (object) $seasonData : null,
             'mode'    => $mode,
             'isAdmin' => $isAdmin,
@@ -101,6 +102,13 @@ class Season extends Controller {
         $this->view('system/footer', $data);
     }
 
+    /**
+     * Accès direct au formulaire d'édition (Admin)
+     */
+    public function edit($id = null) {
+        return $this->index($id, 'edit');
+    }
+
     public function delete($id = null) {
         $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
@@ -124,6 +132,34 @@ class Season extends Controller {
                 }
             } catch (\Exception $e) {
                 $_SESSION['flash_error'] = ($txt['USER_ERR_DELETE_FAIL'] ?? 'Erreur : ') . $e->getMessage();
+            }
+        }
+        return $this->redirect('sport/seasons');
+    }
+
+    public function activate($id = null) {
+        $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
+        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+
+        if (!$isAdmin) {
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+        }
+
+        if (!empty($id)) {
+            try {
+                $userId   = $_SESSION['user_id'] ?? null;
+                $targetId = is_numeric($id) ? (int)$id : null;
+                if (!$targetId) {
+                    $s        = $this->seasonModel->getSeasonByCode($id);
+                    $targetId = $s ? $s['id'] : null;
+                }
+
+                if ($targetId) {
+                    $this->seasonModel->activateSeason($targetId, $userId);
+                    $_SESSION['flash_message'] = $txt['SYS_MSG_ACTIVATED'] ?? 'Élément réactivé avec succès.';
+                }
+            } catch (\Exception $e) {
+                $_SESSION['flash_error'] = ($txt['USER_ERR_UPDATE_FAIL'] ?? 'Erreur : ') . $e->getMessage();
             }
         }
         return $this->redirect('sport/seasons');
