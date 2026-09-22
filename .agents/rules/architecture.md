@@ -32,14 +32,18 @@ Tout module sous `module/[nom]/` comprend :
 - Les statuts des entités ne doivent être visibles **que pour les administrateurs** (`!empty($data['isAdmin'])`), sauf exceptions métier.
 - Sur les pages List, la colonne "Statut" est masquée pour les visiteurs et utilisateurs non-administrateurs.
 
-## 5. Colonne Actions et Accès Fiche (Point [20260908-2304])
+## 5. Pages List Standardisées et Accès aux Fiches (Point [20260908-2304])
+- **Template universel** : Toute page List s'appuie sur `module/system/view/common/list_template.php`.
 - **Lien sur le nom de l'objet** : Ouvre systématiquement la fiche en mode consultation (`View`), pour tous les utilisateurs (visiteurs comme administrateurs).
 - **Colonne Actions** : Visible **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`). Masquée pour les visiteurs et utilisateurs non-administrateurs.
-- **Accès au mode Édition (`Edit`)** : Réservé aux administrateurs via le bouton Modifier (crayon) de la colonne Actions ou depuis la fiche en mode View.
+- **Accès au mode Édition (`Edit`)** : Réservé aux administrateurs via le bouton Modifier (crayon `mif-pencil`) de la colonne Actions ou depuis la fiche en mode View.
+- **Intitulés succincts** : Utiliser « Début » et « Fin » au lieu de « Date de début » et « Date de fin ».
 
-## 6. Mobile First (Point [20260908-2319])
+## 6. Mobile First (Point [20260908-2319]) — Viewport étroit ≤ 414px
 - Tout écran (`List`, `View`, `Form`) est conçu et testé en priorité sur mobile (viewport ≤ 414px).
-- Tableaux en cartes `.table-responsive-cards` avec attribut `data-label` obligatoire sur chaque `<td>`.
-- Zéro scroll/débordement horizontal global (`overflow-x`).
+- **Boutons avec icône seule** : Sur mobile (≤ 414px), les boutons masquent leur texte (classe `.btn-text` masquée en CSS) et n'affichent que leur icône dans un carré ergonomique (36×36px) avec infobulle `title`.
+- **Tableaux avec ascenseur horizontal** : Les données s'affichent sous forme de tableau. Si les colonnes dépassent la largeur mobile, un ascenseur horizontal est obligatoire (via `data-horizontal-scroll="true"`, `.table-container` stylisé, et contrôles interactifs `.table-scroll-controls` avec boutons `[ ◄ ]` / `[ ► ]`).
+- **Isolation du défilement** : Seul le tableau (`.table-container`) défile horizontalement. Le conteneur principal (`main`), le titre, le filtre de recherche et la pagination restent fixes à 100% de largeur.
+- Zéro débordement horizontal global (`main { overflow-x: hidden !important; }`).
 - Cibles tactiles ≥ 44px, volet `NavView` replié en hamburger sur mobile.
 

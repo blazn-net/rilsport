@@ -27,15 +27,17 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 - **Dualité des Fiches : Consultation (`View`) vs Formulaire (`Form` / `Edit`)** :
   - **Consultation (`View`)** : Textes et badges HTML purs, **interdiction formelle** de balises `<input>`, `<select>`, `<textarea>` (même `readonly` ou `disabled`), aucun bouton de soumission.
   - **Formulaire (`Form` / `Edit`)** : Éléments interactifs réservés aux utilisateurs avec privilèges d'édition (Admins).
-- **Accès aux Fiches et Colonne Actions (Point [20260908-2304])** :
-  - Le lien sur le nom de l'objet dans la liste ouvre **toujours** la fiche en mode **Consultation (`View`)** pour tous (visiteurs et admins).
-  - La colonne **Actions** est visible **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`), totalement masquée pour les non-admins.
-  - Le mode Édition est accessible aux admins via le crayon `mif-pencil` de la colonne Actions ou via le bouton « Modifier » en haut de la fiche `View`.
-- **Visibilité des Statuts (Point [20260908-2330])** : Visibles **uniquement pour les administrateurs** (colonne "Statut" en liste et badge statut en fiche masqués pour les non-admins).
-- **Mobile First obligatoire (Point [20260908-2319])** :
-  - Tout écran (`List`, `View`, `Form`) est conçu et testé en priorité sur mobile étroit (≤ 414px).
-  - Tous les tableaux utilisent `.table-responsive-cards` avec l'attribut `data-label="..."` obligatoire sur chaque `<td>`.
-  - Zéro débordement/scroll horizontal global (`overflow-x`).
+- **Pages List standardisées (`list_template.php`)** :
+  - Toute page List s'appuie de préférence sur le template universel `module/system/view/common/list_template.php`.
+  - Le clic sur le nom de l'objet dans la liste ouvre **toujours** la fiche en mode **Consultation (`View`)** pour tous (visiteurs et admins).
+  - Le mode Édition (`Edit`) est accessible aux admins via le bouton Modifier (crayon `mif-pencil`) de la colonne Actions ou via le bouton « Modifier » en haut de la fiche `View`.
+  - La colonne **Actions** et la colonne **Statut** sont visibles **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`), totalement masquées pour les non-admins.
+  - Libellés de dates : Intitulés concis « Début » et « Fin » (et non « Date de début / fin »).
+- **Règles Mobile First (Point [20260908-2319]) — Viewport étroit ≤ 414px** :
+  - **Boutons avec icône seule** : Sur mobile (≤ 414px), les boutons n'affichent **que leur icône** (pas de texte, classe `.btn-text` masquée), format carré ergonomique 36×36px avec infobulle `title`.
+  - **Tableaux avec ascenseur horizontal** : Les données restent sous forme de tableau. Si les colonnes dépassent la largeur mobile, un ascenseur horizontal est obligatoire (via `data-horizontal-scroll="true"` sur la table, styles sur `.table-container`, et contrôles `.table-scroll-controls` avec boutons `[ ◄ ]` / `[ ► ]`).
+  - **Isolation du défilement** : Seul le tableau (`.table-container`) défile horizontalement ; la carte (`main`), la barre de recherche et la pagination restent fixes à 100% de largeur.
+  - Zéro débordement horizontal global sur la page (`main { overflow-x: hidden !important; }`).
   - Cibles tactiles ≥ 44px, volet `NavView` replié en hamburger et fermeture au tap extérieur.
 
 ---
