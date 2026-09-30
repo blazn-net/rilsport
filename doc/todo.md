@@ -217,7 +217,7 @@
 - **Description** : _À compléter_
 - **Sous-tâches** :
     - [ ] `[20260908-2326]` Forum = Discord ?
-    - [ ] `[20260908-2327]` Blog/News = Facebook/Instagram
+    - [ ] `[20260908-2327]` Blog/News = Facebook/Instagram/Wiki
 
 ---
 
