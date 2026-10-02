@@ -11,18 +11,20 @@ class Seasons extends Controller {
     }
 
     public function index() {
-        $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
-        $seasons = $this->seasonModel->getAllSeasons();
+        $txt    = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
+        $search = trim($_GET['search'] ?? '');
+        $seasons = $this->seasonModel->getAllSeasons($search);
 
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
 
         $data = [
-            'txt'     => $txt,
-            'title'   => ($txt['SPORT_SEASONS_MGT'] ?? 'Saisons') . ' - ' . SITENAME,
-            'seasons' => $seasons,
-            'isAdmin' => $isAdmin,
-            'message' => $_SESSION['flash_message'] ?? '',
-            'error'   => $_SESSION['flash_error'] ?? ''
+            'txt'         => $txt,
+            'title'       => ($txt['SPORT_SEASONS_MGT'] ?? 'Saisons') . ' - ' . SITENAME,
+            'seasons'     => $seasons,
+            'search'      => $search,
+            'isAdmin'     => $isAdmin,
+            'message'     => $_SESSION['flash_message'] ?? '',
+            'error'       => $_SESSION['flash_error'] ?? ''
         ];
 
         unset($_SESSION['flash_message']);

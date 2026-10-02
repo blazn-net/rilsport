@@ -10,12 +10,25 @@ class Season {
         $this->db = new Database();
     }
 
-    public function getAllSeasons() {
-        $this->db->query("
-            SELECT se.*
-            FROM t_sport_season se
-            ORDER BY se.date_start DESC, se.id DESC
-        ");
+    public function getAllSeasons(string $search = '') {
+        if ($search !== '') {
+            $like = '%' . $search . '%';
+            $this->db->query("
+                SELECT se.*
+                FROM t_sport_season se
+                WHERE se.code LIKE :s1
+                   OR se.name LIKE :s2
+                ORDER BY se.date_start DESC, se.id DESC
+            ");
+            $this->db->bind(':s1', $like);
+            $this->db->bind(':s2', $like);
+        } else {
+            $this->db->query("
+                SELECT se.*
+                FROM t_sport_season se
+                ORDER BY se.date_start DESC, se.id DESC
+            ");
+        }
         return $this->db->resultSet();
     }
 

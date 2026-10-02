@@ -1,4 +1,4 @@
-# Rules — Projet RIL Sport
+﻿# Rules — Projet RIL Sport
 
 Ce fichier définit les règles principales du projet RIL Sport pour les agents d'assistance.
 Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wamp64/www/rilsport/doc/) et répliquées dans [.agents/rules/](file:///c:/wamp64/www/rilsport/.agents/rules/).
@@ -57,3 +57,18 @@ Lors de la lecture ou de la mise à jour de [doc/todo.md](file:///c:/wamp64/www/
 - `[-]` : Tâche en cours
 - `[x]` : Tâche réalisée
 
+---
+
+## 5. Skills disponibles
+
+Les skills sont des guides detailles a lire avant d'entreprendre certaines taches.
+
+| Skill | Chemin | Quand l'utiliser |
+|-------|--------|-----------------|
+| `list-page` | `.agents/skills/list-page/SKILL.md` | Avant toute creation ou modification d'une **page List** (tableau de donnees) |
+| `form-page` | `.agents/skills/form-page/SKILL.md` | Avant toute creation ou modification d'une **page Form ou View** (fiche individuelle) |
+
+> **IMPORTANT** :
+> - Avant de creer/modifier une **page List** -> lire `.agents/skills/list-page/SKILL.md`
+> - Avant de creer/modifier une **page Form/View** -> lire `.agents/skills/form-page/SKILL.md`
+> - Pour un **nouveau module complet** -> lire les deux skills

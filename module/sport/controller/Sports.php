@@ -12,7 +12,8 @@ class Sports extends Controller {
 
     public function index() {
         $txt    = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
-        $sports = $this->sportModel->getAllSports();
+        $search = trim($_GET['search'] ?? '');
+        $sports = $this->sportModel->getAllSports($search);
 
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
 
@@ -20,6 +21,7 @@ class Sports extends Controller {
             'txt'     => $txt,
             'title'   => ($txt['SPORT_SPORTS_MGT'] ?? 'Sports') . ' - ' . SITENAME,
             'sports'  => $sports,
+            'search'  => $search,
             'isAdmin' => $isAdmin,
             'message' => $_SESSION['flash_message'] ?? '',
             'error'   => $_SESSION['flash_error'] ?? ''

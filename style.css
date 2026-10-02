@@ -4,6 +4,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    overflow: hidden; /* pas de scrollbar sur body/page */
 }
 
 /* Configuration NavView */
@@ -15,8 +16,18 @@ body {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* navview-content occupe exactement 100vh (pas de dépassement de page) */
+.navview-content {
+    height: 100vh !important;
+    min-height: unset !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* main standard (hors pages List) : carte centrée avec scrollbar propre */
 main {
-    flex-grow: 1;
+    flex: 1;
     padding: 2rem 5%;
     background-color: white;
     margin: 2rem auto;
@@ -24,6 +35,22 @@ main {
     max-width: 1200px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow-y: auto; /* scrollbar interne si contenu dépasse */
+    overflow-x: hidden;
+}
+
+/* main en mode page List : flex column pour que le tableau prenne tout l'espace */
+main.list-page {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* le scroll est géré par .table-scroll-wrapper */
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 1rem 1.5rem;
+    box-sizing: border-box;
 }
 
 main h1 {
@@ -52,10 +79,21 @@ main p {
      > .table-bottominfo / pagination (reste fixe à 100% largeur)
 */
 
+/* Zone défilante du tableau : prend tout l'espace vertical restant dans main.list-page */
 .table-scroll-wrapper {
     width: 100% !important;
     max-width: 100% !important;
-    overflow: visible !important;
+    flex: 1 1 0;          /* prend tout l'espace disponible entre filtres et pagination */
+    min-height: 0;        /* essentiel pour que flex-shrink fonctionne dans un flex-column */
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+}
+
+/* Filtres et pagination restent hors de .table-scroll-wrapper (cf. data-search-wrapper
+   et data-pagination-wrapper dans list_template.php) : seul le tableau défile. */
+.list-pagination-wrapper {
+    width: 100%;
+    flex-shrink: 0; /* la pagination ne rétrécit pas */
 }
 
 .table-component {
@@ -126,7 +164,8 @@ table[data-role="table"] {
     width: 100%;
     margin: 8px 0 10px 0;
     user-select: none;
-    display: none; /* Affiché dynamiquement par JS dès que scrollWidth > clientWidth */
+    display: none;
+    /* Affiché dynamiquement par JS dès que scrollWidth > clientWidth */
 }
 
 .table-scroll-controls .scroll-btn-left,
@@ -144,7 +183,7 @@ table[data-role="table"] {
     justify-content: center !important;
     cursor: pointer;
     font-size: 1.1rem;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .table-scroll-controls .scroll-btn-left:hover,
@@ -182,6 +221,7 @@ table[data-role="table"] {
 
 /* Sur mobile : réduire la taille de la police dans les tableaux */
 @media screen and (max-width: 768px) {
+
     .table-scroll-wrapper table td,
     .table-scroll-wrapper table th {
         font-size: 0.875rem;
@@ -194,6 +234,7 @@ table[data-role="table"] {
    Les boutons n'affichent que leur icône (aucun texte)
    ========================================================================== */
 @media screen and (max-width: 576px) {
+
     /* 1. Masquer les textes balisés dans les boutons */
     .button .btn-text,
     .button .btn-label {
@@ -223,7 +264,7 @@ table[data-role="table"] {
     }
 }
 
-/* main ne doit jamais scroller horizontalement */
+/* main ne doit jamais scroller horizontalement (règle de sécurité) */
 main {
     overflow-x: hidden !important;
 }
@@ -271,8 +312,8 @@ main {
 }
 
 /* 3. Élément de menu actif : fond rouge #d9534f (identique au bouton FR .button.primary) */
-.navview .navview-menu li.active > a,
-.navview-menu li.active > a {
+.navview .navview-menu li.active>a,
+.navview-menu li.active>a {
     background-color: #d9534f !important;
     color: #ffffff !important;
     font-weight: 600 !important;
@@ -280,40 +321,40 @@ main {
 }
 
 /* 4. Icônes, textes et triangle de l'élément actif en blanc */
-.navview .navview-menu li.active > a .icon,
-.navview .navview-menu li.active > a .caption,
-.navview-menu li.active > a .icon,
-.navview-menu li.active > a .caption {
+.navview .navview-menu li.active>a .icon,
+.navview .navview-menu li.active>a .caption,
+.navview-menu li.active>a .icon,
+.navview-menu li.active>a .caption {
     color: #ffffff !important;
 }
 
-.navview-menu li.active > a.dropdown-toggle::after,
-.navview .navview-menu li.active > a.dropdown-toggle::after {
+.navview-menu li.active>a.dropdown-toggle::after,
+.navview .navview-menu li.active>a.dropdown-toggle::after {
     border-color: transparent transparent #ffffff transparent !important;
 }
 
 /* 4. Éléments inactifs : icônes et textes foncés sans aucun bleu */
-.navview .navview-menu li:not(.active) > a .icon,
-.navview-menu li:not(.active) > a .icon {
+.navview .navview-menu li:not(.active)>a .icon,
+.navview-menu li:not(.active)>a .icon {
     color: #333333 !important;
 }
 
 /* 5. Survol (Hover) des éléments inactifs du menu */
-.navview .navview-menu li:not(.active) > a:hover,
-.navview-menu li:not(.active) > a:hover {
+.navview .navview-menu li:not(.active)>a:hover,
+.navview-menu li:not(.active)>a:hover {
     background-color: rgba(217, 83, 79, 0.1) !important;
     color: #d9534f !important;
 }
 
-.navview .navview-menu li:not(.active) > a:hover .icon,
-.navview .navview-menu li:not(.active) > a:hover .caption,
-.navview-menu li:not(.active) > a:hover .icon,
-.navview-menu li:not(.active) > a:hover .caption {
+.navview .navview-menu li:not(.active)>a:hover .icon,
+.navview .navview-menu li:not(.active)>a:hover .caption,
+.navview-menu li:not(.active)>a:hover .icon,
+.navview-menu li:not(.active)>a:hover .caption {
     color: #d9534f !important;
 }
 
-.navview .navview-menu li:not(.active) > a:hover.dropdown-toggle::after,
-.navview-menu li:not(.active) > a:hover.dropdown-toggle::after,
+.navview .navview-menu li:not(.active)>a:hover.dropdown-toggle::after,
+.navview-menu li:not(.active)>a:hover.dropdown-toggle::after,
 .navview-pane a.dropdown-toggle:hover::after {
     border-color: transparent transparent #d9534f transparent !important;
 }
@@ -353,7 +394,7 @@ main {
     margin: 0 auto !important;
     gap: 0 !important;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     transition: all .2s ease;
     display: flex !important;
     align-items: center !important;
@@ -418,7 +459,7 @@ main {
 /* Menu déroulant compact flottant à droite */
 .lang-selector-box .d-menu {
     border-radius: 6px !important;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
     border: 1px solid #e0e0e0 !important;
     padding: 4px 0 !important;
     min-width: 160px !important;
@@ -505,8 +546,3 @@ main {
     top: 100% !important;
     width: 100% !important;
 }
-
-
-
-
-

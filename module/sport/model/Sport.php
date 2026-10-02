@@ -10,8 +10,20 @@ class Sport {
         $this->db = new Database();
     }
 
-    public function getAllSports() {
-        $this->db->query("SELECT * FROM t_sport_sport ORDER BY id ASC");
+    public function getAllSports(string $search = '') {
+        if ($search !== '') {
+            $like = '%' . $search . '%';
+            $this->db->query("
+                SELECT * FROM t_sport_sport
+                WHERE code LIKE :s1 OR name LIKE :s2 OR description LIKE :s3
+                ORDER BY id ASC
+            ");
+            $this->db->bind(':s1', $like);
+            $this->db->bind(':s2', $like);
+            $this->db->bind(':s3', $like);
+        } else {
+            $this->db->query("SELECT * FROM t_sport_sport ORDER BY id ASC");
+        }
         return $this->db->resultSet();
     }
 

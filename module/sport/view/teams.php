@@ -8,18 +8,14 @@
 // par le template, on la construit ici et on la passe via customFiltersHtml.
 ob_start();
 ?>
-<form method="GET" action="<?php echo URLROOT; ?>/sport/teams" class="d-flex flex-row flex-wrap flex-align-end"
-    style="gap: 10px;">
+<form method="GET" action="<?php echo URLROOT; ?>/sport/teams" class="d-flex flex-row flex-wrap flex-align-end" style="gap: 10px;">
     <div style="flex: 1.5; min-width: 160px;">
-        <label class="text-bold d-block"><span
-                class="mif-search mr-1"></span><?php echo $data['txt']['SYS_SEARCH'] ?? 'Recherche'; ?></label>
-        <input type="text" name="search" data-role="input" placeholder="Nom d'équipe, code..."
-            value="<?php echo htmlspecialchars($data['search'] ?? ''); ?>">
+        <label class="text-bold d-block"><span class="mif-search mr-1"></span><?php echo $data['txt']['SYS_SEARCH'] ?? 'Recherche'; ?></label>
+        <input type="text" name="search" data-role="input" placeholder="Nom d'équipe, code..." value="<?php echo htmlspecialchars($data['search'] ?? ''); ?>">
     </div>
 
     <div style="flex: 1.2; min-width: 150px;">
-        <label class="text-bold d-block"><span
-                class="mif-security mr-1"></span><?php echo $data['txt']['TEAM_CLUB'] ?? 'Club'; ?></label>
+        <label class="text-bold d-block"><span class="mif-security mr-1"></span><?php echo $data['txt']['TEAM_CLUB'] ?? 'Club'; ?></label>
         <select name="club" data-role="select">
             <option value="">-- Tous les clubs --</option>
             <?php foreach ($data['clubs'] as $cl): ?>
@@ -31,8 +27,7 @@ ob_start();
     </div>
 
     <div style="flex: 1.2; min-width: 140px;">
-        <label class="text-bold d-block"><span
-                class="mif-trophy mr-1"></span><?php echo $data['txt']['TEAM_SPORT'] ?? 'Discipline'; ?></label>
+        <label class="text-bold d-block"><span class="mif-trophy mr-1"></span><?php echo $data['txt']['TEAM_SPORT'] ?? 'Discipline'; ?></label>
         <select name="sport" data-role="select">
             <option value="">-- Tous les sports --</option>
             <?php foreach ($data['sports'] as $sp): ?>
@@ -44,8 +39,7 @@ ob_start();
     </div>
 
     <div style="flex: 0.9; min-width: 110px;">
-        <label class="text-bold d-block"><span
-                class="mif-user mr-1"></span><?php echo $data['txt']['TEAM_GENDER'] ?? 'Genre'; ?></label>
+        <label class="text-bold d-block"><span class="mif-user mr-1"></span><?php echo $data['txt']['TEAM_GENDER'] ?? 'Genre'; ?></label>
         <select name="gender" data-role="select">
             <option value="">-- Tous --</option>
             <option value="M" <?php echo ($data['selectedGender'] === 'M') ? 'selected' : ''; ?>>Masculin</option>
@@ -64,8 +58,8 @@ $teamsFiltersHtml = ob_get_clean();
 
 // Rendu personnalisé de la colonne "Équipe" (nom + sous-titre + code)
 $renderTeamName = function ($val, $row, $data) {
-    $html = '<a href="' . URLROOT . '/sport/team/' . htmlspecialchars((string) $row['id']) . '" ';
-    $html .= 'class="text-bold ' . (!empty($data['isAdmin']) ? 'fg-primary' : 'fg-dark') . '" ';
+    $html  = '<a href="' . URLROOT . '/sport/team/' . htmlspecialchars((string)$row['id']) . '" ';
+    $html .= 'class="text-bold fg-primary" ';
     $html .= 'title="' . (!empty($data['isAdmin']) ? "Modifier l'équipe" : 'Consulter la fiche') . '">';
     $html .= htmlspecialchars($val);
     $html .= '</a>';
@@ -79,7 +73,7 @@ $renderTeamName = function ($val, $row, $data) {
 // Rendu personnalisé de la colonne "Club" (icône couleur + nom, lien vers la fiche club)
 $renderTeamClub = function ($val, $row) {
     $color = !empty($row['club_primary_color']) ? htmlspecialchars($row['club_primary_color']) : '#0072c6';
-    $html = '<a href="' . URLROOT . '/sport/club/' . htmlspecialchars((string) $row['club_id']) . '" class="fg-dark text-bold">';
+    $html  = '<a href="' . URLROOT . '/sport/club/' . htmlspecialchars((string)$row['club_id']) . '" class="fg-dark text-bold">';
     $html .= '<span class="mif-security mr-1" style="color: ' . $color . ';"></span>';
     $html .= htmlspecialchars($val);
     $html .= '</a>';
@@ -96,7 +90,7 @@ $renderTeamSport = function ($val, $row) {
 $renderTeamCategoryGender = function ($val, $row) {
     $genderLabel = ($row['gender'] === 'F') ? 'Féminin' : (($row['gender'] === 'MIXED') ? 'Mixte' : 'Masculin');
     $genderBadge = ($row['gender'] === 'F') ? 'alert' : (($row['gender'] === 'MIXED') ? 'warning' : 'info');
-    $html = '<span class="badge light mr-1">' . htmlspecialchars($row['category']) . '</span>';
+    $html  = '<span class="badge light mr-1">' . htmlspecialchars($row['category']) . '</span>';
     $html .= '<span class="badge ' . $genderBadge . '">' . htmlspecialchars($genderLabel) . '</span>';
     return $html;
 };
@@ -107,48 +101,48 @@ $renderOrDash = function ($val) {
 };
 
 $listConfig = [
-    'title' => $data['txt']['SPORT_TEAMS_MGT'] ?? 'Équipes',
-    'icon' => 'mif-groups',
-    'addUrl' => URLROOT . '/sport/team',
-    'addBtnText' => $data['txt']['SPORT_ADD_TEAM_BTN'] ?? 'Nouvelle équipe',
-    'showSearch' => false, // recherche gérée par la barre de filtres serveur ci-dessus
+    'title'        => $data['txt']['SPORT_TEAMS_MGT'] ?? 'Équipes',
+    'icon'         => 'mif-groups',
+    'addUrl'       => URLROOT . '/sport/team',
+    'addBtnText'   => $data['txt']['SPORT_ADD_TEAM_BTN'] ?? 'Nouvelle équipe',
+    'showSearch'   => false, // recherche gérée par la barre de filtres serveur ci-dessus
     'customFiltersHtml' => $teamsFiltersHtml,
-    'items' => $data['teams'] ?? [],
-    'idField' => 'id',
-    'statusField' => 'status_id',
-    'columns' => [
+    'items'        => $data['teams'] ?? [],
+    'idField'      => 'id',
+    'statusField'  => 'status_id',
+    'columns'      => [
         [
-            'field' => 'name',
-            'label' => $data['txt']['TEAM_NAME'] ?? 'Équipe',
+            'field'  => 'name',
+            'label'  => $data['txt']['TEAM_NAME'] ?? 'Équipe',
             'render' => $renderTeamName,
         ],
         [
-            'field' => 'club_name',
-            'label' => $data['txt']['TEAM_CLUB'] ?? 'Club',
+            'field'  => 'club_name',
+            'label'  => $data['txt']['TEAM_CLUB'] ?? 'Club',
             'render' => $renderTeamClub,
         ],
         [
-            'field' => 'sport_name',
-            'label' => $data['txt']['TEAM_SPORT'] ?? 'Discipline',
+            'field'  => 'sport_name',
+            'label'  => $data['txt']['TEAM_SPORT'] ?? 'Discipline',
             'render' => $renderTeamSport,
         ],
         [
-            'field' => 'category',
-            'label' => ($data['txt']['TEAM_CATEGORY'] ?? 'Catégorie') . ' / ' . ($data['txt']['TEAM_GENDER'] ?? 'Genre'),
+            'field'  => 'category',
+            'label'  => ($data['txt']['TEAM_CATEGORY'] ?? 'Catégorie') . ' / ' . ($data['txt']['TEAM_GENDER'] ?? 'Genre'),
             'render' => $renderTeamCategoryGender,
         ],
         [
-            'field' => 'level',
-            'label' => $data['txt']['TEAM_LEVEL'] ?? 'Niveau',
+            'field'  => 'level',
+            'label'  => $data['txt']['TEAM_LEVEL'] ?? 'Niveau',
             'render' => $renderOrDash,
         ],
     ],
     'actions' => [
-        'editUrl' => URLROOT . '/sport/team/{id}',
-        'disableUrl' => URLROOT . '/sport/team/delete/{id}',
-        'deleteUrl' => URLROOT . '/sport/team/delete/{id}?force=1',
+        'editUrl'        => URLROOT . '/sport/team/{id}',
+        'disableUrl'     => URLROOT . '/sport/team/delete/{id}',
+        'deleteUrl'      => URLROOT . '/sport/team/delete/{id}?force=1',
         'disableConfirm' => $data['txt']['TEAM_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette équipe ?',
-        'deleteConfirm' => 'Voulez-vous vraiment supprimer définitivement cette équipe ?',
+        'deleteConfirm'  => 'Voulez-vous vraiment supprimer définitivement cette équipe ?',
         // Pas de activateUrl : comme dans l'original, aucune réactivation proposée depuis la liste.
     ],
 ];

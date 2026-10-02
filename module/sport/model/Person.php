@@ -10,14 +10,30 @@ class Person {
         $this->db = new Database();
     }
 
-    public function getAllPersons() {
-        $this->db->query("
-            SELECT p.*, 
-                   pr.name AS role_name
-            FROM t_sport_person p
-            LEFT JOIN t_sport_person_role pr ON p.role_code = pr.code
-            ORDER BY p.last_name ASC, p.first_name ASC
-        ");
+    public function getAllPersons(string $search = '') {
+        if ($search !== '') {
+            $like = '%' . $search . '%';
+            $this->db->query("
+                SELECT p.*, pr.name AS role_name
+                FROM t_sport_person p
+                LEFT JOIN t_sport_person_role pr ON p.role_code = pr.code
+                WHERE p.code LIKE :s1 OR p.first_name LIKE :s2 OR p.last_name LIKE :s3
+                   OR pr.name LIKE :s4 OR p.nationality LIKE :s5
+                ORDER BY p.last_name ASC, p.first_name ASC
+            ");
+            $this->db->bind(':s1', $like);
+            $this->db->bind(':s2', $like);
+            $this->db->bind(':s3', $like);
+            $this->db->bind(':s4', $like);
+            $this->db->bind(':s5', $like);
+        } else {
+            $this->db->query("
+                SELECT p.*, pr.name AS role_name
+                FROM t_sport_person p
+                LEFT JOIN t_sport_person_role pr ON p.role_code = pr.code
+                ORDER BY p.last_name ASC, p.first_name ASC
+            ");
+        }
         return $this->db->resultSet();
     }
 

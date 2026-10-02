@@ -70,3 +70,44 @@ Format standardisé du routage :
 - Formulaire d'ajout : `/sport/sport`
 - Formulaire d'édition : `/sport/sport/edit/12` (ou `/sport/sport/12`)
 - Action spécifique : `/sport/sport/delete/12`
+
+---
+
+## 5. Conventions d'Interface Utilisateur (UI) — Pages List
+
+### A. Bouton « + Ajouter »
+- **Couleur obligatoire : `info` (bleu)** — classe Metro UI `button info`
+- Visible **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`)
+- Placé en haut à droite de la page, aligné avec le titre `<h2>`
+- **Libellé affiché : toujours « Ajouter »** (clé `SYS_BTN_ADD`) — jamais un libellé objet-spécifique
+- `addBtnText` (config) = infobulle `title` uniquement (ex : « Ajouter un sport »)
+- Icône : `mif-plus` + texte dans `<span class="btn-text">` (masqué sur mobile ≤ 414px)
+- Exemple HTML : `<a href="..." class="button info" title="Ajouter un sport"><span class="mif-plus"></span> <span class="btn-text">Ajouter</span></a>`
+
+### B. Boutons d'action dans la colonne « Actions »
+| Action | Classe | Icône |
+|---|---|---|
+| Modifier | `button small info` | `mif-pencil` |
+| Désactiver | `button small warning` | `mif-cancel` |
+| Réactiver | `button small success` | `mif-checkmark` |
+| Supprimer | `button small alert` | `mif-bin` |
+
+### C. Colonnes admin-only
+- Les colonnes **Statut** et **Actions** sont visibles **uniquement pour les admins** (`!empty($data['isAdmin'])`).
+- Les visiteurs non-admins ne voient ni statut ni actions.
+
+### D. Badges de statut
+| Statut | Classe badge |
+|---|---|
+| Actif (`status_id = 1`) | `badge success` |
+| Inactif / Désactivé (`status_id = 2`) | `badge secondary` |
+| Brouillon (`status_id = 3`) | `badge warning` |
+
+### E. Boutons Filtrer / Réinitialiser
+- **Filtrer** : `button primary` avec icône `mif-filter`
+- **Réinitialiser** : `button secondary` avec icône `mif-reload`
+- Ces boutons sont générés automatiquement par `list_template.php`
+
+### F. Héritage obligatoire
+> Toute page de type List **doit** utiliser `module/system/view/common/list_template.php`.  
+> Ce template centralise : en-tête, alertes flash, barre de recherche GET, tableau responsive Metro UI, colonnes admin-only, pagination et contrôles de défilement horizontal.

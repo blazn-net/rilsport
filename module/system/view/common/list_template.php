@@ -21,9 +21,9 @@
  */
 $config = $listConfig ?? $data['listConfig'] ?? [];
 ?>
-<main class="p-4" style="margin-top: 60px;">
+<main class="list-page" style="padding-top: 68px;">
     <!-- En-tête : Titre & Bouton "+ Ajouter" -->
-    <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
+    <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4" style="flex-shrink: 0;">
         <h2>
             <?php if (!empty($config['icon'])): ?>
                 <span class="<?php echo htmlspecialchars($config['icon']); ?> mr-2"></span>
@@ -32,12 +32,15 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
         </h2>
 
         <?php if (!empty($data['isAdmin']) && !empty($config['addUrl'])): ?>
-            <a href="<?php echo htmlspecialchars($config['addUrl']); ?>" 
-               class="button info mt-2 mt-md-0" 
+            <a href="<?php echo htmlspecialchars($config['addUrl']); ?>"
+               class="button info mt-2 mt-md-0"
+               id="btn-add-main"
                title="<?php echo htmlspecialchars($config['addBtnText'] ?? $data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?>">
-                <span class="mif-plus"></span> <span class="btn-text"><?php echo htmlspecialchars($config['addBtnText'] ?? $data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?></span>
+                <span class="mif-plus"></span>
+                <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?></span>
             </a>
         <?php endif; ?>
+
     </div>
 
     <!-- Alertes Flash -->
@@ -49,11 +52,69 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
         <div class="remark alert mb-3"><?php echo htmlspecialchars($data['error']); ?></div>
     <?php endif; ?>
 
-    <!-- Filtres Personnalisés (si présents) -->
-    <?php if (!empty($config['customFiltersHtml'])): ?>
-        <div class="mb-3">
-            <?php echo $config['customFiltersHtml']; ?>
+    <?php
+    // ID unique pour cette instance de table (permet plusieurs tables sur une même page sans collision).
+    static $listTemplateInstance = 0;
+    $listTemplateInstance++;
+    $paginationWrapperId = 'list-pagination-' . $listTemplateInstance;
+
+    // Recherche via GET (persiste dans l'URL) ou filtres personnalisés ?
+    $listUrl        = $config['listUrl']    ?? '';        // ex: URLROOT . '/sport/seasons'
+    $searchValue    = $config['searchValue'] ?? '';       // valeur courante de ?search=
+    $showGetSearch  = ($listUrl !== '') && ($config['showSearch'] ?? true);
+    $hasAnyFilter   = $showGetSearch || !empty($config['customFiltersHtml']);
+    ?>
+
+    <!-- Filtres (personnalisés + recherche GET), regroupés dans une zone repliable -->
+    <?php if ($hasAnyFilter): ?>
+        <?php $filterSectionId = 'list-filter-section-' . $listTemplateInstance; ?>
+        <div class="list-filter-section mb-3" id="<?php echo $filterSectionId; ?>" style="flex-shrink: 0;">
+            <div class="list-filter-summary"
+                 onclick="event.preventDefault(); event.stopPropagation(); document.getElementById('<?php echo $filterSectionId; ?>').classList.toggle('collapsed'); return false;">
+                <span class="list-filter-arrow">▾</span>
+                <?php echo htmlspecialchars($data['txt']['SYS_FILTERS'] ?? 'Filtres'); ?>
+            </div>
+            <div class="list-filter-body">
+                <?php if ($showGetSearch): ?>
+                <form method="GET" action="<?php echo htmlspecialchars($listUrl); ?>" class="d-flex flex-row flex-wrap flex-align-end" style="gap: 10px;">
+                    <div style="flex: 2; min-width: 200px;">
+                        <label class="text-bold d-block">
+                            <span class="mif-search mr-1"></span>
+                            <?php echo htmlspecialchars($data['txt']['SYS_SEARCH'] ?? 'Recherche'); ?>
+                        </label>
+                        <input type="text" name="search" data-role="input"
+                               placeholder="<?php echo htmlspecialchars($config['searchPlaceholder'] ?? $data['txt']['SYS_SEARCH_PLACEHOLDER'] ?? 'Rechercher...'); ?>"
+                               value="<?php echo htmlspecialchars($searchValue); ?>">
+                    </div>
+
+                    <div style="flex: 0 0 auto; padding-bottom: 2px;">
+                        <button type="submit" class="button primary mr-1">
+                            <span class="mif-filter"></span>
+                            <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_FILTER'] ?? 'Filtrer'); ?></span>
+                        </button>
+                        <a href="<?php echo htmlspecialchars($listUrl); ?>" class="button secondary">
+                            <span class="mif-reload"></span>
+                            <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_RESET'] ?? 'Réinitialiser'); ?></span>
+                        </a>
+                    </div>
+                </form>
+                <?php endif; ?>
+
+                <?php if (!empty($config['customFiltersHtml'])): ?>
+                    <?php echo $config['customFiltersHtml']; ?>
+                <?php endif; ?>
+            </div>
+
         </div>
+        <style>
+            .list-filter-section { background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; }
+            .list-filter-summary { padding: 10px 14px; font-size: 13px; font-weight: 600; color: #444; cursor: pointer; user-select: none; border-bottom: 1px solid #eee; }
+            .list-filter-arrow { display: inline-block; font-size: 11px; color: #999; transition: transform .15s; }
+            .list-filter-section.collapsed .list-filter-arrow { transform: rotate(-90deg); }
+            .list-filter-section.collapsed .list-filter-summary { border-bottom: none; }
+            .list-filter-body { padding: 12px 14px; }
+            .list-filter-section.collapsed .list-filter-body { display: none; }
+        </style>
     <?php endif; ?>
 
     <!-- Tableau de Données Responsive -->
@@ -61,8 +122,9 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
     <table class="table striped table-border mt-4 w-100" 
            data-role="table"
            data-horizontal-scroll="true"
-           data-show-search="<?php echo ($config['showSearch'] ?? true) ? 'true' : 'false'; ?>"
-           data-search-placeholder="<?php echo htmlspecialchars($config['searchPlaceholder'] ?? $data['txt']['SYS_SEARCH_PLACEHOLDER'] ?? 'Rechercher...'); ?>"
+           data-show-search="false"
+           data-pagination-wrapper="#<?php echo $paginationWrapperId; ?>"
+           data-info-wrapper="#<?php echo $paginationWrapperId; ?>"
            data-show-rows-steps="false" 
            data-check="false" 
            data-rownum="false"
@@ -110,7 +172,7 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
                                 } elseif ($type === 'link') {
                                     $linkUrl = isset($col['linkUrl']) ? str_replace('{id}', htmlspecialchars((string)$id), $col['linkUrl']) : '#';
                                     $linkTitle = $col['linkTitle'] ?? 'Consulter la fiche';
-                                    echo '<a href="' . $linkUrl . '" class="text-bold fg-dark" title="' . htmlspecialchars($linkTitle) . '">' . htmlspecialchars((string)$val) . '</a>';
+                                    echo '<a href="' . $linkUrl . '" class="text-bold fg-primary" title="' . htmlspecialchars($linkTitle) . '">' . htmlspecialchars((string)$val) . '</a>';
                                 } elseif ($type === 'date') {
                                     echo !empty($val) ? htmlspecialchars(date($col['dateFormat'] ?? 'd/m/Y', strtotime($val))) : '-';
                                 } elseif ($type === 'badge') {
@@ -200,5 +262,7 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
         </tbody>
     </table>
     </div>
-</main>
 
+    <!-- Pagination & infos ("Affichage de X à Y sur Z"), toujours visibles sous le tableau -->
+    <div id="<?php echo $paginationWrapperId; ?>" class="list-pagination-wrapper"></div>
+</main>

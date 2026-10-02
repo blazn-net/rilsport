@@ -44,7 +44,9 @@ class Users extends Controller
             }
         }
 
-        $data['users'] = $this->userModel->getUsers();
+        $search        = trim($_GET['search'] ?? '');
+        $data['users'] = $this->userModel->getUsers($search);
+        $data['search'] = $search;
 
         $this->view('system/header', $data);
         $this->view('system/navview', $data);

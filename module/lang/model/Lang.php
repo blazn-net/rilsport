@@ -10,8 +10,19 @@ class Lang {
         $this->db = new Database();
     }
 
-    public function getAllLangs() {
-        $this->db->query("SELECT * FROM t_lang_lang ORDER BY lang_code ASC");
+    public function getAllLangs(string $search = '') {
+        if ($search !== '') {
+            $like = '%' . $search . '%';
+            $this->db->query("
+                SELECT * FROM t_lang_lang
+                WHERE lang_code LIKE :s1 OR lang_name LIKE :s2
+                ORDER BY lang_code ASC
+            ");
+            $this->db->bind(':s1', $like);
+            $this->db->bind(':s2', $like);
+        } else {
+            $this->db->query("SELECT * FROM t_lang_lang ORDER BY lang_code ASC");
+        }
         return $this->db->resultSet();
     }
 

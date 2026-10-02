@@ -16,13 +16,16 @@ class Langs extends Controller {
     }
 
     public function index() {
-        $txt   = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
-        $langs = $this->langModel->getAllLangs();
+        $txt    = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
+        $search = trim($_GET['search'] ?? '');
+        $langs  = $this->langModel->getAllLangs($search);
 
         $data = [
             'txt'     => $txt,
             'title'   => ($txt['LANG_LANGS_MGT'] ?? 'Langues') . ' - ' . SITENAME,
             'langs'   => $langs,
+            'search'  => $search,
+            'isAdmin' => true,   // accès réservé aux admins (vérifié dans __construct)
             'message' => $_SESSION['flash_message'] ?? '',
             'error'   => $_SESSION['flash_error'] ?? ''
         ];

@@ -11,13 +11,13 @@
     <script>
     (function() {
         function setupTableScrollControls() {
-            var wraps = document.querySelectorAll('.table-container, .horizontal-scroll, .table-wrap');
-            wraps.forEach(function(wrap) {
-                if (wrap.nextElementSibling && wrap.nextElementSibling.classList.contains('table-scroll-controls')) {
-                    var existing = wrap.nextElementSibling;
-                    if (existing._updateThumb) existing._updateThumb();
-                    return;
-                }
+            // On cible directement nos propres .table-scroll-wrapper
+            // (et NON .table-container qui est généré par Metro UI pour chaque ligne)
+            var wrappers = document.querySelectorAll('.table-scroll-wrapper');
+            wrappers.forEach(function(wrap) {
+                // Ne pas initialiser deux fois le même wrapper
+                if (wrap._scrollControlsInit) return;
+                wrap._scrollControlsInit = true;
 
                 var controls = document.createElement('div');
                 controls.className = 'table-scroll-controls d-flex flex-align-center';
@@ -32,11 +32,13 @@
                         '<span class="mif-chevron-right"></span>' +
                     '</button>';
 
+                // Insérer les contrôles APRÈS .table-scroll-wrapper (sibling),
+                // au même niveau DOM que la pagination (Préc 1 Suiv).
                 wrap.parentNode.insertBefore(controls, wrap.nextSibling);
 
-                var bar = controls.querySelector('.custom-table-scrollbar');
-                var thumb = controls.querySelector('.custom-table-thumb');
-                var btnLeft = controls.querySelector('.scroll-btn-left');
+                var bar    = controls.querySelector('.custom-table-scrollbar');
+                var thumb  = controls.querySelector('.custom-table-thumb');
+                var btnLeft  = controls.querySelector('.scroll-btn-left');
                 var btnRight = controls.querySelector('.scroll-btn-right');
 
                 function update() {
@@ -117,18 +119,6 @@
             });
         }
 
-        // Surveiller en continu pour détecter quand Metro UI génère .table-container
-        var attempts = 0;
-        var checkTimer = setInterval(function() {
-            attempts++;
-            if (document.querySelector('.table-container, .horizontal-scroll, .table-wrap')) {
-                setupTableScrollControls();
-            }
-            if (attempts > 30) {
-                clearInterval(checkTimer);
-            }
-        }, 150);
-
         if (document.readyState === 'complete') {
             setupTableScrollControls();
         } else {
@@ -136,6 +126,9 @@
                 setTimeout(setupTableScrollControls, 100);
             });
         }
+        // Re-run après Metro UI pour capturer les wrappers tardifs
+        setTimeout(setupTableScrollControls, 500);
+        setTimeout(setupTableScrollControls, 1200);
     })();
     </script>
 </body>

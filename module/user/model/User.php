@@ -116,9 +116,23 @@ class User
     }
 
     // Récupérer tous les utilisateurs
-    public function getUsers()
+    public function getUsers(string $search = '')
     {
-        $this->db->query('SELECT id, username, email, nom, prenom, created_at, status_id FROM t_user_user ORDER BY created_at DESC');
+        if ($search !== '') {
+            $like = '%' . $search . '%';
+            $this->db->query("
+                SELECT id, username, email, nom, prenom, created_at, status_id
+                FROM t_user_user
+                WHERE username LIKE :s1 OR email LIKE :s2 OR nom LIKE :s3 OR prenom LIKE :s4
+                ORDER BY created_at DESC
+            ");
+            $this->db->bind(':s1', $like);
+            $this->db->bind(':s2', $like);
+            $this->db->bind(':s3', $like);
+            $this->db->bind(':s4', $like);
+        } else {
+            $this->db->query('SELECT id, username, email, nom, prenom, created_at, status_id FROM t_user_user ORDER BY created_at DESC');
+        }
         $users = $this->db->resultSet();
         foreach ($users as &$user) {
             if (is_array($user)) {
