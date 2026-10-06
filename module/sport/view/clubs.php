@@ -57,7 +57,7 @@ $renderLogo = function ($val, $row) {
          . '<span class="mif-security" style="font-size:18px;"></span></div>';
 };
 
-// ── Render Nom + Sigle + Code ─────────────────────────────────────────────────
+// ── Render Nom + Sigle ─────────────────────────────────────────────────────────
 $renderClubName = function ($val, $row, $data) {
     $html  = '<a href="' . URLROOT . '/sport/club/' . htmlspecialchars((string)$row['id']) . '" ';
     $html .= 'class="text-bold fg-primary" title="' . htmlspecialchars($data['txt']['SPORT_VIEW_CLUB_TITLE'] ?? 'Fiche du club') . '">';
@@ -65,7 +65,6 @@ $renderClubName = function ($val, $row, $data) {
     if (!empty($row['acronym'])) {
         $html .= ' <span class="badge info ml-1">' . htmlspecialchars($row['acronym']) . '</span>';
     }
-    $html .= '<br><small class="fg-gray"><code>' . htmlspecialchars($row['code']) . '</code></small>';
     return $html;
 };
 
@@ -101,10 +100,23 @@ $listConfig = [
     'statusField'       => 'status_id',
     'columns'           => [
         [
+            'field'       => 'id',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
             'field'       => 'logo',
             'label'       => $data['txt']['CLUB_TABLE_LOGO'] ?? 'Logo',
             'render'      => $renderLogo,
-            'headerStyle' => 'width:60px;',
+            'headerStyle' => 'width:60px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field' => 'code',
+            'label' => $data['txt']['SYS_COL_CODE'] ?? 'Code',
+            'type'  => 'code',
         ],
         [
             'field'  => 'name',

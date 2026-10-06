@@ -28,19 +28,30 @@ $listConfig = [
     'statusField'    => 'status_id',
     'columns'        => [
         [
+            'field'       => 'lang_code',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field'       => 'lang_flag',
+            'label'       => $data['txt']['LANG_FLAG'] ?? 'Drapeau',
+            'render'      => $renderFlag,
+            'headerStyle' => 'width:80px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
             'field' => 'lang_code',
             'label' => $data['txt']['LANG_CODE'] ?? 'Code',
             'type'  => 'code',
         ],
         [
-            'field' => 'lang_name',
-            'label' => $data['txt']['LANG_NAME'] ?? 'Nom',
-            'type'  => 'text',
-        ],
-        [
-            'field'  => 'lang_flag',
-            'label'  => $data['txt']['LANG_FLAG'] ?? 'Drapeau',
-            'render' => $renderFlag,
+            'field'     => 'lang_name',
+            'label'     => $data['txt']['LANG_NAME'] ?? 'Nom',
+            'type'      => 'link',
+            'linkUrl'   => URLROOT . '/lang/{id}',
+            'linkTitle' => 'Consulter la langue',
         ],
     ],
     'actions' => [

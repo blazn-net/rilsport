@@ -40,15 +40,21 @@ ob_start(); ?>
 </form>
 <?php $compFiltersHtml = ob_get_clean();
 
-// ── Render Nom + logo + sigle ─────────────────────────────────────────────────
+// ── Render Logo ───────────────────────────────────────────────────────────────
+$renderCompLogo = function ($val, $row) {
+    if (!empty($row['logo'])) {
+        $logoUrl = URLROOT . '/' . ltrim($row['logo'], '/');
+        return '<img src="' . htmlspecialchars($logoUrl) . '" alt="" style="max-height:36px;max-width:36px;object-fit:contain;vertical-align:middle;">';
+    }
+    return '<span class="mif-trophy mif-2x fg-amber"></span>';
+};
+
+// ── Render Nom + sigle ────────────────────────────────────────────────────────
 $renderCompName = function ($val, $row, $data) {
     $html = '<a href="' . URLROOT . '/sport/competition/' . (int)$row['id'] . '" class="text-bold fg-primary">';
-    if (!empty($row['logo'])) {
-        $html .= '<img src="' . URLROOT . '/' . htmlspecialchars($row['logo']) . '" alt="" style="height:20px;width:auto;margin-right:6px;vertical-align:middle;">';
-    }
     $html .= htmlspecialchars($row['name']);
     if (!empty($row['acronym'])) {
-        $html .= ' <span class="fg-gray ml-1">(' . htmlspecialchars($row['acronym']) . ')</span>';
+        $html .= ' <span class="badge info ml-1">' . htmlspecialchars($row['acronym']) . '</span>';
     }
     $html .= '</a>';
     return $html;
@@ -72,6 +78,25 @@ $listConfig = [
     'idField'           => 'id',
     'statusField'       => 'status_id',
     'columns'           => [
+        [
+            'field'       => 'id',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field'       => 'logo',
+            'label'       => $data['txt']['SYS_COL_LOGO'] ?? 'Logo',
+            'render'      => $renderCompLogo,
+            'headerStyle' => 'width:60px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field' => 'code',
+            'label' => $data['txt']['SYS_COL_CODE'] ?? 'Code',
+            'type'  => 'code',
+        ],
         [
             'field'  => 'name',
             'label'  => $data['txt']['COMPETITION_TABLE_NAME'] ?? 'Nom',

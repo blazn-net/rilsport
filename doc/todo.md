@@ -21,6 +21,17 @@
 
 ---
 
+### `[20261005-0205]` Test
+- **Type** : Évolution
+- **Priorité** : P1
+- **Statut** : Nouveau
+- **Description** : Championnat de test
+- **Sous-tâches** :
+    - [ ] `[20261005-0205]` Zodiaque HorseBall
+    - [ ] `[20261005-0206]` 8 équipes : bronze, argent, or, asgard, poseidon, hades, noir, etc...
+    - [ ] `[20261005-0207]` Joueurs : nom + constellation
+
+
 ### `[20260908-2236]` BDD
 - **Type** : Bug
 - **Priorité** : P1
@@ -156,7 +167,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
-- **Description** : _À compléter_
+- **Description** : Vérifier avec tous les profils
 
 ---
 

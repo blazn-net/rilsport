@@ -18,9 +18,20 @@ $listConfig = [
     'statusField'    => 'status_id',
     'columns'        => [
         [
-            'field' => 'id',
-            'label' => '#',
-            'type'  => 'text',
+            'field'       => 'id',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field'       => 'icon',
+            'label'       => $data['txt']['SPORT_ICON'] ?? 'Icône',
+            'headerStyle' => 'width:60px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+            'render'      => function () {
+                return '<span class="mif-calendar mif-2x fg-darkCyan"></span>';
+            },
         ],
         [
             'field' => 'code',

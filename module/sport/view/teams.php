@@ -56,7 +56,17 @@ ob_start();
 <?php
 $teamsFiltersHtml = ob_get_clean();
 
-// Rendu personnalisé de la colonne "Équipe" (nom + sous-titre + code)
+// Rendu personnalisé de l'icône/logo de l'équipe
+$renderTeamLogo = function ($val, $row) {
+    if (!empty($row['club_logo'])) {
+        $logoUrl = URLROOT . '/' . ltrim($row['club_logo'], '/');
+        return '<img src="' . htmlspecialchars($logoUrl) . '" alt="" style="max-height:36px;max-width:36px;object-fit:contain;vertical-align:middle;">';
+    }
+    $color = !empty($row['club_primary_color']) ? htmlspecialchars($row['club_primary_color']) : '#0072c6';
+    return '<span class="mif-shield mif-2x" style="color:' . $color . ';"></span>';
+};
+
+// Rendu personnalisé de la colonne "Équipe" (nom + sous-titre)
 $renderTeamName = function ($val, $row, $data) {
     $html  = '<a href="' . URLROOT . '/sport/team/' . htmlspecialchars((string)$row['id']) . '" ';
     $html .= 'class="text-bold fg-primary" ';
@@ -66,7 +76,6 @@ $renderTeamName = function ($val, $row, $data) {
     if (!empty($row['short_name'])) {
         $html .= ' <small class="fg-gray">(' . htmlspecialchars($row['short_name']) . ')</small>';
     }
-    $html .= '<br><small class="fg-gray"><code>' . htmlspecialchars($row['code']) . '</code></small>';
     return $html;
 };
 
@@ -111,6 +120,25 @@ $listConfig = [
     'idField'      => 'id',
     'statusField'  => 'status_id',
     'columns'      => [
+        [
+            'field'       => 'id',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field'       => 'club_logo',
+            'label'       => $data['txt']['SYS_COL_LOGO'] ?? 'Logo',
+            'render'      => $renderTeamLogo,
+            'headerStyle' => 'width:60px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field' => 'code',
+            'label' => $data['txt']['SYS_COL_CODE'] ?? 'Code',
+            'type'  => 'code',
+        ],
         [
             'field'  => 'name',
             'label'  => $data['txt']['TEAM_NAME'] ?? 'Équipe',

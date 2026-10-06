@@ -25,6 +25,15 @@ $renderRole = function ($val, $row) {
     return '<span class="badge ' . $roleBadge . '">' . htmlspecialchars($roleName) . '</span>';
 };
 
+// Render : Photo ou Avatar
+$renderPersonPhoto = function ($val, $row) {
+    if (!empty($row['photo'])) {
+        $photoUrl = URLROOT . '/' . ltrim($row['photo'], '/');
+        return '<img src="' . htmlspecialchars($photoUrl) . '" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle;">';
+    }
+    return '<span class="mif-user mif-2x fg-darkCyan"></span>';
+};
+
 $listConfig = [
     'title'          => $data['txt']['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs',
     'icon'           => 'mif-contacts',
@@ -39,9 +48,18 @@ $listConfig = [
     'statusField'    => 'status_id',
     'columns'        => [
         [
-            'field' => 'id',
-            'label' => '#',
-            'type'  => 'text',
+            'field'       => 'id',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field'       => 'photo',
+            'label'       => $data['txt']['SYS_COL_ICON'] ?? 'Icône',
+            'headerStyle' => 'width:60px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+            'render'      => $renderPersonPhoto,
         ],
         [
             'field' => 'code',

@@ -74,6 +74,27 @@ $listConfig = [
     'statusField'       => 'status_id',
     'columns'           => [
         [
+            'field'       => 'id',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field'       => 'icon',
+            'label'       => $data['txt']['SYS_COL_ICON'] ?? 'Icône',
+            'headerStyle' => 'width:60px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+            'render'      => function () {
+                return '<span class="mif-calendar mif-2x fg-darkOrange"></span>';
+            },
+        ],
+        [
+            'field' => 'code',
+            'label' => $data['txt']['SYS_COL_CODE'] ?? 'Code',
+            'type'  => 'code',
+        ],
+        [
             'field'  => 'name',
             'label'  => $data['txt']['COMPETITION_EDITION_TABLE_NAME'] ?? 'Édition',
             'render' => $renderEditionName,

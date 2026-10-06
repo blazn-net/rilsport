@@ -111,3 +111,16 @@ Format standardisé du routage :
 ### F. Héritage obligatoire
 > Toute page de type List **doit** utiliser `module/system/view/common/list_template.php`.  
 > Ce template centralise : en-tête, alertes flash, barre de recherche GET, tableau responsive Metro UI, colonnes admin-only, pagination et contrôles de défilement horizontal.
+
+### G. Structure standardisée du Grid (colonnes du tableau)
+Chaque tableau (grid) de page List doit obligatoirement comporter les colonnes ordonnées suivantes :
+1. **`#` (id)** : Identifiant unique de l'enregistrement.
+2. **`Icône ou Logo`** : Représentation visuelle compacte (logo officiel du club/compétition, icône Metro UI `mif-...`, drapeau ou avatar).
+3. **`Code`** : Identifiant court / code unique (affiché en format monospace `<code>`).
+4. **`Nom`** : Nom de l'entité, obligatoirement avec un lien cliquable ouvrant la fiche en mode **Consultation (View)**.
+5. **`Colonnes persos`** : Colonnes spécifiques au domaine métier (dates début/fin, rôle, discipline, localisation, etc.).
+6. **`Statut`** : Badge d'état (Actif / Inactif), masqué pour les visiteurs, visible **uniquement pour les administrateurs**.
+7. **`Actions`** : Boutons Modifier (`mif-pencil`), Désactiver (`mif-cancel`) / Réactiver (`mif-checkmark`), Supprimer (`mif-bin`), visible **uniquement pour les administrateurs**.
+
+> **Zone de filtre et pagination** : Ne pas altérer la zone de filtre (recherche GET / filtres personnalisés) ni le wrapper de pagination gérés par le template parent.
+

@@ -18,9 +18,21 @@ $listConfig = [
     'statusField'    => 'status_id',
     'columns'        => [
         [
-            'field' => 'id',
-            'label' => '#',
-            'type'  => 'text',
+            'field'       => 'id',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field'       => 'icon',
+            'label'       => $data['txt']['SPORT_ICON'] ?? 'Icône',
+            'headerStyle' => 'width:60px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+            'render'      => function ($val) {
+                $iconClass = (!empty($val) && $val !== 'mif-dribbble') ? htmlspecialchars($val) : 'mif-trophy';
+                return '<span class="' . $iconClass . ' mif-2x"></span>';
+            },
         ],
         [
             'field' => 'code',
@@ -35,18 +47,9 @@ $listConfig = [
             'linkTitle' => 'Consulter la fiche du sport',
         ],
         [
-            'field'  => 'description',
-            'label'  => $data['txt']['SPORT_DESCRIPTION'] ?? 'Description',
-            'type'   => 'text',
-        ],
-        [
-            'field'  => 'icon',
-            'label'  => $data['txt']['SPORT_ICON'] ?? 'Icône',
-            'render' => function ($val) {
-                $iconClass = (!empty($val) && $val !== 'mif-dribbble') ? htmlspecialchars($val) : 'mif-trophy';
-                return '<span class="' . $iconClass . ' mif-lg mr-1"></span>'
-                     . ' <small class="fg-gray">(' . $iconClass . ')</small>';
-            },
+            'field' => 'description',
+            'label' => $data['txt']['SPORT_DESCRIPTION'] ?? 'Description',
+            'type'  => 'text',
         ],
     ],
     'actions' => [

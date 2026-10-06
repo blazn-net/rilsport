@@ -88,33 +88,72 @@ require 'module/system/view/common/list_template.php';
 
 ---
 
-## 4. Définition des colonnes
+## 4. Définition du Grid et des colonnes obligatoires
+
+Chaque page de type List **DOIT** posséder un tableau (grid) contenant les colonnes suivantes :
+
+| N° | Colonne | Rôle | Configuration / Rendu |
+|----|---------|------|------------------------|
+| 1 | **`#` (id)** | Identifiant unique | `['field' => 'id', 'label' => '#', 'type' => 'text']` |
+| 2 | **`Icône ou Logo`** | Visuel représentatif (logo club/compétition, icône Metro UI `mif-...`, drapeau ou avatar) | `['field' => 'icon', 'label' => 'Icône', 'render' => ...]` ou `renderLogo` |
+| 3 | **`Code`** | Code court unique de l'entité | `['field' => 'code', 'label' => 'Code', 'type' => 'code']` |
+| 4 | **`Nom`** | Nom de l'entité avec **lien de consultation** vers la fiche View | `['field' => 'name', 'label' => 'Nom', 'type' => 'link', 'linkUrl' => URLROOT . '/module/objet/{id}']` |
+| 5 | **`Colonnes persos`** | Informations métier spécifiques (ex: dates début/fin, rôle, localisation, sport, etc.) | Colonnes text, date, badge ou render personnalisé |
+| 6 | **`Statut`** | Badge Actif / Inactif (visible **uniquement pour les administrateurs**) | Géré automatiquement par `list_template.php` en fin de tableau |
+| 7 | **`Actions`** | Boutons d'action (Modifier, Désactiver/Activer, Supprimer — visible **admins uniquement**) | Géré automatiquement par `list_template.php` via la clé `'actions'` |
+
+> **Règle stricte** : **Ne pas toucher à la zone de filtres ni à la pagination**. Elles sont gérées automatiquement par `list_template.php`.
+
+### Exemple de configuration `$listConfig['columns']` :
 
 ```php
 'columns' => [
-    // Texte brut
-    ['field' => 'id',   'label' => '#',    'type' => 'text'],
+    // 1. # (id)
+    [
+        'field'       => 'id',
+        'label'       => '#',
+        'type'        => 'text',
+        'headerStyle' => 'width:50px;text-align:center;',
+        'cellStyle'   => 'text-align:center;',
+    ],
 
-    // Code monospace (<code>)
-    ['field' => 'code', 'label' => 'Code', 'type' => 'code'],
+    // 2. Icône ou Logo
+    [
+        'field'       => 'icon',
+        'label'       => 'Icône',
+        'headerStyle' => 'width:60px;text-align:center;',
+        'cellStyle'   => 'text-align:center;',
+        'render'      => function ($val, $row) {
+            $icon = !empty($val) ? htmlspecialchars($val) : 'mif-trophy';
+            return '<span class="' . $icon . ' mif-2x"></span>';
+        },
+    ],
 
-    // Lien vers fiche View — LE CLIC SUR LE NOM VA TOUJOURS EN VIEW (lecture)
-    ['field' => 'name', 'label' => 'Nom',  'type' => 'link',
-     'linkUrl'   => URLROOT . '/module/objet/{id}',
-     'linkTitle' => 'Consulter la fiche'],
+    // 3. Code
+    [
+        'field' => 'code',
+        'label' => 'Code',
+        'type'  => 'code',
+    ],
 
-    // Render personnalisé
-    ['field' => 'role', 'label' => 'Rôle',
-     'render' => function ($val, $row, $data) {
-         return '<span class="badge primary">' . htmlspecialchars($val) . '</span>';
-     }],
+    // 4. Nom (Lien vers fiche View en consultation)
+    [
+        'field'     => 'name',
+        'label'     => 'Nom',
+        'type'      => 'link',
+        'linkUrl'   => URLROOT . '/module/objet/{id}',
+        'linkTitle' => 'Consulter la fiche',
+    ],
 
-    // Alignement
-    ['field' => 'count', 'label' => 'Nb',
-     'headerStyle' => 'text-align:center;',
-     'cellStyle'   => 'text-align:center;'],
+    // 5. Colonnes persos (métier)
+    [
+        'field' => 'description',
+        'label' => 'Description',
+        'type'  => 'text',
+    ],
 ],
 ```
+
 
 ---
 
@@ -227,6 +266,8 @@ Tout nouvel objet List **DOIT** avoir un lien dans `module/system/view/navview.p
 ## 10. Checklist avant livraison
 
 - [ ] `[objets].php` utilise `require list_template.php`
+- [ ] Grid standard : colonnes `#`, `Icône ou Logo`, `Code`, `Nom`, `Colonnes persos`, `Statut` (admin), `Actions` (admin)
+- [ ] Zone de filtres et pagination intactes (gérées par le template)
 - [ ] `listUrl` défini → recherche GET active
 - [ ] Contrôleur lit `$_GET['search']` et passe `$data['search']`
 - [ ] Modèle `getAllXxx(string $search = '')` supporte LIKE
@@ -235,3 +276,4 @@ Tout nouvel objet List **DOIT** avoir un lien dans `module/system/view/navview.p
 - [ ] Colonnes Statut & Actions : admin-only (géré par le template)
 - [ ] Lien `navview.php` (pluriel, sans "Gestion")
 - [ ] Mobile : icône-only pour les boutons, scroll horizontal tableau
+

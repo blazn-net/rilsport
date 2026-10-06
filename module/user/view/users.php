@@ -4,10 +4,11 @@
  * Utilise le template parent universel list_template.php
  */
 
-// Render : Nom complet (prénom + nom)
+// Render : Nom complet avec lien
 $renderUserName = function ($val, $row, $data) {
     $fullName = htmlspecialchars(trim(($row['prenom'] ?? '') . ' ' . ($row['nom'] ?? '')));
-    return ($fullName !== '') ? $fullName : '<em class="fg-gray">—</em>';
+    $label = ($fullName !== '') ? $fullName : htmlspecialchars($row['username'] ?? '—');
+    return '<a href="' . URLROOT . '/user/' . (int)$row['id'] . '" class="text-bold fg-primary" title="Consulter le profil">' . $label . '</a>';
 };
 
 // Render : Badges des rôles
@@ -24,14 +25,6 @@ $renderRoles = function ($val, $row, $data) {
     }
     $html .= '</div>';
     return $html;
-};
-
-// Render : Statut utilisateur
-$renderStatus = function ($val, $row, $data) {
-    $statusCode  = $data['available_statuses'][$row['status_id']] ?? '';
-    $statusLabel = $data['txt'][$statusCode] ?? $statusCode;
-    $badgeClass  = ($row['status_id'] == 1) ? 'success' : 'secondary';
-    return '<span class="badge ' . $badgeClass . '">' . htmlspecialchars($statusLabel) . '</span>';
 };
 
 // Render : Date d'inscription
@@ -53,14 +46,25 @@ $listConfig = [
     'statusField'    => 'status_id',
     'columns'        => [
         [
-            'field' => 'id',
-            'label' => 'ID',
-            'type'  => 'text',
+            'field'       => 'id',
+            'label'       => '#',
+            'type'        => 'text',
+            'headerStyle' => 'width:50px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+        ],
+        [
+            'field'       => 'avatar',
+            'label'       => $data['txt']['SYS_COL_ICON'] ?? 'Icône',
+            'headerStyle' => 'width:60px;text-align:center;',
+            'cellStyle'   => 'text-align:center;',
+            'render'      => function () {
+                return '<span class="mif-user mif-2x fg-emerald"></span>';
+            },
         ],
         [
             'field' => 'username',
-            'label' => $data['txt']['USER_USERNAME'] ?? 'Pseudo',
-            'type'  => 'text',
+            'label' => $data['txt']['USER_USERNAME'] ?? 'Code',
+            'type'  => 'code',
         ],
         [
             'field'  => 'nom',
@@ -81,11 +85,6 @@ $listConfig = [
             'field'  => 'created_at',
             'label'  => $data['txt']['USER_DATE_REG'] ?? 'Inscription',
             'render' => $renderDate,
-        ],
-        [
-            'field'  => 'status_id',
-            'label'  => $data['txt']['STATUS'] ?? 'Statut',
-            'render' => $renderStatus,
         ],
     ],
     // Pas de 'actions' standard (Modifier/Désactiver) : on garde les actions existantes
