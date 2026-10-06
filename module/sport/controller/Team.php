@@ -10,7 +10,7 @@ class Team extends Controller {
         $this->teamModel = $this->model('sport/Team');
     }
 
-    public function index($id = null) {
+    public function index($id = null, $action = null) {
         $txt     = array_merge(
             $this->loadLanguage('system'),
             $this->loadLanguage('user'),
@@ -37,7 +37,8 @@ class Team extends Controller {
             }
         }
 
-        $mode = $id ? ($isAdmin ? 'edit' : 'view') : 'add';
+        $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $mode   = $id ? ((($action === 'edit' || $isPost) && $isAdmin) ? 'edit' : 'view') : 'add';
 
         // Traitement du formulaire POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -123,6 +124,13 @@ class Team extends Controller {
         $this->view('system/navview', $data);
         $this->view('sport/team', $data);
         $this->view('system/footer', $data);
+    }
+
+    /**
+     * Accès direct au formulaire d'édition (Admin)
+     */
+    public function edit($id = null) {
+        return $this->index($id, 'edit');
     }
 
     /**

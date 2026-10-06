@@ -1,4 +1,4 @@
-﻿# Rules — Projet RIL Sport
+# Rules — Projet RIL Sport
 
 Ce fichier définit les règles principales du projet RIL Sport pour les agents d'assistance.
 Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wamp64/www/rilsport/doc/) et répliquées dans [.agents/rules/](file:///c:/wamp64/www/rilsport/.agents/rules/).
@@ -33,6 +33,10 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
   - Le mode Édition (`Edit`) est accessible aux admins via le bouton Modifier (crayon `mif-pencil`) de la colonne Actions ou via le bouton « Modifier » en haut de la fiche `View`.
   - La colonne **Actions** et la colonne **Statut** sont visibles **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`), totalement masquées pour les non-admins.
   - Libellés de dates : Intitulés concis « Début » et « Fin » (et non « Date de début / fin »).
+- **Pages Form & View standardisées (`form_template.php`)** :
+  - Toute fiche individuelle Form / View s'appuie obligatoirement sur le template universel `module/system/view/common/form_template.php`.
+  - **Mode View (Consultation)** : Zéro balise d'entrée (`<input>`, `<select>`), textes et blocs d'informations stylisés, panneau d'audit déplié par défaut, bouton Modifier (bleu `button info`) visible uniquement pour les administrateurs.
+  - **Mode Edit / Add (Formulaire)** : Formulaire dans une card, champ Code `readonly` en mode édition, validation stricte, boutons de pied Enregistrer/Mettre à jour (vert `button success`, `mif-floppy-disk`) et Annuler (neutre `button secondary`, `mif-cancel`).
 - **Règles Mobile First (Point [20260908-2319]) — Viewport étroit ≤ 414px** :
   - **Boutons avec icône seule** : Sur mobile (≤ 414px), les boutons n'affichent **que leur icône** (pas de texte, classe `.btn-text` masquée), format carré ergonomique 36×36px avec infobulle `title`.
   - **Tableaux avec ascenseur horizontal** : Les données restent sous forme de tableau. Si les colonnes dépassent la largeur mobile, un ascenseur horizontal est obligatoire (via `data-horizontal-scroll="true"` sur la table, styles sur `.table-container`, et contrôles `.table-scroll-controls` avec boutons `[ ◄ ]` / `[ ► ]`).

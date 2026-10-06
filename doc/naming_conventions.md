@@ -124,3 +124,33 @@ Chaque tableau (grid) de page List doit obligatoirement comporter les colonnes o
 
 > **Zone de filtre et pagination** : Ne pas altérer la zone de filtre (recherche GET / filtres personnalisés) ni le wrapper de pagination gérés par le template parent.
 
+---
+
+## 6. Conventions d'Interface Utilisateur (UI) — Pages Form & View
+
+### A. Héritage obligatoire
+> Toute page de type Form / View **doit** utiliser le template parent universel `module/system/view/common/form_template.php`.  
+> Ce template gère automatiquement : l'en-tête dynamique selon le mode, les alertes flash, le cadre de la fiche, l'avatar, les boutons d'action (Modifier, Retour, Enregistrer, Annuler) et le panneau d'audit.
+
+### B. Dualité Consultation (`View`) vs Formulaire (`Edit` / `Add`)
+- **Mode `view` (consultation pure)** :
+  - **Interdiction formelle** de toute balise d'entrée (`<input>`, `<select>`, `<textarea>`) même `readonly` ou `disabled`.
+  - **Zéro bouton `submit`**.
+  - Données structurées sous forme de blocs d'informations (`style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;"`), avec icônes colorées et typographie lisible.
+  - Panneau d'audit **déplié par défaut** (`data-collapsed="false"`).
+  - Bouton **Modifier** (`button info`, bleu, `mif-pencil`) visible uniquement pour les administrateurs dans l'en-tête.
+- **Mode `edit` / `add` (formulaire interactif pour admins)** :
+  - Formulaire encapsulé dans une card propre.
+  - Champ `code` : `readonly` en mode édition avec libellé d'aide et icône cadenas, `required` en mode création.
+  - Champ `status_id` : présent uniquement en mode `edit`.
+  - Panneau d'audit : présent en mode `edit` uniquement, et **replié par défaut** (`data-collapsed="true"`).
+
+### C. Boutons d'action — Form & View
+| Bouton | Classe | Icône | Emplacement | Rôle |
+|---|---|---|---|---|
+| **Modifier** | `button info` (bleu) | `mif-pencil` | En-tête, mode View, admin only | Ouvre le formulaire d'édition `/module/objet/edit/{id}` |
+| **Retour** | `button` (neutre) | `mif-arrow-left` | En-tête, tous modes | Retourne à la liste `/module/objets` |
+| **Enregistrer / Mettre à jour** | `button success` (vert) | `mif-floppy-disk` | Pied form, Edit / Add | Soumet le formulaire POST |
+| **Annuler** | `button secondary` (neutre) | `mif-cancel` | Pied form, Edit / Add | Quitte sans modifier (retour en View si Edit, ou vers la liste si Add) |
+
+

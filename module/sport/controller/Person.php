@@ -10,7 +10,7 @@ class Person extends Controller {
         $this->personModel = $this->model('sport/Person');
     }
 
-    public function index($id = null) {
+    public function index($id = null, $action = null) {
         $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
 
@@ -33,12 +33,13 @@ class Person extends Controller {
             }
         }
 
-        $roles = $this->personModel->getAllRoles();
-        $mode  = $id ? ($isAdmin ? 'edit' : 'view') : 'add';
+        $roles  = $this->personModel->getAllRoles();
+        $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $mode   = $id ? ((($action === 'edit' || $isPost) && $isAdmin) ? 'edit' : 'view') : 'add';
 
         $data = [
             'txt'     => $txt,
-            'title'   => ($id ? ($isAdmin ? ($txt['SPORT_EDIT_PERSON_TITLE'] ?? 'Modifier la personne') : 'Fiche de la personne') : ($txt['SPORT_ADD_PERSON_TITLE'] ?? 'Ajouter une personne')) . ' - ' . SITENAME,
+            'title'   => ($id ? ($mode === 'edit' ? ($txt['SPORT_EDIT_PERSON_TITLE'] ?? 'Modifier la personne') : 'Fiche de la personne : ' . (($personData['first_name'] ?? '') . ' ' . ($personData['last_name'] ?? ''))) : ($txt['SPORT_ADD_PERSON_TITLE'] ?? 'Ajouter une personne')) . ' - ' . SITENAME,
             'person'  => $personData ? (object) $personData : null,
             'roles'   => $roles,
             'mode'    => $mode,
@@ -101,6 +102,13 @@ class Person extends Controller {
         $this->view('system/navview', $data);
         $this->view('sport/person', $data);
         $this->view('system/footer', $data);
+    }
+
+    /**
+     * Accès direct au formulaire d'édition (Admin)
+     */
+    public function edit($id = null) {
+        return $this->index($id, 'edit');
     }
 
     public function delete($id = null) {

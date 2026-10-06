@@ -213,11 +213,11 @@
 
 ---
 
-### `[20260920-2318]` Faire une classe/template parente pour les pages list et form (Pilote réalisé avec module/system/view/common/list_template.php sur Saisons)
+### `[20260920-2318]` Faire une classe/template parente pour les pages list et form (Réalisé : list_template.php et form_template.php généralisés)
 - **Type** : Évolution
 - **Priorité** : P1
-- **Statut** : En cours
-- **Description** : _À compléter_
+- **Statut** : Terminé
+- **Description** : Standardisation complète des templates universels `module/system/view/common/list_template.php` et `module/system/view/common/form_template.php`. Dualité consultation pure (`view`) vs formulaires d'édition (`edit`/`add`), audit automatique, mobile-first, généralisé sur toutes les entités de RIL Sport (Saisons, Sports, Clubs, Équipes, Personnes, Compétitions, Éditions, Zones, Langues, Utilisateurs).
 
 ---
 

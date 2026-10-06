@@ -10,7 +10,7 @@ class Sport extends Controller {
         $this->sportModel = $this->model('sport/Sport');
     }
 
-    public function index($id = null) {
+    public function index($id = null, $action = null) {
         $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
 
@@ -33,11 +33,12 @@ class Sport extends Controller {
             }
         }
 
-        $mode = $id ? ($isAdmin ? 'edit' : 'view') : 'add';
+        $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $mode   = $id ? ((($action === 'edit' || $isPost) && $isAdmin) ? 'edit' : 'view') : 'add';
 
         $data = [
             'txt'     => $txt,
-            'title'   => ($id ? ($isAdmin ? ($txt['SPORT_EDIT_SPORT_TITLE'] ?? 'Modifier le sport') : 'Fiche du sport') : ($txt['SPORT_ADD_SPORT_TITLE'] ?? 'Ajouter un sport')) . ' - ' . SITENAME,
+            'title'   => ($id ? ($mode === 'edit' ? ($txt['SPORT_EDIT_SPORT_TITLE'] ?? 'Modifier le sport') : 'Fiche du sport : ' . ($sportData['name'] ?? '')) : ($txt['SPORT_ADD_SPORT_TITLE'] ?? 'Ajouter un sport')) . ' - ' . SITENAME,
             'sport'   => $sportData ? (object) $sportData : null,
             'mode'    => $mode,
             'isAdmin' => $isAdmin,
@@ -96,6 +97,13 @@ class Sport extends Controller {
         $this->view('system/navview', $data);
         $this->view('sport/sport', $data);
         $this->view('system/footer', $data);
+    }
+
+    /**
+     * Accès direct au formulaire d'édition (Admin)
+     */
+    public function edit($id = null) {
+        return $this->index($id, 'edit');
     }
 
     public function delete($id = null) {

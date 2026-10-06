@@ -1,75 +1,72 @@
-<main class="p-4" style="margin-top: 60px;">
-    <div class="d-flex flex-justify-between flex-align-center mb-4">
-        <h2><span class="mif-language mr-2"></span><?php echo ($data['mode'] === 'edit') ? ($data['txt']['LANG_EDIT_LANG_TITLE'] ?? 'LANG_EDIT_LANG_TITLE') : ($data['txt']['LANG_ADD_LANG_TITLE'] ?? 'LANG_ADD_LANG_TITLE'); ?></h2>
-        <a href="<?php echo URLROOT; ?>/lang/langs" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'); ?>">
-            <span class="mif-arrow-left"></span> <?php echo $data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'; ?>
-        </a>
-    </div>
+<?php
+/**
+ * Vue : Langue (Formulaire Add/Edit)
+ * Utilise le template parent universel form_template.php
+ */
 
-    <?php if (!empty($data['message'])): ?>
-        <div class="remark success"><?php echo htmlspecialchars($data['message']); ?></div>
-    <?php endif; ?>
+$lang = $data['lang'] ?? null;
 
-    <?php if (!empty($data['error'])): ?>
-        <div class="remark alert"><?php echo htmlspecialchars($data['error']); ?></div>
-    <?php endif; ?>
+$formConfig = [
+    'mode'        => $data['mode'] ?? 'edit',
+    'item'        => $lang,
+    'idField'     => 'lang_code',
+    'codeField'   => 'lang_code',
+    'nameField'   => 'lang_name',
+    'icon'        => 'mif-language',
+    'viewTitle'   => 'Langue : ' . htmlspecialchars($lang->lang_name ?? ''),
+    'editTitle'   => $data['txt']['LANG_EDIT_LANG_TITLE'] ?? 'Modifier la langue',
+    'addTitle'    => $data['txt']['LANG_ADD_LANG_TITLE'] ?? 'Ajouter une langue',
+    'backUrl'     => URLROOT . '/lang/langs',
+    'cancelUrl'   => URLROOT . '/lang/langs',
+    'formAction'  => URLROOT . '/lang' . (($data['mode'] === 'edit' && isset($lang->lang_code)) ? '/' . htmlspecialchars($lang->lang_code) : ''),
 
-    <?php if ($data['mode'] === 'add'): ?>
-    <div class="remark info">
-        <?php echo $data['txt']['LANG_ADD_NOTE'] ?? 'LANG_ADD_NOTE'; ?>
-    </div>
-    <?php endif; ?>
+    // Formulaire interactif Add/Edit
+    'formContent' => function($item, $data, $mode) { ?>
+        <?php if ($mode === 'add' && !empty($data['txt']['LANG_ADD_NOTE'])): ?>
+            <div class="remark info mb-3">
+                <?php echo htmlspecialchars($data['txt']['LANG_ADD_NOTE']); ?>
+            </div>
+        <?php endif; ?>
 
-    <form method="POST" action="<?php echo URLROOT; ?>/lang<?php echo ($data['mode'] === 'edit' && isset($data['lang']->lang_code)) ? '/' . htmlspecialchars($data['lang']->lang_code) : ''; ?>">
-        
-        <div class="form-group">
-            <label><?php echo $data['txt']['LANG_CODE_LABEL'] ?? 'LANG_CODE_LABEL'; ?></label>
-            <input type="text" name="lang_code" data-role="input" placeholder="<?php echo htmlspecialchars($data['txt']['LANG_CODE_PH'] ?? 'LANG_CODE_PH'); ?>" maxlength="5" value="<?php echo htmlspecialchars($data['lang']->lang_code ?? ''); ?>" <?php echo ($data['mode'] === 'edit') ? 'disabled' : 'required'; ?>>
-            <?php if ($data['mode'] === 'edit'): ?>
-            <small class="fg-gray"><?php echo $data['txt']['LANG_CODE_HELP'] ?? 'LANG_CODE_HELP'; ?></small>
+        <div class="form-group mb-3">
+            <label class="text-bold"><?php echo $data['txt']['LANG_CODE_LABEL'] ?? 'Code de la langue (ISO 639-1)'; ?></label>
+            <input type="text" name="lang_code" data-role="input" placeholder="<?php echo htmlspecialchars($data['txt']['LANG_CODE_PH'] ?? 'ex: fr, en, es...'); ?>" maxlength="5"
+                   value="<?php echo htmlspecialchars($item->lang_code ?? ''); ?>"
+                   <?php echo ($mode === 'edit') ? 'readonly' : 'required'; ?>>
+            <?php if ($mode === 'edit'): ?>
+                <small class="fg-gray d-block mt-1"><span class="mif-lock mr-1"></span> <?php echo $data['txt']['LANG_CODE_HELP'] ?? 'Le code langue ne peut pas être modifié.'; ?></small>
+            <?php else: ?>
+                <small class="text-muted d-block mt-1">Code sur 2 caractères minuscules (ex: fr, en, es, de, it).</small>
             <?php endif; ?>
         </div>
 
-        <div class="form-group mt-2">
-            <label><?php echo $data['txt']['LANG_NAME_LABEL'] ?? 'LANG_NAME_LABEL'; ?></label>
-            <input type="text" name="lang_name" data-role="input" placeholder="<?php echo htmlspecialchars($data['txt']['LANG_NAME_PH'] ?? 'LANG_NAME_PH'); ?>" value="<?php echo htmlspecialchars($data['lang']->lang_name ?? ''); ?>" required>
+        <div class="form-group mb-3">
+            <label class="text-bold"><?php echo $data['txt']['LANG_NAME_LABEL'] ?? 'Nom complet de la langue'; ?></label>
+            <input type="text" name="lang_name" data-role="input" placeholder="<?php echo htmlspecialchars($data['txt']['LANG_NAME_PH'] ?? 'ex: Français, English...'); ?>"
+                   value="<?php echo htmlspecialchars($item->lang_name ?? ''); ?>" required>
         </div>
 
-        <div class="form-group mt-2">
-            <label><?php echo $data['txt']['LANG_FLAG_LABEL'] ?? 'LANG_FLAG_LABEL'; ?></label>
-            <input type="text" name="lang_flag" data-role="input" placeholder="<?php echo htmlspecialchars($data['txt']['LANG_FLAG_PH'] ?? 'LANG_FLAG_PH'); ?>" value="<?php echo htmlspecialchars($data['lang']->lang_flag ?? ''); ?>">
-            <small class="fg-gray"><?php echo $data['txt']['LANG_FLAG_HELP'] ?? 'LANG_FLAG_HELP'; ?></small>
+        <div class="form-group mb-3">
+            <label class="text-bold"><?php echo $data['txt']['LANG_FLAG_LABEL'] ?? 'Classe d\'icône du drapeau'; ?></label>
+            <input type="text" name="lang_flag" data-role="input" placeholder="<?php echo htmlspecialchars($data['txt']['LANG_FLAG_PH'] ?? 'ex: fi-fr, fi-gb, fi-es'); ?>"
+                   value="<?php echo htmlspecialchars($item->lang_flag ?? ''); ?>">
+            <small class="fg-gray d-block mt-1"><?php echo $data['txt']['LANG_FLAG_HELP'] ?? 'Nom de classe du drapeau (flag-icons).'; ?></small>
         </div>
 
-        <?php if ($data['mode'] === 'edit'): ?>
-        <div class="form-group mt-2">
-            <label><?php echo $data['txt']['LANG_STATUS'] ?? 'LANG_STATUS'; ?></label>
+        <?php if ($mode === 'edit'): ?>
+        <div class="form-group mb-3">
+            <label class="text-bold"><?php echo $data['txt']['LANG_STATUS'] ?? 'Statut'; ?></label>
             <select name="status_id" data-role="select">
-                <option value="1" <?php echo (isset($data['lang']->status_id) && intval($data['lang']->status_id) === 1) ? 'selected' : ''; ?>><?php echo $data['txt']['LANG_ACTIVE'] ?? 'LANG_ACTIVE'; ?></option>
-                <option value="2" <?php echo (isset($data['lang']->status_id) && intval($data['lang']->status_id) === 2) ? 'selected' : ''; ?>><?php echo $data['txt']['LANG_DRAFT'] ?? 'LANG_DRAFT'; ?></option>
+                <option value="1" <?php echo (isset($item->status_id) && (int)$item->status_id === 1) ? 'selected' : ''; ?>>
+                    <?php echo $data['txt']['LANG_ACTIVE'] ?? 'Actif'; ?>
+                </option>
+                <option value="2" <?php echo (isset($item->status_id) && (int)$item->status_id === 2) ? 'selected' : ''; ?>>
+                    <?php echo $data['txt']['LANG_DRAFT'] ?? 'Inactif / Brouillon'; ?>
+                </option>
             </select>
         </div>
-
-        <div data-role="panel" 
-             data-title-caption="<?php echo htmlspecialchars($data['txt']['LANG_INFO_PANEL'] ?? 'LANG_INFO_PANEL'); ?>" 
-             data-collapsible="true" 
-             data-collapsed="true" 
-             class="mt-4">
-            <div class="row">
-                <div class="cell-md-6">
-                    <p><strong><?php echo $data['txt']['LANG_CREATED_AT'] ?? 'LANG_CREATED_AT'; ?></strong> <?php echo isset($data['lang']->created_at) && $data['lang']->created_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['lang']->created_at))) : '-'; ?></p>
-                    <p><strong><?php echo $data['txt']['LANG_CREATED_BY'] ?? 'LANG_CREATED_BY'; ?></strong> <?php echo isset($data['lang']->created_by_name) && $data['lang']->created_by_name ? htmlspecialchars($data['lang']->created_by_name) : '-'; ?></p>
-                </div>
-                <div class="cell-md-6">
-                    <p><strong><?php echo $data['txt']['LANG_MODIFIED_AT'] ?? 'LANG_MODIFIED_AT'; ?></strong> <?php echo isset($data['lang']->modified_at) && $data['lang']->modified_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['lang']->modified_at))) : '-'; ?></p>
-                    <p><strong><?php echo $data['txt']['LANG_MODIFIED_BY'] ?? 'LANG_MODIFIED_BY'; ?></strong> <?php echo isset($data['lang']->modified_by_name) && $data['lang']->modified_by_name ? htmlspecialchars($data['lang']->modified_by_name) : '-'; ?></p>
-                </div>
-            </div>
-        </div>
         <?php endif; ?>
+    <?php }
+];
 
-        <div class="form-group mt-4">
-            <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'USER_BTN_UPDATE') : ($data['txt']['USER_BTN_SAVE'] ?? 'USER_BTN_SAVE')); ?>"><?php echo ($data['mode'] === 'edit') ? ($data['txt']['USER_BTN_UPDATE'] ?? 'USER_BTN_UPDATE') : ($data['txt']['USER_BTN_SAVE'] ?? 'USER_BTN_SAVE'); ?></button>
-        </div>
-    </form>
-</main>
+require 'module/system/view/common/form_template.php';

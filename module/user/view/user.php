@@ -1,59 +1,92 @@
-    <main class="p-4" style="margin-top: 60px;">
-        <div class="d-flex flex-justify-between flex-align-center mb-4">
-            <h2><span class="<?php echo $data['mode'] === 'edit' ? 'mif-profile' : 'mif-user-plus'; ?> mr-2"></span><?php echo $data['mode'] === 'edit' ? ($data['txt']['USER_EDIT_USER_TITLE'] ?? 'USER_EDIT_USER_TITLE') : ($data['txt']['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN'); ?></h2>
-            <a href="<?php echo URLROOT; ?>/<?php echo $data['is_admin'] ? 'user/users' : 'main'; ?>" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'); ?>">
-                <span class="mif-arrow-left"></span> <?php echo $data['txt']['USER_BTN_BACK'] ?? 'USER_BTN_BACK'; ?>
-            </a>
+<?php
+/**
+ * Vue : Utilisateur (Formulaire Profil / Add / Edit)
+ * Utilise le template parent universel form_template.php
+ */
+
+$user      = $data['user'] ?? null;
+$isAdmin   = !empty($data['is_admin']);
+$backUrl   = URLROOT . '/' . ($isAdmin ? 'user/users' : 'main');
+
+$formConfig = [
+    'mode'        => $data['mode'] ?? 'edit',
+    'item'        => $user,
+    'idField'     => 'id',
+    'codeField'   => 'username',
+    'nameField'   => 'username',
+    'icon'        => 'mif-user',
+    'viewTitle'   => 'Profil de l\'utilisateur : ' . htmlspecialchars($user->username ?? ''),
+    'editTitle'   => $data['txt']['USER_EDIT_USER_TITLE'] ?? 'Modifier l\'utilisateur',
+    'addTitle'    => $data['txt']['USER_ADD_USER_BTN'] ?? 'Ajouter un utilisateur',
+    'backUrl'     => $backUrl,
+    'cancelUrl'   => $backUrl,
+    'formAction'  => URLROOT . '/user/' . (!empty($data['id']) ? (int)$data['id'] : ''),
+    'viewAvatarIcon' => 'mif-user',
+
+    // Formulaire interactif Add/Edit
+    'formContent' => function($item, $data, $mode) use ($isAdmin) { ?>
+        <div class="form-group mb-3">
+            <label class="text-bold"><?php echo $data['txt']['USER_USERNAME'] ?? 'Identifiant (Pseudo)'; ?> <span class="fg-red">*</span></label>
+            <input type="text" name="username" data-role="input" required
+                   value="<?php echo htmlspecialchars($item->username ?? ''); ?>"
+                   placeholder="ex: jdupont">
         </div>
 
-        <?php if (!empty($data['message'])): ?>
-            <div class="remark success"><?php echo htmlspecialchars($data['message']); ?></div>
-        <?php endif; ?>
+        <div class="row mb-3">
+            <div class="cell-md-6">
+                <div class="form-group">
+                    <label class="text-bold"><?php echo $data['txt']['USER_FIRSTNAME'] ?? 'Prénom'; ?></label>
+                    <input type="text" name="prenom" data-role="input" placeholder="ex: Jean"
+                           value="<?php echo htmlspecialchars($item->prenom ?? ''); ?>">
+                </div>
+            </div>
+            <div class="cell-md-6">
+                <div class="form-group">
+                    <label class="text-bold"><?php echo $data['txt']['USER_LASTNAME'] ?? 'Nom'; ?></label>
+                    <input type="text" name="nom" data-role="input" placeholder="ex: Dupont"
+                           value="<?php echo htmlspecialchars($item->nom ?? ''); ?>">
+                </div>
+            </div>
+        </div>
 
-        <?php if (!empty($data['error'])): ?>
-            <div class="remark alert"><?php echo htmlspecialchars($data['error']); ?></div>
-        <?php endif; ?>
+        <div class="form-group mb-3">
+            <label class="text-bold"><?php echo $data['txt']['USER_EMAIL'] ?? 'Adresse email'; ?> <span class="fg-red">*</span></label>
+            <input type="email" name="email" data-role="input" required placeholder="contact@example.com"
+                   value="<?php echo htmlspecialchars($item->email ?? ''); ?>">
+        </div>
 
-        <form method="POST" action="<?php echo URLROOT; ?>/user/<?php echo $data['id'] ? $data['id'] : ''; ?>">
-            <div class="form-group">
-                <label><?php echo $data['txt']['USER_USERNAME'] ?? 'USER_USERNAME'; ?></label>
-                <input type="text" name="username" data-role="input" value="<?php echo isset($data['user']->username) ? htmlspecialchars($data['user']->username) : ''; ?>" required>
-            </div>
-            <div class="form-group mt-2">
-                <label><?php echo $data['txt']['USER_LASTNAME'] ?? 'USER_LASTNAME'; ?></label>
-                <input type="text" name="nom" data-role="input" value="<?php echo isset($data['user']->nom) ? htmlspecialchars($data['user']->nom) : ''; ?>">
-            </div>
-            <div class="form-group mt-2">
-                <label><?php echo $data['txt']['USER_FIRSTNAME'] ?? 'USER_FIRSTNAME'; ?></label>
-                <input type="text" name="prenom" data-role="input" value="<?php echo isset($data['user']->prenom) ? htmlspecialchars($data['user']->prenom) : ''; ?>">
-            </div>
-            <div class="form-group mt-2">
-                <label><?php echo $data['txt']['USER_EMAIL'] ?? 'USER_EMAIL'; ?></label>
-                <input type="email" name="email" data-role="input" value="<?php echo isset($data['user']->email) ? htmlspecialchars($data['user']->email) : ''; ?>" required>
-            </div>
-            <div class="form-group mt-2">
-                <label><?php echo $data['txt']['USER_PASSWORD'] ?? 'USER_PASSWORD'; ?> <?php echo $data['mode'] === 'edit' ? ($data['txt']['USER_LEAVE_BLANK_NO_CHANGE'] ?? 'USER_LEAVE_BLANK_NO_CHANGE') : ''; ?></label>
-                <input type="password" name="password" data-role="input" <?php echo $data['mode'] === 'add' ? 'required' : ''; ?>>
-            </div>
-            <?php if ($data['is_admin']): ?>
-            <div class="form-group mt-2">
-                <label><?php echo $data['txt']['USER_ROLE'] ?? 'USER_ROLE'; ?></label>
+        <div class="form-group mb-3">
+            <label class="text-bold">
+                <?php echo $data['txt']['USER_PASSWORD'] ?? 'Mot de passe'; ?>
+                <?php if ($mode === 'edit'): ?>
+                    <small class="fg-gray font-normal">(<?php echo $data['txt']['USER_LEAVE_BLANK_NO_CHANGE'] ?? 'laisser vide pour ne pas modifier'; ?>)</small>
+                <?php else: ?>
+                    <span class="fg-red">*</span>
+                <?php endif; ?>
+            </label>
+            <input type="password" name="password" data-role="input" <?php echo ($mode === 'add') ? 'required' : ''; ?>>
+        </div>
+
+        <?php if ($isAdmin): ?>
+            <div class="form-group mb-3">
+                <label class="text-bold"><?php echo $data['txt']['USER_ROLE'] ?? 'Rôle(s)'; ?></label>
                 <select name="roles[]" multiple data-role="select">
                     <?php foreach ($data['available_roles'] as $role_id => $role_info): ?>
-                        <?php $selected = (isset($data['user']->roles) && is_array($data['user']->roles) && in_array($role_id, $data['user']->roles)) ? 'selected' : ''; ?>
+                        <?php $selected = (isset($item->roles) && is_array($item->roles) && in_array($role_id, $item->roles)) ? 'selected' : ''; ?>
                         <option value="<?php echo htmlspecialchars($role_id); ?>" <?php echo $selected; ?>>
                             <?php echo htmlspecialchars($data['txt'][$role_info['text_code']] ?? $role_info['text_code']); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="form-group mt-2">
-                <label><?php echo $data['txt']['STATUS'] ?? 'STATUS'; ?></label>
+
+            <div class="form-group mb-3">
+                <label class="text-bold"><?php echo $data['txt']['STATUS'] ?? 'Statut'; ?></label>
                 <select name="status_id" data-role="select">
                     <?php foreach ($data['available_statuses'] as $status_id => $text_code): ?>
                         <?php 
-                        $statusValue = isset($data['user']->status_id) ? $data['user']->status_id : 2;
-                        $selected = ($statusValue == $status_id) ? 'selected' : ''; 
+                        $statusValue = isset($item->status_id) ? (int)$item->status_id : 1;
+                        $selected = ($statusValue === (int)$status_id) ? 'selected' : ''; 
                         ?>
                         <option value="<?php echo htmlspecialchars($status_id); ?>" <?php echo $selected; ?>>
                             <?php echo htmlspecialchars($data['txt'][$text_code] ?? $text_code); ?>
@@ -61,28 +94,8 @@
                     <?php endforeach; ?>
                 </select>
             </div>
-            <?php endif; ?>
-            <?php if ($data['mode'] === 'edit'): ?>
-            <div data-role="panel" 
-                 data-title-caption="<?php echo htmlspecialchars($data['txt']['INFO'] ?? 'Infos'); ?>" 
-                 data-collapsible="true" 
-                 data-collapsed="true" 
-                 class="mt-4">
-                <div class="row">
-                    <div class="cell-md-6">
-                        <p><strong><?php echo htmlspecialchars($data['txt']['CREATED_AT'] ?? 'Cree le'); ?> :</strong> <?php echo isset($data['user']->created_at) && $data['user']->created_at ? htmlspecialchars(date('Y-m-d H:i:s (T)', strtotime($data['user']->created_at))) : '-'; ?></p>
-                        <p><strong><?php echo htmlspecialchars($data['txt']['CREATED_BY'] ?? 'Cree par'); ?> :</strong> <?php echo isset($data['user']->created_by_name) && $data['user']->created_by_name ? htmlspecialchars($data['user']->created_by_name) : '-'; ?></p>
-                    </div>
-                    <div class="cell-md-6">
-                        <p><strong><?php echo htmlspecialchars($data['txt']['MODIFIED_AT'] ?? 'Modifie le'); ?> :</strong> <?php echo isset($data['user']->modified_at) && $data['user']->modified_at ? htmlspecialchars(date('Y-m-d H:i:s (T)', strtotime($data['user']->modified_at))) : '-'; ?></p>
-                        <p><strong><?php echo htmlspecialchars($data['txt']['MODIFIED_BY'] ?? 'Modifie par'); ?> :</strong> <?php echo isset($data['user']->modified_by_name) && $data['user']->modified_by_name ? htmlspecialchars($data['user']->modified_by_name) : '-'; ?></p>
-                    </div>
-                </div>
-            </div>
-            <?php endif; ?>
+        <?php endif; ?>
+    <?php }
+];
 
-            <div class="form-group mt-4">
-                <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'USER_BTN_UPDATE') : ($data['txt']['USER_BTN_SAVE'] ?? 'USER_BTN_SAVE')); ?>"><?php echo $data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'USER_BTN_UPDATE') : ($data['txt']['USER_BTN_SAVE'] ?? 'USER_BTN_SAVE'); ?></button>
-            </div>
-        </form>
-    </main>
+require 'module/system/view/common/form_template.php';

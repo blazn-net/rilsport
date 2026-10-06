@@ -166,7 +166,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'        => URLROOT . '/sport/team/{id}',
+        'editUrl'        => URLROOT . '/sport/team/edit/{id}',
         'disableUrl'     => URLROOT . '/sport/team/delete/{id}',
         'deleteUrl'      => URLROOT . '/sport/team/delete/{id}?force=1',
         'disableConfirm' => $data['txt']['TEAM_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette équipe ?',

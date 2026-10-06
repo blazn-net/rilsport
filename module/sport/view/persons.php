@@ -83,7 +83,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'         => URLROOT . '/sport/person/{id}',
+        'editUrl'         => URLROOT . '/sport/person/edit/{id}',
         'disableUrl'      => URLROOT . '/sport/person/delete/{id}',
         'deleteUrl'       => URLROOT . '/sport/person/forcedelete/{id}',
         'disableConfirm'  => $data['txt']['SPORT_DELETE_PERSON_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette personne ?',

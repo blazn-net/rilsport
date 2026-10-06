@@ -1,159 +1,103 @@
-<main class="p-4" style="margin-top: 60px;">
-    <div class="d-flex flex-justify-between flex-align-center mb-4">
-        <h2>
-            <span class="mif-calendar mr-2"></span>
-            <?php 
-                if ($data['mode'] === 'edit') {
-                    echo $data['txt']['SPORT_EDIT_SEASON_TITLE'] ?? 'Modifier la saison';
-                } elseif ($data['mode'] === 'view') {
-                    echo 'Fiche de la saison : ' . htmlspecialchars($data['season']->name ?? '');
-                } else {
-                    echo $data['txt']['SPORT_ADD_SEASON_TITLE'] ?? 'Ajouter une saison';
-                }
-            ?>
-        </h2>
-        <div class="d-flex flex-align-center" style="gap: 10px;">
-            <?php if ($data['mode'] === 'view' && !empty($data['isAdmin']) && isset($data['season']->id)): ?>
-                <a href="<?php echo URLROOT; ?>/sport/season/edit/<?php echo htmlspecialchars($data['season']->id); ?>" class="button info" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'); ?>">
-                    <span class="mif-pencil"></span> <span class="btn-text"><?php echo $data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'; ?></span>
-                </a>
-            <?php endif; ?>
-            <a href="<?php echo URLROOT; ?>/sport/seasons" class="button" title="<?php echo htmlspecialchars($data['txt']['USER_BTN_BACK'] ?? 'Retour à la liste'); ?>">
-                <span class="mif-arrow-left"></span> <span class="btn-text"><?php echo $data['txt']['USER_BTN_BACK'] ?? 'Retour à la liste'; ?></span>
-            </a>
-        </div>
-    </div>
+<?php
+/**
+ * Vue : Saison (Consultation View & Formulaire Add/Edit)
+ * Utilise le template parent universel form_template.php
+ */
 
-    <?php if (!empty($data['message'])): ?>
-        <div class="remark success"><?php echo htmlspecialchars($data['message']); ?></div>
-    <?php endif; ?>
+$season = $data['season'] ?? null;
 
-    <?php if (!empty($data['error'])): ?>
-        <div class="remark alert"><?php echo htmlspecialchars($data['error']); ?></div>
-    <?php endif; ?>
+$formConfig = [
+    'mode'       => $data['mode'] ?? 'view',
+    'item'       => $season,
+    'icon'       => 'mif-calendar',
+    'viewTitle'  => 'Fiche de la saison : ' . htmlspecialchars($season->name ?? ''),
+    'editTitle'  => $data['txt']['SPORT_EDIT_SEASON_TITLE'] ?? 'Modifier la saison',
+    'addTitle'   => $data['txt']['SPORT_ADD_SEASON_TITLE'] ?? 'Ajouter une saison',
+    'backUrl'    => URLROOT . '/sport/seasons',
+    'editUrl'    => isset($season->id) ? URLROOT . '/sport/season/edit/' . (int)$season->id : null,
+    'cancelUrl'  => isset($season->id) ? URLROOT . '/sport/season/' . (int)$season->id : URLROOT . '/sport/seasons',
+    'formAction' => URLROOT . '/sport/season' . (($data['mode'] === 'edit' && isset($season->id)) ? '/' . (int)$season->id : ''),
 
-    <?php if ($data['mode'] === 'view'): ?>
-        <!-- MODE VIEW (Consultation pour utilisateurs simples : Affichage pur en Libellés / Cartes, sans inputs) -->
-        <div class="card p-4">
-            <div class="d-flex flex-align-center mb-3">
-                <div class="avatar bg-info fg-white border-radius-half d-flex flex-justify-center flex-align-center mr-3" style="width: 50px; height: 50px; min-width: 50px;">
-                    <span class="mif-calendar mif-2x"></span>
-                </div>
-                <div>
-                    <h3 class="m-0"><?php echo htmlspecialchars($data['season']->name ?? ''); ?></h3>
-                    <small class="fg-gray">Code : <code><?php echo htmlspecialchars($data['season']->code ?? ''); ?></code></small>
-                </div>
-                <div class="ml-auto">
-                    <?php 
-                        $isActive   = isset($data['season']->status_id) && intval($data['season']->status_id) === 1;
-                        $badgeClass = $isActive ? 'success' : 'secondary';
-                        $statusText = $isActive ? ($data['txt']['SPORT_ACTIVE'] ?? 'Actif') : ($data['txt']['SPORT_INACTIVE'] ?? 'Inactif');
-                    ?>
-                    <span class="badge <?php echo $badgeClass; ?> p-2"><?php echo htmlspecialchars($statusText); ?></span>
-                </div>
-            </div>
+    // Icône de l'avatar en mode View
+    'viewAvatarIcon' => 'mif-calendar',
 
-            <div class="divider my-3"></div>
-
-            <div class="row mb-4">
-                <div class="cell-md-6">
-                    <h5 class="text-bold mb-1"><?php echo $data['txt']['SPORT_SEASON_DATE_START'] ?? 'Début'; ?></h5>
-                    <p class="text-leader">
-                        <span class="mif-event-available fg-green mr-1"></span>
-                        <?php echo isset($data['season']->date_start) ? htmlspecialchars(date('d/m/Y', strtotime($data['season']->date_start))) : '-'; ?>
-                    </p>
-                </div>
-                <div class="cell-md-6">
-                    <h5 class="text-bold mb-1"><?php echo $data['txt']['SPORT_SEASON_DATE_END'] ?? 'Fin'; ?></h5>
-                    <p class="text-leader">
-                        <span class="mif-event-busy fg-red mr-1"></span>
-                        <?php echo isset($data['season']->date_end) ? htmlspecialchars(date('d/m/Y', strtotime($data['season']->date_end))) : '-'; ?>
-                    </p>
-                </div>
-            </div>
-
-            <div data-role="panel" 
-                 data-title-caption="<?php echo htmlspecialchars($data['txt']['SPORT_INFO_PANEL'] ?? 'Informations d\'audit'); ?>" 
-                 data-collapsible="true" 
-                 data-collapsed="false" 
-                 class="mt-4">
-                <div class="row">
-                    <div class="cell-md-6">
-                        <p><strong><?php echo $data['txt']['CREATED_AT'] ?? 'Créé le'; ?> :</strong> <?php echo isset($data['season']->created_at) && $data['season']->created_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['season']->created_at))) : '-'; ?></p>
-                        <p><strong><?php echo $data['txt']['CREATED_BY'] ?? 'Créé par'; ?> :</strong> <?php echo isset($data['season']->created_by_name) && $data['season']->created_by_name ? htmlspecialchars($data['season']->created_by_name) : '-'; ?></p>
+    // Contenu spécifique du mode View (Consultation)
+    'viewContent' => function($item, $data) { ?>
+        <div class="row">
+            <div class="cell-md-6 mb-3">
+                <div class="p-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div class="text-muted text-upper text-bold" style="font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="mif-event-available fg-emerald mr-1"></span> <?php echo $data['txt']['SPORT_SEASON_DATE_START'] ?? 'Date de début'; ?>
                     </div>
-                    <div class="cell-md-6">
-                        <p><strong><?php echo $data['txt']['MODIFIED_AT'] ?? 'Modifié le'; ?> :</strong> <?php echo isset($data['season']->modified_at) && $data['season']->modified_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['season']->modified_at))) : '-'; ?></p>
-                        <p><strong><?php echo $data['txt']['MODIFIED_BY'] ?? 'Modifié par'; ?> :</strong> <?php echo isset($data['season']->modified_by_name) && $data['season']->modified_by_name ? htmlspecialchars($data['season']->modified_by_name) : '-'; ?></p>
+                    <div class="mt-1 text-bold" style="font-size: 18px; color: #1e293b;">
+                        <?php echo !empty($item->date_start) ? htmlspecialchars(date('d/m/Y', strtotime($item->date_start))) : '—'; ?>
+                    </div>
+                </div>
+            </div>
+            <div class="cell-md-6 mb-3">
+                <div class="p-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div class="text-muted text-upper text-bold" style="font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="mif-event-busy fg-crimson mr-1"></span> <?php echo $data['txt']['SPORT_SEASON_DATE_END'] ?? 'Date de fin'; ?>
+                    </div>
+                    <div class="mt-1 text-bold" style="font-size: 18px; color: #1e293b;">
+                        <?php echo !empty($item->date_end) ? htmlspecialchars(date('d/m/Y', strtotime($item->date_end))) : '—'; ?>
                     </div>
                 </div>
             </div>
         </div>
+    <?php },
 
-    <?php else: ?>
-        <!-- MODE EDIT / ADD (Formulaire interactif pour Administrateurs) -->
-        <form method="POST" action="<?php echo URLROOT; ?>/sport/season<?php echo ($data['mode'] === 'edit' && isset($data['season']->id)) ? '/' . htmlspecialchars($data['season']->id) : ''; ?>">
-            
-            <div class="form-group">
-                <label><?php echo $data['txt']['SPORT_SEASON_CODE_LABEL'] ?? 'Code unique de la saison'; ?></label>
-                <input type="text" name="code" data-role="input" placeholder="ex: 2026-2027 ou 2027" maxlength="50" value="<?php echo htmlspecialchars($data['season']->code ?? ''); ?>" <?php echo ($data['mode'] === 'edit') ? 'disabled' : 'required'; ?>>
-                <?php if ($data['mode'] === 'edit'): ?>
-                <small class="fg-gray"><?php echo $data['txt']['SPORT_SEASON_CODE_HELP'] ?? 'Le code ne peut plus être modifié après la création.'; ?></small>
-                <?php endif; ?>
-            </div>
-
-            <div class="form-group mt-3">
-                <label><?php echo $data['txt']['SPORT_SEASON_NAME_LABEL'] ?? 'Nom de la saison'; ?></label>
-                <input type="text" name="name" data-role="input" placeholder="ex: Saison 2026-2027" maxlength="100" value="<?php echo htmlspecialchars($data['season']->name ?? ''); ?>" required>
-            </div>
-
-            <div class="row mt-3">
-                <div class="cell-md-6">
-                    <div class="form-group">
-                        <label><?php echo $data['txt']['SPORT_SEASON_START_LABEL'] ?? 'Début'; ?></label>
-                        <input type="date" name="date_start" data-role="input" value="<?php echo htmlspecialchars($data['season']->date_start ?? ''); ?>" required>
-                    </div>
-                </div>
-                <div class="cell-md-6">
-                    <div class="form-group">
-                        <label><?php echo $data['txt']['SPORT_SEASON_END_LABEL'] ?? 'Fin'; ?></label>
-                        <input type="date" name="date_end" data-role="input" value="<?php echo htmlspecialchars($data['season']->date_end ?? ''); ?>" required>
-                    </div>
-                </div>
-            </div>
-
-            <?php if ($data['mode'] === 'edit'): ?>
-            <div class="form-group mt-3">
-                <label><?php echo $data['txt']['SPORT_STATUS_LABEL'] ?? 'Statut'; ?></label>
-                <select name="status_id" data-role="select">
-                    <option value="1" <?php echo (isset($data['season']->status_id) && intval($data['season']->status_id) === 1) ? 'selected' : ''; ?>><?php echo $data['txt']['SPORT_ACTIVE'] ?? 'Actif'; ?></option>
-                    <option value="2" <?php echo (isset($data['season']->status_id) && intval($data['season']->status_id) === 2) ? 'selected' : ''; ?>><?php echo $data['txt']['SPORT_INACTIVE'] ?? 'Inactif'; ?></option>
-                </select>
-            </div>
-
-            <div data-role="panel" 
-                 data-title-caption="<?php echo htmlspecialchars($data['txt']['SPORT_INFO_PANEL'] ?? 'Informations d\'audit'); ?>" 
-                 data-collapsible="true" 
-                 data-collapsed="true" 
-                 class="mt-4">
-                <div class="row">
-                    <div class="cell-md-6">
-                        <p><strong><?php echo $data['txt']['CREATED_AT'] ?? 'Créé le'; ?> :</strong> <?php echo isset($data['season']->created_at) && $data['season']->created_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['season']->created_at))) : '-'; ?></p>
-                        <p><strong><?php echo $data['txt']['CREATED_BY'] ?? 'Créé par'; ?> :</strong> <?php echo isset($data['season']->created_by_name) && $data['season']->created_by_name ? htmlspecialchars($data['season']->created_by_name) : '-'; ?></p>
-                    </div>
-                    <div class="cell-md-6">
-                        <p><strong><?php echo $data['txt']['MODIFIED_AT'] ?? 'Modifié le'; ?> :</strong> <?php echo isset($data['season']->modified_at) && $data['season']->modified_at ? htmlspecialchars(date('d/m/Y H:i', strtotime($data['season']->modified_at))) : '-'; ?></p>
-                        <p><strong><?php echo $data['txt']['MODIFIED_BY'] ?? 'Modifié par'; ?> :</strong> <?php echo isset($data['season']->modified_by_name) && $data['season']->modified_by_name ? htmlspecialchars($data['season']->modified_by_name) : '-'; ?></p>
-                    </div>
-                </div>
-            </div>
+    // Contenu spécifique du mode Edit / Add (Formulaire)
+    'formContent' => function($item, $data, $mode) { ?>
+        <div class="form-group">
+            <label class="text-bold"><?php echo $data['txt']['SPORT_SEASON_CODE_LABEL'] ?? 'Code unique de la saison'; ?></label>
+            <input type="text" name="code" data-role="input" placeholder="ex: 2026-2027 ou 2027" maxlength="50"
+                   value="<?php echo htmlspecialchars($item->code ?? ''); ?>"
+                   <?php echo ($mode === 'edit') ? 'readonly' : 'required'; ?>>
+            <?php if ($mode === 'edit'): ?>
+                <small class="fg-gray d-block mt-1"><span class="mif-lock mr-1"></span> <?php echo $data['txt']['SPORT_SEASON_CODE_HELP'] ?? 'Le code ne peut plus être modifié après la création.'; ?></small>
+            <?php else: ?>
+                <small class="fg-gray d-block mt-1">Identifiant unique (lettres, chiffres, tirets).</small>
             <?php endif; ?>
+        </div>
 
-            <div class="form-group mt-4">
-                <button class="button primary" type="submit" title="<?php echo htmlspecialchars($data['mode'] === 'edit' ? ($data['txt']['USER_BTN_UPDATE'] ?? 'Mettre à jour') : ($data['txt']['USER_BTN_SAVE'] ?? 'Enregistrer')); ?>">
-                    <span class="mif-floppy-disk mr-1"></span><span class="btn-text"><?php echo ($data['mode'] === 'edit') ? ($data['txt']['USER_BTN_UPDATE'] ?? 'Mettre à jour') : ($data['txt']['USER_BTN_SAVE'] ?? 'Enregistrer'); ?></span>
-                </button>
+        <div class="form-group mt-3">
+            <label class="text-bold"><?php echo $data['txt']['SPORT_SEASON_NAME_LABEL'] ?? 'Nom de la saison'; ?></label>
+            <input type="text" name="name" data-role="input" placeholder="ex: Saison 2026-2027" maxlength="100"
+                   value="<?php echo htmlspecialchars($item->name ?? ''); ?>" required>
+        </div>
+
+        <div class="row mt-3">
+            <div class="cell-md-6">
+                <div class="form-group">
+                    <label class="text-bold"><span class="mif-event-available fg-emerald mr-1"></span> <?php echo $data['txt']['SPORT_SEASON_START_LABEL'] ?? 'Date de début'; ?></label>
+                    <input type="date" name="date_start" data-role="input"
+                           value="<?php echo htmlspecialchars($item->date_start ?? ''); ?>" required>
+                </div>
             </div>
-        </form>
-    <?php endif; ?>
-</main>
+            <div class="cell-md-6">
+                <div class="form-group">
+                    <label class="text-bold"><span class="mif-event-busy fg-crimson mr-1"></span> <?php echo $data['txt']['SPORT_SEASON_END_LABEL'] ?? 'Date de fin'; ?></label>
+                    <input type="date" name="date_end" data-role="input"
+                           value="<?php echo htmlspecialchars($item->date_end ?? ''); ?>" required>
+                </div>
+            </div>
+        </div>
+
+        <?php if ($mode === 'edit'): ?>
+        <div class="form-group mt-3">
+            <label class="text-bold"><?php echo $data['txt']['SPORT_STATUS_LABEL'] ?? 'Statut'; ?></label>
+            <select name="status_id" data-role="select">
+                <option value="1" <?php echo (isset($item->status_id) && (int)$item->status_id === 1) ? 'selected' : ''; ?>>
+                    <?php echo $data['txt']['SPORT_ACTIVE'] ?? 'Actif'; ?>
+                </option>
+                <option value="2" <?php echo (isset($item->status_id) && (int)$item->status_id === 2) ? 'selected' : ''; ?>>
+                    <?php echo $data['txt']['SPORT_INACTIVE'] ?? 'Inactif'; ?>
+                </option>
+            </select>
+        </div>
+        <?php endif; ?>
+    <?php }
+];
+
+require 'module/system/view/common/form_template.php';

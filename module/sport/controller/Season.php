@@ -34,7 +34,8 @@ class Season extends Controller {
         }
 
         // Mode : view (consultation simple pour tous) ou edit/add (formulaire interactif)
-        $mode = $id ? (($action === 'edit' && $isAdmin) ? 'edit' : 'view') : 'add';
+        $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $mode   = $id ? ((($action === 'edit' || $isPost) && $isAdmin) ? 'edit' : 'view') : 'add';
 
         $data = [
             'txt'     => $txt,
