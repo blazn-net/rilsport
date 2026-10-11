@@ -51,6 +51,7 @@
 - **Sous-tâches** :
     - [x] `[20260908-2240]` sport
     - [-] `[20260908-2241]` clubs, sections, équipes
+        - [ ] `[20261011-2026]` Gérer les équipes/sections qui changent de club
         - [-] `[20260908-2242]` clubs
         - [-] `[20260908-2243]` sections
         - [-] `[20260908-2244]` équipes
