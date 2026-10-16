@@ -43,7 +43,7 @@ $listConfig = [
             'field'     => 'name',
             'label'     => $data['txt']['SPORT_NAME'] ?? 'Nom',
             'type'      => 'link',
-            'linkUrl'   => URLROOT . '/sport/sport/{id}',
+            'linkUrl'   => URLROOT . '/sport/sport/{code}',
             'linkTitle' => 'Consulter la fiche du sport',
         ],
         [
@@ -53,7 +53,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'         => URLROOT . '/sport/sport/edit/{id}',
+        'editUrl'         => URLROOT . '/sport/sport/edit/{code}',
         'disableUrl'      => URLROOT . '/sport/sport/delete/{id}',
         'deleteUrl'       => URLROOT . '/sport/sport/forcedelete/{id}',
         'disableConfirm'  => $data['txt']['SPORT_DELETE_SPORT_CONFIRM'] ?? 'Voulez-vous vraiment désactiver ce sport ?',

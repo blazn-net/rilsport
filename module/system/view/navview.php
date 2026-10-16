@@ -75,6 +75,8 @@
     $isClubsActive = (strpos($currentRoute, 'sport/club') === 0 || strpos($currentRoute, 'sport/clubs') === 0);
     $isTeamsActive = (strpos($currentRoute, 'sport/team') === 0 || strpos($currentRoute, 'sport/teams') === 0);
     $isCompetitionsActive = (strpos($currentRoute, 'sport/competition') === 0);
+    $isMatchesActive = (strpos($currentRoute, 'sport/match') === 0);
+    $isStandingsActive = (strpos($currentRoute, 'sport/standing') === 0);
     $isSportsActive = ($currentRoute === 'sport/sports' || $currentRoute === 'sport/sport' || strpos($currentRoute, 'sport/sport/') === 0);
     $isSportsGroupActive = ($isSportsActive || $isSeasonsActive);
     $isAdminSystemGroupActive = ($isUsersListActive || $isLangsActive || $isZonesActive);
@@ -89,6 +91,22 @@
                 <span class="caption">
                     <?php echo $sportTxt['COMPETITION_NAV_COMPETITIONS'] ?? 'Compétitions'; ?>
                 </span>
+            </a>
+        </li>
+
+        <!-- Matchs -->
+        <li class="<?php echo $isMatchesActive ? 'active' : ''; ?>">
+            <a href="<?php echo URLROOT; ?>/sport/matches">
+                <span class="icon"><span class="mif-calendar"></span></span>
+                <span class="caption"><?php echo $sportTxt['MATCH_LBL_MATCHES'] ?? 'Matchs'; ?></span>
+            </a>
+        </li>
+
+        <!-- Classements -->
+        <li class="<?php echo $isStandingsActive ? 'active' : ''; ?>">
+            <a href="<?php echo URLROOT; ?>/sport/standings">
+                <span class="icon"><span class="mif-table"></span></span>
+                <span class="caption"><?php echo $sportTxt['STANDING_LBL_STANDINGS'] ?? 'Classements'; ?></span>
             </a>
         </li>
 

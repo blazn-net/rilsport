@@ -59,7 +59,8 @@ $renderLogo = function ($val, $row) {
 
 // ── Render Nom + Sigle ─────────────────────────────────────────────────────────
 $renderClubName = function ($val, $row, $data) {
-    $html  = '<a href="' . URLROOT . '/sport/club/' . htmlspecialchars((string)$row['id']) . '" ';
+    $codeOrId = !empty($row['code']) ? $row['code'] : $row['id'];
+    $html  = '<a href="' . URLROOT . '/sport/club/' . htmlspecialchars((string)$codeOrId) . '" ';
     $html .= 'class="text-bold fg-primary" title="' . htmlspecialchars($data['txt']['SPORT_VIEW_CLUB_TITLE'] ?? 'Fiche du club') . '">';
     $html .= htmlspecialchars($row['name']) . '</a>';
     if (!empty($row['acronym'])) {
@@ -135,7 +136,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'        => URLROOT . '/sport/club/edit/{id}',
+        'editUrl'        => URLROOT . '/sport/club/edit/{code}',
         'disableUrl'     => URLROOT . '/sport/club/delete/{id}',
         'deleteUrl'      => URLROOT . '/sport/club/delete/{id}?force=1',
         'disableConfirm' => $data['txt']['CLUB_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment désactiver ce club ?',

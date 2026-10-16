@@ -52,7 +52,7 @@ class Team extends Controller {
 
             if (empty($sectionId) || empty($code) || empty($name)) {
                 $_SESSION['flash_error'] = $txt['TEAM_ERR_MISSING_FIELDS'] ?? 'Veuillez remplir tous les champs obligatoires (Section, Code, Nom).';
-                return $this->redirect($teamData ? 'sport/team/' . $teamData['id'] : 'sport/team');
+                return $this->redirect($teamData ? 'sport/team/' . $teamData['code'] : 'sport/team');
             }
 
             // Vérification de l'unicité du code lors de la création
@@ -83,12 +83,12 @@ class Team extends Controller {
                 if ($updated) {
                     $_SESSION['flash_message'] = $txt['TEAM_MSG_UPDATED'] ?? 'L\'équipe a été mise à jour avec succès.';
                 }
-                return $this->redirect('sport/team/' . $teamData['id']);
+                return $this->redirect('sport/team/' . $teamData['code']);
             } else {
                 $newId = $this->teamModel->addTeam($postData);
                 if ($newId) {
                     $_SESSION['flash_message'] = $txt['TEAM_MSG_ADDED'] ?? 'L\'équipe a été créée avec succès.';
-                    return $this->redirect('sport/team/' . $newId);
+                    return $this->redirect('sport/team/' . $postData['code']);
                 } else {
                     $_SESSION['flash_error'] = 'Erreur lors de la création de l\'équipe.';
                     return $this->redirect('sport/team');

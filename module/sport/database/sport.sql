@@ -2106,6 +2106,373 @@ ON CONFLICT (text_code, lang_code) DO UPDATE
     SET text_label = EXCLUDED.text_label;
 
 
+
+-- ============================================================
+-- SCHÉMA : t_sport_match_status (Statuts des matchs)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_match_status (
+    id        SERIAL       PRIMARY KEY,
+    text_code VARCHAR(100) UNIQUE NOT NULL,
+    FOREIGN KEY (text_code) REFERENCES t_sport_text_key(text_code) ON DELETE RESTRICT
+);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_match (Matchs / Rencontres)
+-- ============================================================
+-- Un match appartient à un round (journée/tour).
+-- home_team_id et away_team_id peuvent être NULL pour des matchs
+-- dont les participants ne sont pas encore connus (phase finale).
+-- score_detail est un JSONB flexible pour les sports à sets, manches,
+-- quarts-temps, etc. (ex: {"sets": [25,23,18], "sets_opp": [20,25,25]})
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_match (
+    id              SERIAL       PRIMARY KEY,
+    round_id        INT          NOT NULL,
+    home_team_id    INT          DEFAULT NULL,
+    away_team_id    INT          DEFAULT NULL,
+    match_order     INT          NOT NULL DEFAULT 1,
+    match_date      TIMESTAMP    DEFAULT NULL,
+    venue_name      VARCHAR(150) DEFAULT NULL,
+    venue_id        INT          DEFAULT NULL,
+    score_home      SMALLINT     DEFAULT NULL,
+    score_away      SMALLINT     DEFAULT NULL,
+    score_detail    JSONB        DEFAULT NULL,
+    note            TEXT         DEFAULT NULL,
+    status_id       INT          NOT NULL DEFAULT 1,
+    created_at      TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by      INT          DEFAULT NULL,
+    modified_at     TIMESTAMP    DEFAULT NULL,
+    modified_by     INT          DEFAULT NULL,
+    FOREIGN KEY (round_id)      REFERENCES t_sport_competition_round(id) ON DELETE CASCADE,
+    FOREIGN KEY (home_team_id)  REFERENCES t_sport_team(id)              ON DELETE SET NULL,
+    FOREIGN KEY (away_team_id)  REFERENCES t_sport_team(id)              ON DELETE SET NULL,
+    FOREIGN KEY (status_id)     REFERENCES t_sport_match_status(id)      ON DELETE RESTRICT,
+    FOREIGN KEY (created_by)    REFERENCES t_user_user(id)               ON DELETE SET NULL,
+    FOREIGN KEY (modified_by)   REFERENCES t_user_user(id)               ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_match_round     ON t_sport_match(round_id);
+CREATE INDEX IF NOT EXISTS idx_sport_match_home_team ON t_sport_match(home_team_id);
+CREATE INDEX IF NOT EXISTS idx_sport_match_away_team ON t_sport_match(away_team_id);
+CREATE INDEX IF NOT EXISTS idx_sport_match_status    ON t_sport_match(status_id);
+CREATE INDEX IF NOT EXISTS idx_sport_match_date      ON t_sport_match(match_date);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_standing_rule (Règles de calcul du classement)
+-- ============================================================
+-- Une règle est définie par édition (ou phase si compétition multi-phase).
+-- Permet de paramétrer les points par résultat et les critères de tri.
+-- tri_criteria : JSONB, ex: ["points","goal_diff","goals_for","head_to_head"]
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_standing_rule (
+    id                SERIAL    PRIMARY KEY,
+    edition_id        INT       NOT NULL,
+    phase_id          INT       DEFAULT NULL,
+    pts_win           SMALLINT  NOT NULL DEFAULT 3,
+    pts_draw          SMALLINT  NOT NULL DEFAULT 1,
+    pts_loss          SMALLINT  NOT NULL DEFAULT 0,
+    pts_win_ot        SMALLINT  DEFAULT NULL,
+    pts_loss_ot       SMALLINT  DEFAULT NULL,
+    count_goals       BOOLEAN   NOT NULL DEFAULT TRUE,
+    tri_criteria      JSONB     NOT NULL DEFAULT '["points","goal_diff","goals_for"]',
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by        INT       DEFAULT NULL,
+    modified_at       TIMESTAMP DEFAULT NULL,
+    modified_by       INT       DEFAULT NULL,
+    FOREIGN KEY (edition_id)  REFERENCES t_sport_competition_edition(id) ON DELETE CASCADE,
+    FOREIGN KEY (phase_id)    REFERENCES t_sport_competition_phase(id)   ON DELETE CASCADE,
+    FOREIGN KEY (created_by)  REFERENCES t_user_user(id)                 ON DELETE SET NULL,
+    FOREIGN KEY (modified_by) REFERENCES t_user_user(id)                 ON DELETE SET NULL,
+    CONSTRAINT uk_sport_standing_rule_edition_phase UNIQUE (edition_id, phase_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_standing_rule_edition ON t_sport_standing_rule(edition_id);
+
+
+-- ============================================================
+-- SCHÉMA : t_sport_standing (Classement)
+-- ============================================================
+-- Calculé automatiquement depuis les matchs joués (status=played).
+-- is_manual=TRUE : la ligne a été corrigée manuellement par un admin.
+-- La colonne rank est calculée et stockée pour l'affichage rapide.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS t_sport_standing (
+    id              SERIAL    PRIMARY KEY,
+    group_id        INT       NOT NULL,
+    team_id         INT       NOT NULL,
+    rank            SMALLINT  DEFAULT NULL,
+    played          SMALLINT  NOT NULL DEFAULT 0,
+    won             SMALLINT  NOT NULL DEFAULT 0,
+    drawn           SMALLINT  NOT NULL DEFAULT 0,
+    lost            SMALLINT  NOT NULL DEFAULT 0,
+    goals_for       SMALLINT  NOT NULL DEFAULT 0,
+    goals_against   SMALLINT  NOT NULL DEFAULT 0,
+    goal_diff       SMALLINT  NOT NULL DEFAULT 0,
+    points          SMALLINT  NOT NULL DEFAULT 0,
+    is_manual       BOOLEAN   NOT NULL DEFAULT FALSE,
+    note            TEXT      DEFAULT NULL,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by      INT       DEFAULT NULL,
+    modified_at     TIMESTAMP DEFAULT NULL,
+    modified_by     INT       DEFAULT NULL,
+    FOREIGN KEY (group_id)   REFERENCES t_sport_competition_group(id) ON DELETE CASCADE,
+    FOREIGN KEY (team_id)    REFERENCES t_sport_team(id)              ON DELETE RESTRICT,
+    FOREIGN KEY (created_by) REFERENCES t_user_user(id)               ON DELETE SET NULL,
+    FOREIGN KEY (modified_by)REFERENCES t_user_user(id)               ON DELETE SET NULL,
+    CONSTRAINT uk_sport_standing_group_team UNIQUE (group_id, team_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sport_standing_group ON t_sport_standing(group_id);
+CREATE INDEX IF NOT EXISTS idx_sport_standing_team  ON t_sport_standing(team_id);
+CREATE INDEX IF NOT EXISTS idx_sport_standing_rank  ON t_sport_standing(group_id, rank);
+
+
+-- ============================================================
+-- DONNÉES : Statuts des matchs
+-- ============================================================
+
+INSERT INTO t_sport_text_key (text_code) VALUES
+('MATCH_STATUS_SCHEDULED'),
+('MATCH_STATUS_IN_PROGRESS'),
+('MATCH_STATUS_PLAYED'),
+('MATCH_STATUS_POSTPONED'),
+('MATCH_STATUS_CANCELLED'),
+('MATCH_STATUS_FORFEITED'),
+('MATCH_LBL_MATCHES'),
+('MATCH_LBL_MATCH'),
+('MATCH_LBL_HOME_TEAM'),
+('MATCH_LBL_AWAY_TEAM'),
+('MATCH_LBL_DATE'),
+('MATCH_LBL_VENUE'),
+('MATCH_LBL_SCORE'),
+('MATCH_LBL_ROUND'),
+('MATCH_LBL_NOTE'),
+('MATCH_LBL_STATUS'),
+('MATCH_BTN_ADD'),
+('MATCH_BTN_EDIT'),
+('MATCH_BTN_DELETE'),
+('MATCH_BTN_ENTER_SCORE'),
+('MATCH_TITLE_LIST'),
+('MATCH_TITLE_VIEW'),
+('MATCH_TITLE_ADD'),
+('MATCH_TITLE_EDIT'),
+('MATCH_MSG_ADDED'),
+('MATCH_MSG_UPDATED'),
+('MATCH_MSG_DELETED'),
+('MATCH_ERR_MISSING_FIELDS'),
+('MATCH_ERR_SAME_TEAMS'),
+('STANDING_LBL_STANDINGS'),
+('STANDING_LBL_RANK'),
+('STANDING_LBL_TEAM'),
+('STANDING_LBL_PLAYED'),
+('STANDING_LBL_WON'),
+('STANDING_LBL_DRAWN'),
+('STANDING_LBL_LOST'),
+('STANDING_LBL_GF'),
+('STANDING_LBL_GA'),
+('STANDING_LBL_GD'),
+('STANDING_LBL_PTS'),
+('STANDING_LBL_FORM'),
+('STANDING_BTN_RECALCULATE'),
+('STANDING_BTN_EDIT'),
+('STANDING_MSG_RECALCULATED'),
+('STANDING_MSG_UPDATED')
+ON CONFLICT (text_code) DO NOTHING;
+
+INSERT INTO t_sport_match_status (text_code) VALUES
+('MATCH_STATUS_SCHEDULED'),
+('MATCH_STATUS_IN_PROGRESS'),
+('MATCH_STATUS_PLAYED'),
+('MATCH_STATUS_POSTPONED'),
+('MATCH_STATUS_CANCELLED'),
+('MATCH_STATUS_FORFEITED')
+ON CONFLICT (text_code) DO NOTHING;
+
+-- Traductions des statuts et libellés
+INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
+
+('MATCH_STATUS_SCHEDULED',   'fr', 'Programmé'),
+('MATCH_STATUS_SCHEDULED',   'en', 'Scheduled'),
+('MATCH_STATUS_SCHEDULED',   'es', 'Programado'),
+
+('MATCH_STATUS_IN_PROGRESS', 'fr', 'En cours'),
+('MATCH_STATUS_IN_PROGRESS', 'en', 'In progress'),
+('MATCH_STATUS_IN_PROGRESS', 'es', 'En curso'),
+
+('MATCH_STATUS_PLAYED',      'fr', 'Joué'),
+('MATCH_STATUS_PLAYED',      'en', 'Played'),
+('MATCH_STATUS_PLAYED',      'es', 'Jugado'),
+
+('MATCH_STATUS_POSTPONED',   'fr', 'Reporté'),
+('MATCH_STATUS_POSTPONED',   'en', 'Postponed'),
+('MATCH_STATUS_POSTPONED',   'es', 'Aplazado'),
+
+('MATCH_STATUS_CANCELLED',   'fr', 'Annulé'),
+('MATCH_STATUS_CANCELLED',   'en', 'Cancelled'),
+('MATCH_STATUS_CANCELLED',   'es', 'Cancelado'),
+
+('MATCH_STATUS_FORFEITED',   'fr', 'Forfait'),
+('MATCH_STATUS_FORFEITED',   'en', 'Forfeited'),
+('MATCH_STATUS_FORFEITED',   'es', 'Por incomparecencia'),
+
+('MATCH_LBL_MATCHES',        'fr', 'Matchs'),
+('MATCH_LBL_MATCHES',        'en', 'Matches'),
+('MATCH_LBL_MATCHES',        'es', 'Partidos'),
+
+('MATCH_LBL_MATCH',          'fr', 'Match'),
+('MATCH_LBL_MATCH',          'en', 'Match'),
+('MATCH_LBL_MATCH',          'es', 'Partido'),
+
+('MATCH_LBL_HOME_TEAM',      'fr', 'Équipe domicile'),
+('MATCH_LBL_HOME_TEAM',      'en', 'Home team'),
+('MATCH_LBL_HOME_TEAM',      'es', 'Equipo local'),
+
+('MATCH_LBL_AWAY_TEAM',      'fr', 'Équipe extérieur'),
+('MATCH_LBL_AWAY_TEAM',      'en', 'Away team'),
+('MATCH_LBL_AWAY_TEAM',      'es', 'Equipo visitante'),
+
+('MATCH_LBL_DATE',           'fr', 'Date'),
+('MATCH_LBL_DATE',           'en', 'Date'),
+('MATCH_LBL_DATE',           'es', 'Fecha'),
+
+('MATCH_LBL_VENUE',          'fr', 'Lieu'),
+('MATCH_LBL_VENUE',          'en', 'Venue'),
+('MATCH_LBL_VENUE',          'es', 'Lugar'),
+
+('MATCH_LBL_SCORE',          'fr', 'Score'),
+('MATCH_LBL_SCORE',          'en', 'Score'),
+('MATCH_LBL_SCORE',          'es', 'Marcador'),
+
+('MATCH_LBL_ROUND',          'fr', 'Journée / Tour'),
+('MATCH_LBL_ROUND',          'en', 'Round'),
+('MATCH_LBL_ROUND',          'es', 'Jornada'),
+
+('MATCH_LBL_NOTE',           'fr', 'Note'),
+('MATCH_LBL_NOTE',           'en', 'Note'),
+('MATCH_LBL_NOTE',           'es', 'Nota'),
+
+('MATCH_LBL_STATUS',         'fr', 'Statut'),
+('MATCH_LBL_STATUS',         'en', 'Status'),
+('MATCH_LBL_STATUS',         'es', 'Estado'),
+
+('MATCH_BTN_ADD',            'fr', 'Ajouter un match'),
+('MATCH_BTN_ADD',            'en', 'Add match'),
+('MATCH_BTN_ADD',            'es', 'Agregar partido'),
+
+('MATCH_BTN_ENTER_SCORE',    'fr', 'Saisir le score'),
+('MATCH_BTN_ENTER_SCORE',    'en', 'Enter score'),
+('MATCH_BTN_ENTER_SCORE',    'es', 'Introducir marcador'),
+
+('MATCH_TITLE_LIST',         'fr', 'Matchs'),
+('MATCH_TITLE_LIST',         'en', 'Matches'),
+('MATCH_TITLE_LIST',         'es', 'Partidos'),
+
+('MATCH_TITLE_VIEW',         'fr', 'Fiche match'),
+('MATCH_TITLE_VIEW',         'en', 'Match details'),
+('MATCH_TITLE_VIEW',         'es', 'Detalle del partido'),
+
+('MATCH_TITLE_ADD',          'fr', 'Nouveau match'),
+('MATCH_TITLE_ADD',          'en', 'New match'),
+('MATCH_TITLE_ADD',          'es', 'Nuevo partido'),
+
+('MATCH_TITLE_EDIT',         'fr', 'Modifier le match'),
+('MATCH_TITLE_EDIT',         'en', 'Edit match'),
+('MATCH_TITLE_EDIT',         'es', 'Editar partido'),
+
+('MATCH_MSG_ADDED',          'fr', 'Match ajouté avec succès.'),
+('MATCH_MSG_ADDED',          'en', 'Match added successfully.'),
+('MATCH_MSG_ADDED',          'es', 'Partido agregado con éxito.'),
+
+('MATCH_MSG_UPDATED',        'fr', 'Match mis à jour avec succès.'),
+('MATCH_MSG_UPDATED',        'en', 'Match updated successfully.'),
+('MATCH_MSG_UPDATED',        'es', 'Partido actualizado con éxito.'),
+
+('MATCH_MSG_DELETED',        'fr', 'Match supprimé.'),
+('MATCH_MSG_DELETED',        'en', 'Match deleted.'),
+('MATCH_MSG_DELETED',        'es', 'Partido eliminado.'),
+
+('MATCH_ERR_MISSING_FIELDS', 'fr', 'Veuillez sélectionner une journée et au moins une équipe.'),
+('MATCH_ERR_MISSING_FIELDS', 'en', 'Please select a round and at least one team.'),
+('MATCH_ERR_MISSING_FIELDS', 'es', 'Seleccione una jornada y al menos un equipo.'),
+
+('MATCH_ERR_SAME_TEAMS',     'fr', 'Les deux équipes doivent être différentes.'),
+('MATCH_ERR_SAME_TEAMS',     'en', 'Both teams must be different.'),
+('MATCH_ERR_SAME_TEAMS',     'es', 'Los dos equipos deben ser diferentes.'),
+
+('STANDING_LBL_STANDINGS',   'fr', 'Classement'),
+('STANDING_LBL_STANDINGS',   'en', 'Standings'),
+('STANDING_LBL_STANDINGS',   'es', 'Clasificación'),
+
+('STANDING_LBL_RANK',        'fr', '#'),
+('STANDING_LBL_RANK',        'en', '#'),
+('STANDING_LBL_RANK',        'es', '#'),
+
+('STANDING_LBL_TEAM',        'fr', 'Équipe'),
+('STANDING_LBL_TEAM',        'en', 'Team'),
+('STANDING_LBL_TEAM',        'es', 'Equipo'),
+
+('STANDING_LBL_PLAYED',      'fr', 'J'),
+('STANDING_LBL_PLAYED',      'en', 'P'),
+('STANDING_LBL_PLAYED',      'es', 'PJ'),
+
+('STANDING_LBL_WON',         'fr', 'G'),
+('STANDING_LBL_WON',         'en', 'W'),
+('STANDING_LBL_WON',         'es', 'PG'),
+
+('STANDING_LBL_DRAWN',       'fr', 'N'),
+('STANDING_LBL_DRAWN',       'en', 'D'),
+('STANDING_LBL_DRAWN',       'es', 'PE'),
+
+('STANDING_LBL_LOST',        'fr', 'P'),
+('STANDING_LBL_LOST',        'en', 'L'),
+('STANDING_LBL_LOST',        'es', 'PP'),
+
+('STANDING_LBL_GF',          'fr', 'BP'),
+('STANDING_LBL_GF',          'en', 'GF'),
+('STANDING_LBL_GF',          'es', 'GF'),
+
+('STANDING_LBL_GA',          'fr', 'BC'),
+('STANDING_LBL_GA',          'en', 'GA'),
+('STANDING_LBL_GA',          'es', 'GC'),
+
+('STANDING_LBL_GD',          'fr', 'Diff'),
+('STANDING_LBL_GD',          'en', 'GD'),
+('STANDING_LBL_GD',          'es', 'DG'),
+
+('STANDING_LBL_PTS',         'fr', 'Pts'),
+('STANDING_LBL_PTS',         'en', 'Pts'),
+('STANDING_LBL_PTS',         'es', 'Pts'),
+
+('STANDING_LBL_FORM',        'fr', 'Forme'),
+('STANDING_LBL_FORM',        'en', 'Form'),
+('STANDING_LBL_FORM',        'es', 'Forma'),
+
+('STANDING_BTN_RECALCULATE', 'fr', 'Recalculer'),
+('STANDING_BTN_RECALCULATE', 'en', 'Recalculate'),
+('STANDING_BTN_RECALCULATE', 'es', 'Recalcular'),
+
+('STANDING_BTN_EDIT',        'fr', 'Modifier le classement'),
+('STANDING_BTN_EDIT',        'en', 'Edit standings'),
+('STANDING_BTN_EDIT',        'es', 'Editar clasificación'),
+
+('STANDING_MSG_RECALCULATED','fr', 'Classement recalculé avec succès.'),
+('STANDING_MSG_RECALCULATED','en', 'Standings recalculated successfully.'),
+('STANDING_MSG_RECALCULATED','es', 'Clasificación recalculada con éxito.'),
+
+('STANDING_MSG_UPDATED',     'fr', 'Classement mis à jour.'),
+('STANDING_MSG_UPDATED',     'en', 'Standings updated.'),
+('STANDING_MSG_UPDATED',     'es', 'Clasificación actualizada.')
+
+ON CONFLICT (text_code, lang_code) DO UPDATE
+    SET text_label = EXCLUDED.text_label;
+
+
 -- ============================================================
 -- SYNCHRONISATION DES SÉQUENCES
 -- ============================================================
@@ -2125,3 +2492,7 @@ SELECT setval('t_sport_competition_phase_id_seq', COALESCE((SELECT MAX(id) FROM 
 SELECT setval('t_sport_competition_group_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_group), 1));
 SELECT setval('t_sport_competition_round_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_round), 1));
 SELECT setval('t_sport_competition_entry_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_competition_entry), 1));
+SELECT setval('t_sport_match_status_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_match_status), 1));
+SELECT setval('t_sport_match_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_match), 1));
+SELECT setval('t_sport_standing_rule_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_standing_rule), 1));
+SELECT setval('t_sport_standing_id_seq', COALESCE((SELECT MAX(id) FROM t_sport_standing), 1));

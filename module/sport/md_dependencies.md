@@ -35,8 +35,12 @@
 | `t_sport_competition_group`   | Groupes / Poules / Conférences / Divisions (id, phase_id, parent_group_id, code, name, group_order, status_id, audit) |
 | `t_sport_competition_round`   | Journées / Tours / Étapes (id, phase_id, group_id, code, name, round_order, round_type, venue_name, venue_id, date_start, date_end, status_id, audit) |
 | `t_sport_competition_entry`   | Inscriptions des équipes à une édition (id, edition_id, group_id, team_id, entry_order, status_id, audit) |
-| `t_sport_text_key`    | Clés de traduction du module sport                 |
-| `t_sport_text`        | Traductions (fr / en / es) du module sport         |
+| `t_sport_match_status`        | Statuts des matchs (programmé, en cours, joué, reporté, annulé, forfait) |
+| `t_sport_match`               | Matchs / Rencontres (id, round_id, home_team_id, away_team_id, match_order, match_date, venue_name, score_home, score_away, score_detail, note, status_id, audit) |
+| `t_sport_standing_rule`       | Règles de calcul de classement par édition/phase (pts_win, pts_draw, pts_loss, tri_criteria) |
+| `t_sport_standing`            | Classements d'équipes par groupe (id, group_id, team_id, rank, played, won, drawn, lost, goals_for, goals_against, goal_diff, points, is_manual, note, audit) |
+| `t_sport_text_key`            | Clés de traduction du module sport                 |
+| `t_sport_text`                | Traductions (fr / en / es) du module sport         |
 
 ### 2. Métadonnées locales du module sport
 | Table                 | Description                                        |

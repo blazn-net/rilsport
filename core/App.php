@@ -41,7 +41,16 @@ class App
                 $candidateClass = str_replace('-', '', ucwords($url[0], '-'));
                 $candidateFile  = 'module/' . $this->currentModule . '/controller/' . $candidateClass . '.php';
 
-                if (isset($aliases[$this->currentModule][$url[0]])) {
+                $controllerAliases = [
+                    'sport' => [
+                        'match' => 'SportMatch',
+                    ]
+                ];
+
+                if (isset($controllerAliases[$this->currentModule][$url[0]])) {
+                    $this->currentController = $controllerAliases[$this->currentModule][$url[0]];
+                    unset($url[0]);
+                } elseif (isset($aliases[$this->currentModule][$url[0]])) {
                     // On garde $url[0] intact : il sera récupéré comme méthode juste après
                     $this->currentController = $aliases[$this->currentModule][$url[0]];
                 } elseif (file_exists($candidateFile)) {

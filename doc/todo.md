@@ -222,6 +222,26 @@
 
 ---
 
+### `[20261016-2330]` Pages Form / View : afficher le code de l'objet dans les URLs au lieu de l'ID
+- **Type** : Évolution
+- **Priorité** : P1
+- **Statut** : En cours
+- **Description** : Standardisation des URLs pour les fiches individuelles (consultation `view` et édition `edit`) afin d'utiliser le code unique de l'objet métier (ex: `/sport/sport/football`, `/sport/club/edit/psg`) au lieu de l'identifiant numérique interne. Prise en charge des placeholders `{code}` et `{id}` dans `list_template.php`, mise à jour des vues List/Form et des redirections contrôleurs.
+
+### `[20261016-2345]` Implémentation des Matchs et Classements (Module Sport)
+- **Type** : Évolution
+- **Priorité** : P1
+- **Statut** : Terminé
+- **Description** : Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_status`) et Classements (`t_sport_standing`, `t_sport_standing_rule`).
+  - Base de données : Tables ré-entrantes créées et validées (x2), clés de traduction UI et statuts insérés.
+  - Modèles : `SportMatch` (CRUD, filtres, saisie de score) et `Standing` (calcul automatique selon règles de tri, gestion des forfaits et ajustements manuels `is_manual`).
+  - Contrôleurs : `Matches`, `SportMatch` (avec alias de classe dans `App.php` pour le mot-clé réservé PHP 8 `match`), `Standings` (avec action de recalcul automatique), `Standing` (vue et ajustement manuel).
+  - Vues : `matches.php` (tableur standard `list_template.php`, filtres, badges rencontres/scores/statuts, actions admin), `match.php` (mode consultation stylisé avec grand bandeau de match, saisie rapide de score pour admins, formulaire d'édition), `standings.php` (tableau interactif, médailles de rang, points et statistiques, boutons de recalcul), `standing.php` (détail et formulaire d'ajustement manuel).
+  - Navigation : Liens « Matchs » et « Classements » intégrés dans `module/system/view/navview.php`.
+  - Recette : Tests unitaires et intégration de bout en bout validés.
+
+---
+
 ### `[20260908-2325]` Module blog/news/forum
 - **Type** : Évolution
 - **Priorité** : P2

@@ -15,9 +15,9 @@ $formConfig = [
     'editTitle'  => $data['txt']['SPORT_EDIT_SPORT_TITLE'] ?? 'Modifier le sport',
     'addTitle'   => $data['txt']['SPORT_ADD_SPORT_TITLE'] ?? 'Ajouter un sport',
     'backUrl'    => URLROOT . '/sport/sports',
-    'editUrl'    => isset($sport->id) ? URLROOT . '/sport/sport/edit/' . (int)$sport->id : null,
-    'cancelUrl'  => isset($sport->id) ? URLROOT . '/sport/sport/' . (int)$sport->id : URLROOT . '/sport/sports',
-    'formAction' => URLROOT . '/sport/sport' . (($data['mode'] === 'edit' && isset($sport->id)) ? '/' . (int)$sport->id : ''),
+    'editUrl'    => !empty($sport->code) ? URLROOT . '/sport/sport/edit/' . htmlspecialchars($sport->code) : (isset($sport->id) ? URLROOT . '/sport/sport/edit/' . (int)$sport->id : null),
+    'cancelUrl'  => !empty($sport->code) ? URLROOT . '/sport/sport/' . htmlspecialchars($sport->code) : (isset($sport->id) ? URLROOT . '/sport/sport/' . (int)$sport->id : URLROOT . '/sport/sports'),
+    'formAction' => URLROOT . '/sport/sport' . (($data['mode'] === 'edit' && !empty($sport->code)) ? '/' . htmlspecialchars($sport->code) : (isset($sport->id) && $data['mode'] === 'edit' ? '/' . (int)$sport->id : '')),
 
     // Icône de l'avatar en mode View
     'viewAvatarIcon' => $sportIcon,

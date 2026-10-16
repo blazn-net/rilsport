@@ -16,26 +16,54 @@ class User extends Controller
         $this->userModel = $this->model('user/User');
     }
 
-    public function index($id = null)
+    public function index($id = null, $action = null)
     {
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
         
         if (!$isAdmin) {
-            if ($id === null || $id != $_SESSION['user_id']) {
+            if ($id === null || (int)$id !== (int)$_SESSION['user_id']) {
                 $txt = $this->loadLanguage('user');
                 die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
             }
         }
 
-        $txt = $this->loadLanguage('user');
+        $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
+
+        $userData = null;
+        if ($id) {
+            $userData = $this->userModel->getUserById((int)$id);
+            if (!$userData) {
+                if ($isAdmin) {
+                    return $this->redirect('user/users');
+                } else {
+                    return $this->redirect('main');
+                }
+            }
+        }
+
+        $userObj = $userData ? (object) $userData : null;
+        if ($userObj) {
+            $fullName = trim(($userObj->prenom ?? '') . ' ' . ($userObj->nom ?? ''));
+            $userObj->displayName = ($fullName !== '') ? $fullName : ($userObj->username ?? '');
+        }
+
+        $isPost  = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $canEdit = $isAdmin || ($id !== null && (int)$id === (int)$_SESSION['user_id']);
+        $mode    = $id ? ((($action === 'edit' || $isPost) && $canEdit) ? 'edit' : 'view') : 'add';
+
+        $title = $id
+            ? ($mode === 'edit'
+                ? ($txt['USER_EDIT_USER_TITLE'] ?? 'Modifier l\'utilisateur')
+                : ('Fiche de l\'utilisateur : ' . ($userObj->displayName ?? '')))
+            : ($txt['USER_ADD_USER_BTN'] ?? 'Ajouter un utilisateur');
 
         $data = [
             'txt'               => $txt,
-            'title'             => ($id ? ($txt['USER_EDIT_USER_TITLE'] ?? 'USER_EDIT_USER_TITLE') : ($txt['USER_ADD_USER_BTN'] ?? 'USER_ADD_USER_BTN')) . ' - ' . SITENAME,
-            'user'              => null,
+            'title'             => $title . ' - ' . SITENAME,
+            'user'              => $userObj,
             'message'           => $_SESSION['flash_message'] ?? '',
             'error'             => $_SESSION['flash_error'] ?? '',
-            'mode'              => $id ? 'edit' : 'add',
+            'mode'              => $mode,
             'id'                => $id,
             'isAdmin'           => $isAdmin,
             'is_admin'          => $isAdmin,
@@ -46,22 +74,14 @@ class User extends Controller
         unset($_SESSION['flash_message']);
         unset($_SESSION['flash_error']);
 
-        if ($id) {
-            $userData    = $this->userModel->getUserById($id);
-            $data['user'] = $userData ? (object) $userData : null;
-            if (!$data['user']) {
-                if ($isAdmin) {
-                    $this->redirect('user/users');
-                } else {
-                    $this->redirect('main');
-                }
-            }
-        }
-
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (!$canEdit) {
+                die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+            }
+
             $postData = [
-                'username' => trim($_POST['username']),
-                'email'    => trim($_POST['email']),
+                'username' => trim($_POST['username'] ?? ''),
+                'email'    => trim($_POST['email'] ?? ''),
                 'nom'      => trim($_POST['nom'] ?? ''),
                 'prenom'   => trim($_POST['prenom'] ?? '')
             ];
@@ -71,9 +91,8 @@ class User extends Controller
                 $postData['status_id'] = isset($_POST['status_id']) ? (int) $_POST['status_id'] : 2;
             } else {
                 if ($id) {
-                    $existingUser          = $this->userModel->getUserById($id);
-                    $postData['roles']     = $existingUser ? (is_array($existingUser) ? $existingUser['roles'] : $existingUser->roles) : ['user'];
-                    $postData['status_id'] = $existingUser ? (is_array($existingUser) ? $existingUser['status_id'] : $existingUser->status_id) : 2;
+                    $postData['roles']     = $userObj ? ($userObj->roles ?? ['user']) : ['user'];
+                    $postData['status_id'] = $userObj ? ($userObj->status_id ?? 1) : 1;
                 } else {
                     $postData['roles']     = ['user'];
                     $postData['status_id'] = 2;
@@ -81,7 +100,7 @@ class User extends Controller
             }
 
             if ($id) {
-                $postData['id']       = $id;
+                $postData['id']       = (int)$id;
                 $postData['password'] = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : '';
 
                 if ($this->userModel->updateUser($postData)) {
@@ -89,14 +108,14 @@ class User extends Controller
                         $_SESSION['username'] = $postData['username'];
                     }
                     $_SESSION['flash_message'] = $txt['USER_SUCCESS_UPDATE_USER'] ?? 'USER_SUCCESS_UPDATE_USER';
-                    $this->redirect('user/' . urlencode($id));
+                    return $this->redirect('user/' . urlencode($id));
                 } else {
                     $data['error'] = $txt['USER_ERR_UPDATE_FAIL'] ?? 'USER_ERR_UPDATE_FAIL';
                 }
             } else {
                 $postData['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 if ($this->userModel->addUser($postData)) {
-                    $this->redirect('user/users');
+                    return $this->redirect('user/users');
                 } else {
                     $data['error'] = $txt['USER_ERR_ADD_USER_EXISTS'] ?? 'USER_ERR_ADD_USER_EXISTS';
                 }
@@ -104,7 +123,8 @@ class User extends Controller
 
             // Repopulate user object with failed post data to avoid wiping out the form
             if (!empty($data['error'])) {
-                $data['user'] = (object) $postData;
+                $data['user'] = (object) array_merge((array)($userObj ?? []), $postData);
+                $data['mode'] = 'edit';
             }
         }
 
@@ -112,5 +132,13 @@ class User extends Controller
         $this->view('system/navview', $data);
         $this->view('user/user', $data);
         $this->view('system/footer', $data);
+    }
+
+    /**
+     * Accès direct au formulaire d'édition
+     */
+    public function edit($id = null)
+    {
+        return $this->index($id, 'edit');
     }
 }

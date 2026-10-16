@@ -16,9 +16,9 @@ $formConfig = [
     'editTitle'      => $data['txt']['SPORT_EDIT_PERSON_TITLE'] ?? 'Modifier la personne',
     'addTitle'       => $data['txt']['SPORT_ADD_PERSON_TITLE'] ?? 'Ajouter une personne',
     'backUrl'        => URLROOT . '/sport/persons',
-    'editUrl'        => isset($person->id) ? URLROOT . '/sport/person/edit/' . (int)$person->id : null,
-    'cancelUrl'      => isset($person->id) ? URLROOT . '/sport/person/' . (int)$person->id : URLROOT . '/sport/persons',
-    'formAction'     => URLROOT . '/sport/person' . (($data['mode'] === 'edit' && isset($person->id)) ? '/' . (int)$person->id : ''),
+    'editUrl'        => !empty($person->code) ? URLROOT . '/sport/person/edit/' . htmlspecialchars($person->code) : (isset($person->id) ? URLROOT . '/sport/person/edit/' . (int)$person->id : null),
+    'cancelUrl'      => !empty($person->code) ? URLROOT . '/sport/person/' . htmlspecialchars($person->code) : (isset($person->id) ? URLROOT . '/sport/person/' . (int)$person->id : URLROOT . '/sport/persons'),
+    'formAction'     => URLROOT . '/sport/person' . (($data['mode'] === 'edit' && !empty($person->code)) ? '/' . htmlspecialchars($person->code) : (isset($person->id) && $data['mode'] === 'edit' ? '/' . (int)$person->id : '')),
     'viewAvatarIcon' => 'mif-user',
 
     // Contenu spécifique du mode View (Consultation pure)

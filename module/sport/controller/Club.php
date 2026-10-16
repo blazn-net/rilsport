@@ -60,7 +60,7 @@ class Club extends Controller {
             // Validation des champs obligatoires
             if (empty($code) || empty($name) || empty($countryCode) || empty($cityName)) {
                 $_SESSION['flash_error'] = $txt['CLUB_ERR_MISSING_FIELDS'] ?? 'Veuillez remplir les champs obligatoires (Code, Nom, Pays, Ville).';
-                return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['id'] : 'sport/club');
+                return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['code'] : 'sport/club');
             }
 
             // Vérification de l'unicité du code lors de l'ajout
@@ -80,13 +80,13 @@ class Club extends Controller {
                 // 1. Vérification du code d'erreur PHP
                 if ($file['error'] !== UPLOAD_ERR_OK) {
                     $_SESSION['flash_error'] = $txt['CLUB_ERR_INVALID_IMAGE'] ?? 'Erreur lors du téléversement du fichier.';
-                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['id'] : 'sport/club');
+                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['code'] : 'sport/club');
                 }
 
                 // 2. Limitation stricte du poids à 2 Mo
                 if ($file['size'] > self::MAX_FILE_SIZE) {
                     $_SESSION['flash_error'] = $txt['CLUB_ERR_FILE_TOO_LARGE'] ?? 'Le fichier est trop volumineux (2 Mo maximum).';
-                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['id'] : 'sport/club');
+                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['code'] : 'sport/club');
                 }
 
                 // 3. Validation du type MIME réel
@@ -104,7 +104,7 @@ class Club extends Controller {
 
                 if (!array_key_exists($mimeType, $allowedMimes)) {
                     $_SESSION['flash_error'] = $txt['CLUB_ERR_INVALID_IMAGE'] ?? 'Format de fichier non autorisé (PNG, JPG, WEBP, SVG uniquement).';
-                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['id'] : 'sport/club');
+                    return $this->redirect($clubData ? 'sport/club/edit/' . $clubData['code'] : 'sport/club');
                 }
 
                 // 4. Déplacement sécurisé vers public/uploads/clubs/
@@ -152,13 +152,13 @@ class Club extends Controller {
                     $this->clubModel->syncSections($clubData['id'], $sportsChosen, $_SESSION['user_id'] ?? null);
                     $_SESSION['flash_message'] = $txt['CLUB_MSG_UPDATED'] ?? 'Club mis à jour avec succès.';
                 }
-                return $this->redirect('sport/club/' . $clubData['id']);
+                return $this->redirect('sport/club/' . $clubData['code']);
             } else {
                 $newId = $this->clubModel->addClub($postData);
                 if ($newId) {
                     $this->clubModel->syncSections($newId, $sportsChosen, $_SESSION['user_id'] ?? null);
                     $_SESSION['flash_message'] = $txt['CLUB_MSG_ADDED'] ?? 'Club créé avec succès.';
-                    return $this->redirect('sport/club/' . $newId);
+                    return $this->redirect('sport/club/' . $postData['code']);
                 } else {
                     $_SESSION['flash_error'] = 'Erreur lors de la création du club.';
                     return $this->redirect('sport/club');

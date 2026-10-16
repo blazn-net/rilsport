@@ -74,7 +74,7 @@ class Season extends Controller {
                     if ($id) {
                         $this->seasonModel->updateSeason($postData);
                         $_SESSION['flash_message'] = $txt['SPORT_MSG_SEASON_UPDATED'] ?? 'Saison mise à jour avec succès.';
-                        return $this->redirect('sport/season/' . $seasonData['id']);
+                        return $this->redirect('sport/season/' . $seasonData['code']);
                     } else {
                         // Vérifier si le code existe déjà
                         $existing = $this->seasonModel->getSeasonByCode($postData['code']);

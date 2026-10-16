@@ -7,7 +7,8 @@
 // Render : Nom complet (prénom + nom)
 $renderFullName = function ($val, $row, $data) {
     $fullName  = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
-    $viewUrl   = URLROOT . '/sport/person/' . htmlspecialchars((string)$row['id']);
+    $codeOrId  = !empty($row['code']) ? $row['code'] : $row['id'];
+    $viewUrl   = URLROOT . '/sport/person/' . htmlspecialchars((string)$codeOrId);
     $title     = !empty($data['isAdmin']) ? 'Modifier la personne' : 'Consulter la fiche';
     $linkClass = !empty($data['isAdmin']) ? 'fg-primary' : 'fg-dark';
     return '<a href="' . $viewUrl . '" class="text-bold ' . $linkClass . '" title="' . htmlspecialchars($title) . '">'
@@ -83,7 +84,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'         => URLROOT . '/sport/person/edit/{id}',
+        'editUrl'         => URLROOT . '/sport/person/edit/{code}',
         'disableUrl'      => URLROOT . '/sport/person/delete/{id}',
         'deleteUrl'       => URLROOT . '/sport/person/forcedelete/{id}',
         'disableConfirm'  => $data['txt']['SPORT_DELETE_PERSON_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette personne ?',

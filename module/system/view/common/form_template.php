@@ -66,7 +66,7 @@ $backUrl   = $cfg['backUrl']   ?? '#';
 $editUrl   = $cfg['editUrl']   ?? null;
 $deleteUrl = $cfg['deleteUrl'] ?? null;
 $deleteConfirm = $cfg['deleteConfirm'] ?? ($data['txt']['SYS_CONFIRM_DELETE'] ?? 'Êtes-vous sûr de vouloir supprimer cet élément ?');
-$cancelUrl = $cfg['cancelUrl'] ?? ($mode === 'edit' && $itemId ? str_replace('/edit', '', $editUrl) : $backUrl);
+$cancelUrl = $cfg['cancelUrl'] ?? ($mode === 'edit' && ($itemCode || $itemId) ? str_replace('/edit', '', (string)$editUrl) : $backUrl);
 $formAction = $cfg['formAction'] ?? '';
 
 // Statut (view)

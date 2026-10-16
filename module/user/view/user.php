@@ -5,25 +5,94 @@
  */
 
 $user      = $data['user'] ?? null;
-$isAdmin   = !empty($data['is_admin']);
+$isAdmin   = !empty($data['isAdmin']);
 $backUrl   = URLROOT . '/' . ($isAdmin ? 'user/users' : 'main');
 
 $formConfig = [
-    'mode'        => $data['mode'] ?? 'edit',
-    'item'        => $user,
-    'idField'     => 'id',
-    'codeField'   => 'username',
-    'nameField'   => 'username',
-    'icon'        => 'mif-user',
-    'viewTitle'   => 'Profil de l\'utilisateur : ' . htmlspecialchars($user->username ?? ''),
-    'editTitle'   => $data['txt']['USER_EDIT_USER_TITLE'] ?? 'Modifier l\'utilisateur',
-    'addTitle'    => $data['txt']['USER_ADD_USER_BTN'] ?? 'Ajouter un utilisateur',
-    'backUrl'     => $backUrl,
-    'cancelUrl'   => $backUrl,
-    'formAction'  => URLROOT . '/user/' . (!empty($data['id']) ? (int)$data['id'] : ''),
+    'mode'           => $data['mode'] ?? 'view',
+    'item'           => $user,
+    'idField'        => 'id',
+    'codeField'      => 'username',
+    'nameField'      => 'displayName',
+    'statusField'    => 'status_id',
+    'icon'           => 'mif-user',
+    'viewTitle'      => 'Fiche de l\'utilisateur : ' . htmlspecialchars($user->displayName ?? ''),
+    'editTitle'      => $data['txt']['USER_EDIT_USER_TITLE'] ?? 'Modifier l\'utilisateur',
+    'addTitle'       => $data['txt']['USER_ADD_USER_BTN'] ?? 'Ajouter un utilisateur',
+    'backUrl'        => $backUrl,
+    'editUrl'        => isset($user->id) ? URLROOT . '/user/edit/' . (int)$user->id : null,
+    'cancelUrl'      => isset($user->id) ? URLROOT . '/user/' . (int)$user->id : $backUrl,
+    'formAction'     => URLROOT . '/user/' . (!empty($data['id']) ? (int)$data['id'] : ''),
     'viewAvatarIcon' => 'mif-user',
 
-    // Formulaire interactif Add/Edit
+    // ── Mode VIEW : Consultation pure (Zéro input, textes & badges) ───────────
+    'viewContent' => function($item, $data) {
+        $roles          = $item->roles ?? [];
+        $availableRoles = $data['available_roles'] ?? [];
+    ?>
+        <div class="row">
+            <div class="cell-md-6 mb-3">
+                <div class="p-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div class="text-muted text-upper text-bold" style="font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="mif-user mr-1 fg-primary"></span> <?php echo $data['txt']['USER_FIRSTNAME'] ?? 'Prénom'; ?>
+                    </div>
+                    <div class="mt-2 text-bold" style="font-size: 16px; color: #1e293b;">
+                        <?php echo !empty($item->prenom) ? htmlspecialchars($item->prenom) : '—'; ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cell-md-6 mb-3">
+                <div class="p-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div class="text-muted text-upper text-bold" style="font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="mif-user mr-1 fg-primary"></span> <?php echo $data['txt']['USER_LASTNAME'] ?? 'Nom'; ?>
+                    </div>
+                    <div class="mt-2 text-bold" style="font-size: 16px; color: #1e293b;">
+                        <?php echo !empty($item->nom) ? htmlspecialchars($item->nom) : '—'; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="cell-md-6 mb-3">
+                <div class="p-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div class="text-muted text-upper text-bold" style="font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="mif-mail mr-1 fg-orange"></span> <?php echo $data['txt']['USER_EMAIL'] ?? 'Email'; ?>
+                    </div>
+                    <div class="mt-2 text-bold" style="font-size: 16px; color: #1e293b;">
+                        <?php echo !empty($item->email) ? htmlspecialchars($item->email) : '—'; ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cell-md-6 mb-3">
+                <div class="p-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div class="text-muted text-upper text-bold" style="font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="mif-badge mr-1 fg-emerald"></span> <?php echo $data['txt']['USER_ROLE'] ?? 'Rôle(s)'; ?>
+                    </div>
+                    <div class="mt-2 d-flex flex-wrap" style="gap: 5px;">
+                        <?php if (!empty($roles) && is_array($roles)): ?>
+                            <?php foreach ($roles as $roleId): ?>
+                                <?php 
+                                    $badgeCode = $availableRoles[$roleId]['badge_code'] ?? 'primary';
+                                    $textCode  = $availableRoles[$roleId]['text_code'] ?? $roleId;
+                                    $roleLabel = $data['txt'][$textCode] ?? $textCode;
+                                ?>
+                                <span class="badge <?php echo htmlspecialchars($badgeCode); ?> p-2" style="font-size: 13px;">
+                                    <?php echo htmlspecialchars($roleLabel); ?>
+                                </span>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <span class="badge primary p-2" style="font-size: 13px;">—</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php },
+
+    // ── Mode EDIT / ADD : Formulaire interactif ──────────────────────────────
     'formContent' => function($item, $data, $mode) use ($isAdmin) { ?>
         <div class="form-group mb-3">
             <label class="text-bold"><?php echo $data['txt']['USER_USERNAME'] ?? 'Identifiant (Pseudo)'; ?> <span class="fg-red">*</span></label>

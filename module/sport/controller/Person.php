@@ -75,7 +75,7 @@ class Person extends Controller {
                     if ($id) {
                         $this->personModel->updatePerson($postData);
                         $_SESSION['flash_message'] = $txt['SPORT_MSG_PERSON_UPDATED'] ?? 'Personne mise à jour avec succès.';
-                        return $this->redirect('sport/person/' . $personData['id']);
+                        return $this->redirect('sport/person/' . $personData['code']);
                     } else {
                         // Vérifier si le code existe déjà
                         $existing = $this->personModel->getPersonByCode($postData['code']);

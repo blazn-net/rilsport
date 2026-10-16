@@ -140,6 +140,8 @@ Ces 4 règles fondamentales s'appliquent à **toutes les entités du module Spor
 | **CPT-02** | Arborescence Métier | Tous | Naviguer : Compétition → Éditions → Phases → Groupes / Poules. | Enchaînement fluide sans perte de contexte ni erreur 404. | [ ] |
 | **CPT-03** | Inscriptions (`Entries`) | P3 | Inscrire une équipe dans un groupe/poule. | Données enregistrées dans `t_sport_competition_entry`, visibilité immédiate dans l'édition. | [ ] |
 | **CPT-04** | Responsive Poules | Mobile | Consulter une édition / phase sur mobile. | Affichage lisible des classements et poules sans débordement horizontal tronqué. | [ ] |
+| **CPT-05** | Matchs (`SportMatch`) | Tous / P3 | Créer un match, saisir le score, consulter la fiche view et vérifier les badges. | Calcul des scores, statuts mis à jour (programmé, joué), consultation pure sans input pour tous. | [ ] |
+| **CPT-06** | Classements (`Standings`) | Tous / P3 | Recalculer le classement d'un groupe à partir des matchs joués, modifier une ligne manuellement. | Points et différence calculés selon les règles de tri, marquage `is_manual` préservé lors des recalculs. | [ ] |
 
 ---
 

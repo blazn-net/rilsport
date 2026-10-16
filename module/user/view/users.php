@@ -88,7 +88,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'         => URLROOT . '/user/{id}',
+        'editUrl'         => URLROOT . '/user/edit/{id}',
         'disableUrl'      => URLROOT . '/user/users?action=disable&id={id}',
         'activateUrl'     => URLROOT . '/user/users?action=activate&id={id}',
         'deleteUrl'       => URLROOT . '/user/users?action=delete&id={id}',

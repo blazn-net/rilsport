@@ -51,7 +51,8 @@ $renderCompLogo = function ($val, $row) {
 
 // ── Render Nom + sigle ────────────────────────────────────────────────────────
 $renderCompName = function ($val, $row, $data) {
-    $html = '<a href="' . URLROOT . '/sport/competition/' . (int)$row['id'] . '" class="text-bold fg-primary">';
+    $codeOrId = !empty($row['code']) ? $row['code'] : $row['id'];
+    $html = '<a href="' . URLROOT . '/sport/competition/' . htmlspecialchars((string)$codeOrId) . '" class="text-bold fg-primary">';
     $html .= htmlspecialchars($row['name']);
     if (!empty($row['acronym'])) {
         $html .= ' <span class="badge info ml-1">' . htmlspecialchars($row['acronym']) . '</span>';
@@ -126,7 +127,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'        => URLROOT . '/sport/competition/edit/{id}',
+        'editUrl'        => URLROOT . '/sport/competition/edit/{code}',
         'disableUrl'     => URLROOT . '/sport/competition/delete/{id}',
         'deleteUrl'      => URLROOT . '/sport/competition/delete/{id}?force=1',
         'disableConfirm' => $data['txt']['COMPETITION_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette compétition ?',

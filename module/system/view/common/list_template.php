@@ -17,7 +17,7 @@
  * - items          : Tableau de données
  * - idField        : Nom de la clé d'ID (défaut: 'id')
  * - statusField    : Nom du champ statut (défaut: 'status_id')
- * - actions        : URLs d'actions avec placeholder {id} ('editUrl', 'disableUrl', 'activateUrl', 'deleteUrl')
+ * - actions        : URLs d'actions avec placeholder {code} ou {id} ('editUrl', 'disableUrl', 'activateUrl', 'deleteUrl')
  */
 $config = $listConfig ?? $data['listConfig'] ?? [];
 $isAdmin = !empty($data['isAdmin']) 
@@ -175,6 +175,7 @@ $isAdmin = !empty($data['isAdmin'])
                 <?php foreach ($config['items'] as $item): 
                     $row = is_object($item) ? (array)$item : $item;
                     $id = $row[$config['idField'] ?? 'id'] ?? '';
+                    $code = !empty($row[$config['codeField'] ?? 'code']) ? $row[$config['codeField'] ?? 'code'] : $id;
                     $statusId = isset($row[$config['statusField'] ?? 'status_id']) ? (int)$row[$config['statusField'] ?? 'status_id'] : 1;
                     $isActive = ($statusId === 1);
                     $statusText = $isActive ? ($data['txt']['SPORT_ACTIVE'] ?? $data['txt']['SYS_ACTIVE'] ?? 'Actif') : ($data['txt']['SPORT_INACTIVE'] ?? $data['txt']['SYS_INACTIVE'] ?? 'Inactif');
@@ -194,7 +195,7 @@ $isAdmin = !empty($data['isAdmin'])
                                 } elseif ($type === 'code') {
                                     echo '<code>' . htmlspecialchars((string)$val) . '</code>';
                                 } elseif ($type === 'link') {
-                                    $linkUrl = isset($col['linkUrl']) ? str_replace('{id}', htmlspecialchars((string)$id), $col['linkUrl']) : '#';
+                                    $linkUrl = isset($col['linkUrl']) ? str_replace(['{code}', '{id}'], [htmlspecialchars((string)$code), htmlspecialchars((string)$id)], $col['linkUrl']) : '#';
                                     $linkTitle = $col['linkTitle'] ?? 'Consulter la fiche';
                                     echo '<a href="' . $linkUrl . '" class="text-bold fg-primary" title="' . htmlspecialchars($linkTitle) . '">' . htmlspecialchars((string)$val) . '</a>';
                                 } elseif ($type === 'date') {
@@ -223,7 +224,7 @@ $isAdmin = !empty($data['isAdmin'])
                                     
                                     // 1. Modifier (Admin)
                                     if (!empty($actions['editUrl'])): 
-                                        $editUrl = str_replace('{id}', htmlspecialchars((string)$id), $actions['editUrl']);
+                                        $editUrl = str_replace(['{code}', '{id}'], [htmlspecialchars((string)$code), htmlspecialchars((string)$id)], $actions['editUrl']);
                                     ?>
                                         <a href="<?php echo $editUrl; ?>" class="button small info" title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'); ?>">
                                             <span class="mif-pencil"></span>
@@ -233,7 +234,7 @@ $isAdmin = !empty($data['isAdmin'])
                                     <?php 
                                     // 2. Désactiver (si actif, Admin)
                                     if ($isActive && !empty($actions['disableUrl'])): 
-                                        $disableUrl = str_replace('{id}', htmlspecialchars((string)$id), $actions['disableUrl']);
+                                        $disableUrl = str_replace(['{code}', '{id}'], [htmlspecialchars((string)$code), htmlspecialchars((string)$id)], $actions['disableUrl']);
                                         $confirmMsg = $actions['disableConfirm'] ?? ($data['txt']['SYS_CONFIRM_DISABLE'] ?? 'Voulez-vous vraiment désactiver cet élément ?');
                                     ?>
                                         <button type="button" 
@@ -247,7 +248,7 @@ $isAdmin = !empty($data['isAdmin'])
                                     <?php 
                                     // 3. Réactiver (si inactif, Admin)
                                     if (!$isActive && !empty($actions['activateUrl'])): 
-                                        $activateUrl = str_replace('{id}', htmlspecialchars((string)$id), $actions['activateUrl']);
+                                        $activateUrl = str_replace(['{code}', '{id}'], [htmlspecialchars((string)$code), htmlspecialchars((string)$id)], $actions['activateUrl']);
                                         $confirmMsg = $actions['activateConfirm'] ?? ($data['txt']['SYS_CONFIRM_ACTIVATE'] ?? 'Voulez-vous vraiment réactiver cet élément ?');
                                     ?>
                                         <button type="button" 
@@ -261,7 +262,7 @@ $isAdmin = !empty($data['isAdmin'])
                                     <?php 
                                     // 4. Supprimer définitivement (Admin)
                                     if (!empty($actions['deleteUrl'])): 
-                                        $deleteUrl = str_replace('{id}', htmlspecialchars((string)$id), $actions['deleteUrl']);
+                                        $deleteUrl = str_replace(['{code}', '{id}'], [htmlspecialchars((string)$code), htmlspecialchars((string)$id)], $actions['deleteUrl']);
                                         $confirmMsg = $actions['deleteConfirm'] ?? ($data['txt']['SYS_CONFIRM_DELETE'] ?? 'Voulez-vous vraiment supprimer définitivement cet élément ?');
                                     ?>
                                         <button type="button" 

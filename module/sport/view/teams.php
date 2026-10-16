@@ -68,7 +68,8 @@ $renderTeamLogo = function ($val, $row) {
 
 // Rendu personnalisé de la colonne "Équipe" (nom + sous-titre)
 $renderTeamName = function ($val, $row, $data) {
-    $html  = '<a href="' . URLROOT . '/sport/team/' . htmlspecialchars((string)$row['id']) . '" ';
+    $codeOrId = !empty($row['code']) ? $row['code'] : $row['id'];
+    $html  = '<a href="' . URLROOT . '/sport/team/' . htmlspecialchars((string)$codeOrId) . '" ';
     $html .= 'class="text-bold fg-primary" ';
     $html .= 'title="' . (!empty($data['isAdmin']) ? "Modifier l'équipe" : 'Consulter la fiche') . '">';
     $html .= htmlspecialchars($val);
@@ -82,7 +83,8 @@ $renderTeamName = function ($val, $row, $data) {
 // Rendu personnalisé de la colonne "Club" (icône couleur + nom, lien vers la fiche club)
 $renderTeamClub = function ($val, $row) {
     $color = !empty($row['club_primary_color']) ? htmlspecialchars($row['club_primary_color']) : '#0072c6';
-    $html  = '<a href="' . URLROOT . '/sport/club/' . htmlspecialchars((string)$row['club_id']) . '" class="fg-dark text-bold">';
+    $clubCodeOrId = !empty($row['club_code']) ? $row['club_code'] : $row['club_id'];
+    $html  = '<a href="' . URLROOT . '/sport/club/' . htmlspecialchars((string)$clubCodeOrId) . '" class="fg-dark text-bold">';
     $html .= '<span class="mif-security mr-1" style="color: ' . $color . ';"></span>';
     $html .= htmlspecialchars($val);
     $html .= '</a>';
@@ -166,7 +168,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'        => URLROOT . '/sport/team/edit/{id}',
+        'editUrl'        => URLROOT . '/sport/team/edit/{code}',
         'disableUrl'     => URLROOT . '/sport/team/delete/{id}',
         'deleteUrl'      => URLROOT . '/sport/team/delete/{id}?force=1',
         'disableConfirm' => $data['txt']['TEAM_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette équipe ?',

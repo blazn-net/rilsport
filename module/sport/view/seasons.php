@@ -42,7 +42,7 @@ $listConfig = [
             'field'     => 'name',
             'label'     => $data['txt']['SYS_COL_NAME'] ?? 'Nom',
             'type'      => 'link',
-            'linkUrl'   => URLROOT . '/sport/season/{id}',
+            'linkUrl'   => URLROOT . '/sport/season/{code}',
             'linkTitle' => 'Consulter la fiche de la saison',
         ],
         [
@@ -59,7 +59,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'         => URLROOT . '/sport/season/edit/{id}',
+        'editUrl'         => URLROOT . '/sport/season/edit/{code}',
         'disableUrl'      => URLROOT . '/sport/season/delete/{id}',
         'activateUrl'     => URLROOT . '/sport/season/activate/{id}',
         'deleteUrl'       => URLROOT . '/sport/season/forcedelete/{id}',

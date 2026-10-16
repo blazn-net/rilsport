@@ -21,9 +21,9 @@ $formConfig = [
     'editTitle'      => $data['txt']['SPORT_EDIT_TEAM_TITLE'] ?? 'Modifier l\'équipe',
     'addTitle'       => $data['txt']['SPORT_ADD_TEAM_TITLE'] ?? 'Créer une équipe',
     'backUrl'        => URLROOT . '/sport/teams',
-    'editUrl'        => isset($team->id) ? URLROOT . '/sport/team/edit/' . (int)$team->id : null,
-    'cancelUrl'      => isset($team->id) ? URLROOT . '/sport/team/' . (int)$team->id : URLROOT . '/sport/teams',
-    'formAction'     => URLROOT . '/sport/team' . (($data['mode'] === 'edit' && isset($team->id)) ? '/' . (int)$team->id : ''),
+    'editUrl'        => !empty($team->code) ? URLROOT . '/sport/team/edit/' . htmlspecialchars($team->code) : (isset($team->id) ? URLROOT . '/sport/team/edit/' . (int)$team->id : null),
+    'cancelUrl'      => !empty($team->code) ? URLROOT . '/sport/team/' . htmlspecialchars($team->code) : (isset($team->id) ? URLROOT . '/sport/team/' . (int)$team->id : URLROOT . '/sport/teams'),
+    'formAction'     => URLROOT . '/sport/team' . (($data['mode'] === 'edit' && !empty($team->code)) ? '/' . htmlspecialchars($team->code) : (isset($team->id) && $data['mode'] === 'edit' ? '/' . (int)$team->id : '')),
     'viewAvatarHtml' => $avatarHtml,
 
     // Contenu spécifique du mode View (Consultation pure)
@@ -40,7 +40,7 @@ $formConfig = [
                     
                     <p class="mb-2">
                         <span class="mif-security fg-primary mr-1"></span> <strong>Club :</strong>
-                        <a href="<?php echo URLROOT; ?>/sport/club/<?php echo (int)($item->club_id ?? 0); ?>" class="fg-primary text-bold">
+                        <a href="<?php echo URLROOT; ?>/sport/club/<?php echo htmlspecialchars($item->club_code ?? $item->club_id ?? ''); ?>" class="fg-primary text-bold">
                             <?php echo htmlspecialchars($item->club_name ?? ''); ?>
                         </a>
                         <small class="fg-gray">(<?php echo htmlspecialchars($item->club_city ?? ''); ?>, <?php echo htmlspecialchars($item->club_country ?? ''); ?>)</small>

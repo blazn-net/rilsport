@@ -34,9 +34,9 @@ $formConfig = [
     'editTitle'      => $data['txt']['SPORT_EDIT_CLUB_TITLE'] ?? 'Modifier le club',
     'addTitle'       => $data['txt']['SPORT_ADD_CLUB_TITLE'] ?? 'Créer un club',
     'backUrl'        => URLROOT . '/sport/clubs',
-    'editUrl'        => isset($club->id) ? URLROOT . '/sport/club/edit/' . (int)$club->id : null,
-    'cancelUrl'      => isset($club->id) ? URLROOT . '/sport/club/' . (int)$club->id : URLROOT . '/sport/clubs',
-    'formAction'     => URLROOT . '/sport/club' . (($data['mode'] === 'edit' && isset($club->id)) ? '/' . (int)$club->id : ''),
+    'editUrl'        => !empty($club->code) ? URLROOT . '/sport/club/edit/' . htmlspecialchars($club->code) : (isset($club->id) ? URLROOT . '/sport/club/edit/' . (int)$club->id : null),
+    'cancelUrl'      => !empty($club->code) ? URLROOT . '/sport/club/' . htmlspecialchars($club->code) : (isset($club->id) ? URLROOT . '/sport/club/' . (int)$club->id : URLROOT . '/sport/clubs'),
+    'formAction'     => URLROOT . '/sport/club' . (($data['mode'] === 'edit' && !empty($club->code)) ? '/' . htmlspecialchars($club->code) : (isset($club->id) && $data['mode'] === 'edit' ? '/' . (int)$club->id : '')),
     'viewAvatarHtml' => $avatarHtml,
 
     // Contenu spécifique du mode View (Consultation pure, zéro input)

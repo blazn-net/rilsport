@@ -59,7 +59,7 @@ class CompetitionEdition extends Controller {
 
             if (empty($code) || empty($name) || empty($competitionId)) {
                 $_SESSION['flash_error'] = $txt['COMPETITION_EDITION_ERR_MISSING_FIELDS'] ?? 'Champs obligatoires manquants.';
-                return $this->redirect($editionData ? 'sport/competition-edition/edit/' . $editionData['id'] : 'sport/competition-edition');
+                return $this->redirect($editionData ? 'sport/competition-edition/edit/' . ($editionData['code'] ?? $editionData['id']) : 'sport/competition-edition');
             }
 
             if (!$editionData) {
@@ -88,13 +88,14 @@ class CompetitionEdition extends Controller {
             if ($editionData) {
                 $this->editionModel->updateEdition($postData);
                 $_SESSION['flash_message'] = $txt['COMPETITION_EDITION_MSG_UPDATED'] ?? 'Edition mise a jour.';
-                return $this->redirect('sport/competition-edition/' . $editionData['id']);
+                return $this->redirect('sport/competition-edition/' . ($editionData['code'] ?? $editionData['id']));
             } else {
                 $newId = $this->editionModel->addEdition($postData);
                 if ($newId) {
                     $_SESSION['flash_message'] = $txt['COMPETITION_EDITION_MSG_ADDED'] ?? 'Edition creee.';
                     // Redirige vers la fiche competition parente
-                    return $this->redirect('sport/competition/' . $competitionId);
+                    $comp = $this->competitionModel->getCompetitionById($competitionId);
+                    return $this->redirect('sport/competition/' . (!empty($comp['code']) ? $comp['code'] : $competitionId));
                 } else {
                     $_SESSION['flash_error'] = 'Erreur lors de la creation.';
                     return $this->redirect('sport/competition-edition');

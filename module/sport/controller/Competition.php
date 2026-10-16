@@ -53,7 +53,7 @@ class Competition extends Controller {
 
             if (empty($code) || empty($name) || empty($sportId) || empty($typeCode)) {
                 $_SESSION['flash_error'] = $txt['COMPETITION_ERR_MISSING_FIELDS'] ?? 'Veuillez remplir les champs obligatoires.';
-                return $this->redirect($competitionData ? 'sport/competition/edit/' . $competitionData['id'] : 'sport/competition');
+                return $this->redirect($competitionData ? 'sport/competition/edit/' . ($competitionData['code'] ?? $competitionData['id']) : 'sport/competition');
             }
 
             if (!$competitionData) {
@@ -104,12 +104,12 @@ class Competition extends Controller {
             if ($competitionData) {
                 $this->competitionModel->updateCompetition($postData);
                 $_SESSION['flash_message'] = $txt['COMPETITION_MSG_UPDATED'] ?? 'Competiton mise a jour.';
-                return $this->redirect('sport/competition/' . $competitionData['id']);
+                return $this->redirect('sport/competition/' . ($competitionData['code'] ?? $competitionData['id']));
             } else {
                 $newId = $this->competitionModel->addCompetition($postData);
                 if ($newId) {
                     $_SESSION['flash_message'] = $txt['COMPETITION_MSG_ADDED'] ?? 'Competition creee.';
-                    return $this->redirect('sport/competition/' . $newId);
+                    return $this->redirect('sport/competition/' . ($postData['code'] ?? $newId));
                 } else {
                     $_SESSION['flash_error'] = 'Erreur lors de la creation.';
                     return $this->redirect('sport/competition');

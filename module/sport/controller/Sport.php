@@ -70,7 +70,7 @@ class Sport extends Controller {
                     if ($id) {
                         $this->sportModel->updateSport($postData);
                         $_SESSION['flash_message'] = $txt['SPORT_MSG_SPORT_UPDATED'] ?? 'Sport mis à jour avec succès.';
-                        return $this->redirect('sport/' . $sportData['id']);
+                        return $this->redirect('sport/sport/' . $sportData['code']);
                     } else {
                         // Vérifier si le code existe déjà
                         $existing = $this->sportModel->getSportByCode($postData['code']);

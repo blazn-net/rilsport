@@ -31,9 +31,9 @@ $formConfig = [
     'editTitle'      => $data['txt']['COMPETITION_EDIT_TITLE'] ?? 'Modifier la compétition',
     'addTitle'       => $data['txt']['COMPETITION_ADD_TITLE'] ?? 'Nouvelle compétition',
     'backUrl'        => URLROOT . '/sport/competitions',
-    'editUrl'        => isset($comp->id) ? URLROOT . '/sport/competition/edit/' . (int)$comp->id : null,
-    'cancelUrl'      => isset($comp->id) ? URLROOT . '/sport/competition/' . (int)$comp->id : URLROOT . '/sport/competitions',
-    'formAction'     => URLROOT . '/sport/competition' . (($data['mode'] === 'edit' && isset($comp->id)) ? '/edit/' . (int)$comp->id : ''),
+    'editUrl'        => !empty($comp->code) ? URLROOT . '/sport/competition/edit/' . htmlspecialchars($comp->code) : (isset($comp->id) ? URLROOT . '/sport/competition/edit/' . (int)$comp->id : null),
+    'cancelUrl'      => !empty($comp->code) ? URLROOT . '/sport/competition/' . htmlspecialchars($comp->code) : (isset($comp->id) ? URLROOT . '/sport/competition/' . (int)$comp->id : URLROOT . '/sport/competitions'),
+    'formAction'     => URLROOT . '/sport/competition' . (($data['mode'] === 'edit' && !empty($comp->code)) ? '/edit/' . htmlspecialchars($comp->code) : (isset($comp->id) && $data['mode'] === 'edit' ? '/edit/' . (int)$comp->id : '')),
     'viewAvatarHtml' => $avatarHtml,
 
     // Contenu spécifique du mode View (Consultation pure)
@@ -100,10 +100,12 @@ $formConfig = [
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($editions as $e): ?>
+                        <?php foreach ($editions as $e): 
+                            $edCodeOrId = !empty($e['code']) ? $e['code'] : $e['id'];
+                        ?>
                             <tr>
                                 <td>
-                                    <a href="<?php echo URLROOT; ?>/sport/competition-edition/<?php echo (int)$e['id']; ?>" class="text-bold">
+                                    <a href="<?php echo URLROOT; ?>/sport/competition-edition/<?php echo htmlspecialchars((string)$edCodeOrId); ?>" class="text-bold">
                                         <?php echo htmlspecialchars($e['name']); ?>
                                     </a>
                                 </td>
@@ -112,7 +114,7 @@ $formConfig = [
                                 <td><?php echo !empty($e['date_end'])   ? date('d/m/Y', strtotime($e['date_end']))   : '—'; ?></td>
                                 <?php if (!empty($data['isAdmin'])): ?>
                                     <td class="text-center">
-                                        <a href="<?php echo URLROOT; ?>/sport/competition-edition/edit/<?php echo (int)$e['id']; ?>" class="button small info square" title="Modifier">
+                                        <a href="<?php echo URLROOT; ?>/sport/competition-edition/edit/<?php echo htmlspecialchars((string)$edCodeOrId); ?>" class="button small info square" title="Modifier">
                                             <span class="mif-pencil"></span>
                                         </a>
                                     </td>

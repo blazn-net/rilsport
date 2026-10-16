@@ -14,9 +14,9 @@ $formConfig = [
     'editTitle'  => $data['txt']['SPORT_EDIT_SEASON_TITLE'] ?? 'Modifier la saison',
     'addTitle'   => $data['txt']['SPORT_ADD_SEASON_TITLE'] ?? 'Ajouter une saison',
     'backUrl'    => URLROOT . '/sport/seasons',
-    'editUrl'    => isset($season->id) ? URLROOT . '/sport/season/edit/' . (int)$season->id : null,
-    'cancelUrl'  => isset($season->id) ? URLROOT . '/sport/season/' . (int)$season->id : URLROOT . '/sport/seasons',
-    'formAction' => URLROOT . '/sport/season' . (($data['mode'] === 'edit' && isset($season->id)) ? '/' . (int)$season->id : ''),
+    'editUrl'    => !empty($season->code) ? URLROOT . '/sport/season/edit/' . htmlspecialchars($season->code) : (isset($season->id) ? URLROOT . '/sport/season/edit/' . (int)$season->id : null),
+    'cancelUrl'  => !empty($season->code) ? URLROOT . '/sport/season/' . htmlspecialchars($season->code) : (isset($season->id) ? URLROOT . '/sport/season/' . (int)$season->id : URLROOT . '/sport/seasons'),
+    'formAction' => URLROOT . '/sport/season' . (($data['mode'] === 'edit' && !empty($season->code)) ? '/' . htmlspecialchars($season->code) : (isset($season->id) && $data['mode'] === 'edit' ? '/' . (int)$season->id : '')),
 
     // Icône de l'avatar en mode View
     'viewAvatarIcon' => 'mif-calendar',
