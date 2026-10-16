@@ -225,8 +225,8 @@
 ### `[20261016-2330]` Pages Form / View : afficher le code de l'objet dans les URLs au lieu de l'ID
 - **Type** : Évolution
 - **Priorité** : P1
-- **Statut** : En cours
-- **Description** : Standardisation des URLs pour les fiches individuelles (consultation `view` et édition `edit`) afin d'utiliser le code unique de l'objet métier (ex: `/sport/sport/football`, `/sport/club/edit/psg`) au lieu de l'identifiant numérique interne. Prise en charge des placeholders `{code}` et `{id}` dans `list_template.php`, mise à jour des vues List/Form et des redirections contrôleurs.
+- **Statut** : Terminé
+- **Description** : Standardisation des URLs pour les fiches individuelles (consultation `view` et édition `edit`) afin d'utiliser le code unique de l'objet métier (ex: `/sport/sport/football`, `/sport/club/edit/psg`, `/sport/competition/ligue1`, `/sport/competition-edition/ligue1-2024-2025`, `/user/william.baskerville`) au lieu de l'identifiant numérique interne. Prise en charge des placeholders `{code}` et `{id}` dans `list_template.php`, enrichissement des méthodes `getByCode` dans les modèles avec toutes les jointures nécessaires, mise à jour de l'ensemble des vues List/Form et des redirections de contrôleurs (Sport, Club, Team, Season, Person, Competition, CompetitionEdition, User).
 
 ### `[20261016-2345]` Implémentation des Matchs et Classements (Module Sport)
 - **Type** : Évolution

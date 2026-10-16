@@ -104,7 +104,29 @@ class Team {
      * Récupère une équipe par son code unique
      */
     public function getTeamByCode($code) {
-        $this->db->query("SELECT * FROM t_sport_team WHERE code = :code");
+        $this->db->query("
+            SELECT t.*,
+                   sec.name AS section_name,
+                   c.name AS club_name,
+                   c.code AS club_code,
+                   c.logo AS club_logo,
+                   c.primary_color AS club_primary_color,
+                   c.city_name AS club_city,
+                   c.country_code AS club_country,
+                   s.name AS sport_name,
+                   s.icon AS sport_icon,
+                   ts.text_code AS status_text_code,
+                   u_c.username AS created_by_name,
+                   u_m.username AS modified_by_name
+            FROM t_sport_team t
+            JOIN t_sport_section sec ON t.section_id = sec.id
+            JOIN t_sport_club c ON sec.club_id = c.id
+            JOIN t_sport_sport s ON sec.sport_id = s.id
+            LEFT JOIN t_sport_team_status ts ON t.status_id = ts.id
+            LEFT JOIN t_user_user u_c ON t.created_by = u_c.id
+            LEFT JOIN t_user_user u_m ON t.modified_by = u_m.id
+            WHERE t.code = :code
+        ");
         $this->db->bind(':code', $code);
         return $this->db->single();
     }

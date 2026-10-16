@@ -8,6 +8,8 @@ $user      = $data['user'] ?? null;
 $isAdmin   = !empty($data['isAdmin']);
 $backUrl   = URLROOT . '/' . ($isAdmin ? 'user/users' : 'main');
 
+$userCodeOrId = !empty($user->username) ? htmlspecialchars($user->username) : (isset($user->id) ? (int)$user->id : null);
+
 $formConfig = [
     'mode'           => $data['mode'] ?? 'view',
     'item'           => $user,
@@ -20,9 +22,9 @@ $formConfig = [
     'editTitle'      => $data['txt']['USER_EDIT_USER_TITLE'] ?? 'Modifier l\'utilisateur',
     'addTitle'       => $data['txt']['USER_ADD_USER_BTN'] ?? 'Ajouter un utilisateur',
     'backUrl'        => $backUrl,
-    'editUrl'        => isset($user->id) ? URLROOT . '/user/edit/' . (int)$user->id : null,
-    'cancelUrl'      => isset($user->id) ? URLROOT . '/user/' . (int)$user->id : $backUrl,
-    'formAction'     => URLROOT . '/user/' . (!empty($data['id']) ? (int)$data['id'] : ''),
+    'editUrl'        => $userCodeOrId ? URLROOT . '/user/edit/' . $userCodeOrId : null,
+    'cancelUrl'      => $userCodeOrId ? URLROOT . '/user/' . $userCodeOrId : $backUrl,
+    'formAction'     => URLROOT . '/user' . (($data['mode'] === 'edit' && $userCodeOrId) ? '/edit/' . $userCodeOrId : ''),
     'viewAvatarIcon' => 'mif-user',
 
     // ── Mode VIEW : Consultation pure (Zéro input, textes & badges) ───────────

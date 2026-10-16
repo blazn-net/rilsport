@@ -15,12 +15,15 @@ $statuses        = $data['statuses'] ?? [];
 $parentCandidates = $data['parentCandidates'] ?? [];
 $preselectedCompetitionId = $data['preselectedCompetitionId'] ?? null;
 
-$backUrl = !empty($edition->competition_id)
-    ? URLROOT . '/sport/competition/' . (int)$edition->competition_id
+$editionCodeOrId = !empty($edition->code) ? htmlspecialchars($edition->code) : (isset($edition->id) ? (int)$edition->id : null);
+$compCodeOrId    = !empty($edition->competition_code) ? htmlspecialchars($edition->competition_code) : (!empty($edition->competition_id) ? (int)$edition->competition_id : null);
+
+$backUrl = !empty($compCodeOrId)
+    ? URLROOT . '/sport/competition/' . $compCodeOrId
     : URLROOT . '/sport/competition-editions';
 
-$cancelUrl = isset($edition->id)
-    ? URLROOT . '/sport/competition-edition/' . (int)$edition->id
+$cancelUrl = $editionCodeOrId
+    ? URLROOT . '/sport/competition-edition/' . $editionCodeOrId
     : $backUrl;
 
 $formConfig = [
@@ -32,9 +35,9 @@ $formConfig = [
     'editTitle'      => $data['txt']['COMPETITION_EDITION_EDIT_TITLE'] ?? 'Modifier l\'édition',
     'addTitle'       => $data['txt']['COMPETITION_EDITION_ADD_TITLE'] ?? 'Nouvelle édition',
     'backUrl'        => $backUrl,
-    'editUrl'        => isset($edition->id) ? URLROOT . '/sport/competition-edition/edit/' . (int)$edition->id : null,
+    'editUrl'        => $editionCodeOrId ? URLROOT . '/sport/competition-edition/edit/' . $editionCodeOrId : null,
     'cancelUrl'      => $cancelUrl,
-    'formAction'     => URLROOT . '/sport/competition-edition' . (($data['mode'] === 'edit' && isset($edition->id)) ? '/edit/' . (int)$edition->id : ''),
+    'formAction'     => URLROOT . '/sport/competition-edition' . (($data['mode'] === 'edit' && $editionCodeOrId) ? '/edit/' . $editionCodeOrId : ''),
     'viewAvatarIcon' => 'mif-calendar',
 
     // Contenu spécifique du mode View (Consultation pure)
@@ -48,7 +51,7 @@ $formConfig = [
 
                     <p class="mb-2">
                         <strong><?php echo $data['txt']['COMPETITION_EDITION_COMPETITION'] ?? 'Compétition'; ?> :</strong>
-                        <a href="<?php echo URLROOT; ?>/sport/competition/<?php echo (int)($item->competition_id ?? 0); ?>" class="fg-primary text-bold">
+                        <a href="<?php echo URLROOT; ?>/sport/competition/<?php echo !empty($item->competition_code) ? htmlspecialchars($item->competition_code) : (int)($item->competition_id ?? 0); ?>" class="fg-primary text-bold">
                             <?php echo htmlspecialchars($item->competition_name ?? ''); ?>
                         </a>
                     </p>

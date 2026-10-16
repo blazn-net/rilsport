@@ -75,7 +75,24 @@ class Competition {
      * Récupère une compétition par son code
      */
     public function getCompetitionByCode($code) {
-        $this->db->query("SELECT * FROM t_sport_competition WHERE code = :code");
+        $this->db->query("
+            SELECT c.*,
+                   ct.text_code AS type_text_code,
+                   cs.text_code AS status_text_code,
+                   s.name       AS sport_name,
+                   s.icon       AS sport_icon,
+                   COALESCE(z.name_default, c.country_code) AS country_name,
+                   u_c.username AS created_by_name,
+                   u_m.username AS modified_by_name
+            FROM t_sport_competition c
+            LEFT JOIN t_sport_competition_type   ct ON c.type_code  = ct.code
+            LEFT JOIN t_sport_competition_status cs ON c.status_id  = cs.id
+            LEFT JOIN t_sport_sport              s  ON c.sport_id   = s.id
+            LEFT JOIN t_zone_zone                z  ON z.country_code = c.country_code AND z.type_code = 'country'
+            LEFT JOIN t_user_user               u_c ON c.created_by  = u_c.id
+            LEFT JOIN t_user_user               u_m ON c.modified_by = u_m.id
+            WHERE c.code = :code
+        ");
         $this->db->bind(':code', $code);
         return $this->db->single();
     }

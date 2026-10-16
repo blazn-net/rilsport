@@ -42,7 +42,8 @@ ob_start(); ?>
 
 // ── Render Nom édition + édition parente ──────────────────────────────────────
 $renderEditionName = function ($val, $row) {
-    $html = '<a href="' . URLROOT . '/sport/competition-edition/' . (int)$row['id'] . '" class="text-bold fg-primary">'
+    $codeOrId = !empty($row['code']) ? $row['code'] : $row['id'];
+    $html = '<a href="' . URLROOT . '/sport/competition-edition/' . htmlspecialchars((string)$codeOrId) . '" class="text-bold fg-primary">'
           . htmlspecialchars($row['name']) . '</a>';
     if (!empty($row['parent_edition_name'])) {
         $html .= '<br><small class="fg-gray">' . htmlspecialchars($row['parent_edition_name']) . '</small>';
@@ -52,7 +53,8 @@ $renderEditionName = function ($val, $row) {
 
 // ── Render Compétition (lien) ─────────────────────────────────────────────────
 $renderCompetition = function ($val, $row) {
-    return '<a href="' . URLROOT . '/sport/competition/' . (int)$row['competition_id'] . '" class="fg-dark">'
+    $compCodeOrId = !empty($row['competition_code']) ? $row['competition_code'] : $row['competition_id'];
+    return '<a href="' . URLROOT . '/sport/competition/' . htmlspecialchars((string)$compCodeOrId) . '" class="fg-dark">'
          . htmlspecialchars($row['competition_name'] ?? '') . '</a>';
 };
 
@@ -135,7 +137,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'        => URLROOT . '/sport/competition-edition/edit/{id}',
+        'editUrl'        => URLROOT . '/sport/competition-edition/edit/{code}',
         'disableUrl'     => URLROOT . '/sport/competition-edition/delete/{id}?return=list',
         'deleteUrl'      => URLROOT . '/sport/competition-edition/delete/{id}?force=1&return=list',
         'disableConfirm' => $data['txt']['COMPETITION_EDITION_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette édition ?',

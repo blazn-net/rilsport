@@ -79,7 +79,28 @@ class CompetitionEdition {
      * Une edition par code
      */
     public function getEditionByCode($code) {
-        $this->db->query("SELECT * FROM t_sport_competition_edition WHERE code = :code");
+        $this->db->query("
+            SELECT e.*,
+                   cs.text_code  AS status_text_code,
+                   se.name       AS season_name,
+                   c.name        AS competition_name,
+                   c.code        AS competition_code,
+                   c.type_code   AS competition_type_code,
+                   c.sport_id    AS competition_sport_id,
+                   sp.name       AS sport_name,
+                   pe.name       AS parent_edition_name,
+                   u_c.username  AS created_by_name,
+                   u_m.username  AS modified_by_name
+            FROM t_sport_competition_edition e
+            LEFT JOIN t_sport_competition_status  cs ON e.status_id        = cs.id
+            LEFT JOIN t_sport_season              se ON e.season_id         = se.id
+            LEFT JOIN t_sport_competition          c ON e.competition_id    = c.id
+            LEFT JOIN t_sport_sport               sp ON c.sport_id          = sp.id
+            LEFT JOIN t_sport_competition_edition pe ON e.parent_edition_id = pe.id
+            LEFT JOIN t_user_user                u_c ON e.created_by        = u_c.id
+            LEFT JOIN t_user_user                u_m ON e.modified_by       = u_m.id
+            WHERE e.code = :code
+        ");
         $this->db->bind(':code', $code);
         return $this->db->single();
     }

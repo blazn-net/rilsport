@@ -20,18 +20,11 @@ class User extends Controller
     {
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
         
-        if (!$isAdmin) {
-            if ($id === null || (int)$id !== (int)$_SESSION['user_id']) {
-                $txt = $this->loadLanguage('user');
-                die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
-            }
-        }
-
-        $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
-
         $userData = null;
-        if ($id) {
-            $userData = $this->userModel->getUserById((int)$id);
+        if ($id !== null && $id !== '') {
+            $userData = is_numeric($id)
+                ? $this->userModel->getUserById((int)$id)
+                : $this->userModel->findUserByEmailOrUsername($id);
             if (!$userData) {
                 if ($isAdmin) {
                     return $this->redirect('user/users');
@@ -41,6 +34,15 @@ class User extends Controller
             }
         }
 
+        if (!$isAdmin) {
+            if ($id === null || ((int)($userData['id'] ?? 0) !== (int)$_SESSION['user_id'])) {
+                $txt = $this->loadLanguage('user');
+                die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
+            }
+        }
+
+        $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
+
         $userObj = $userData ? (object) $userData : null;
         if ($userObj) {
             $fullName = trim(($userObj->prenom ?? '') . ' ' . ($userObj->nom ?? ''));
@@ -48,7 +50,7 @@ class User extends Controller
         }
 
         $isPost  = ($_SERVER['REQUEST_METHOD'] === 'POST');
-        $canEdit = $isAdmin || ($id !== null && (int)$id === (int)$_SESSION['user_id']);
+        $canEdit = $isAdmin || ($userData !== null && (int)$userData['id'] === (int)$_SESSION['user_id']);
         $mode    = $id ? ((($action === 'edit' || $isPost) && $canEdit) ? 'edit' : 'view') : 'add';
 
         $title = $id
@@ -99,16 +101,16 @@ class User extends Controller
                 }
             }
 
-            if ($id) {
-                $postData['id']       = (int)$id;
+            if ($userData) {
+                $postData['id']       = (int)$userData['id'];
                 $postData['password'] = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : '';
 
                 if ($this->userModel->updateUser($postData)) {
-                    if ($id == $_SESSION['user_id']) {
+                    if ($userData['id'] == $_SESSION['user_id']) {
                         $_SESSION['username'] = $postData['username'];
                     }
                     $_SESSION['flash_message'] = $txt['USER_SUCCESS_UPDATE_USER'] ?? 'USER_SUCCESS_UPDATE_USER';
-                    return $this->redirect('user/' . urlencode($id));
+                    return $this->redirect('user/' . urlencode($postData['username'] ?? $userData['username']));
                 } else {
                     $data['error'] = $txt['USER_ERR_UPDATE_FAIL'] ?? 'USER_ERR_UPDATE_FAIL';
                 }

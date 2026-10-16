@@ -8,7 +8,8 @@
 $renderUserName = function ($val, $row, $data) {
     $fullName = htmlspecialchars(trim(($row['prenom'] ?? '') . ' ' . ($row['nom'] ?? '')));
     $label = ($fullName !== '') ? $fullName : htmlspecialchars($row['username'] ?? '—');
-    return '<a href="' . URLROOT . '/user/' . (int)$row['id'] . '" class="text-bold fg-primary" title="Consulter le profil">' . $label . '</a>';
+    $userCodeOrId = !empty($row['username']) ? $row['username'] : $row['id'];
+    return '<a href="' . URLROOT . '/user/' . htmlspecialchars((string)$userCodeOrId) . '" class="text-bold fg-primary" title="Consulter le profil">' . $label . '</a>';
 };
 
 // Render : Badges des rôles
@@ -43,6 +44,7 @@ $listConfig = [
     'searchFields'   => 'username,email,nom,prenom',
     'items'          => $data['users'] ?? [],
     'idField'        => 'id',
+    'codeField'      => 'username',
     'statusField'    => 'status_id',
     'columns'        => [
         [
@@ -88,7 +90,7 @@ $listConfig = [
         ],
     ],
     'actions' => [
-        'editUrl'         => URLROOT . '/user/edit/{id}',
+        'editUrl'         => URLROOT . '/user/edit/{code}',
         'disableUrl'      => URLROOT . '/user/users?action=disable&id={id}',
         'activateUrl'     => URLROOT . '/user/users?action=activate&id={id}',
         'deleteUrl'       => URLROOT . '/user/users?action=delete&id={id}',
