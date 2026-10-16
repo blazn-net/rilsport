@@ -174,12 +174,11 @@ Chaque page de type List **DOIT** posséder un tableau (grid) contenant les colo
 
 Les colonnes **Statut** et **Actions** sont masquées automatiquement pour les non-admins par le template.
 
-Couleurs des boutons d'action :
+Couleurs des boutons d'action (admin-only) :
 - Modifier    → `button small info`    + `mif-pencil`
 - Désactiver  → `button small warning` + `mif-cancel`
 - Réactiver   → `button small success` + `mif-checkmark`
 - Supprimer   → `button small alert`   + `mif-bin`
-- Consulter   → `button small primary` + `mif-eye` (non-admins)
 
 ---
 
@@ -250,8 +249,9 @@ public function getAllObjects(string $search = '') {
 - `status_id = 3` → `badge warning`
 
 ### Boutons Filtrer / Réinitialiser
-- Filtrer       : `button primary` + `mif-filter`
-- Réinitialiser : `button secondary` + `mif-reload`
+- Filtrer       : `button info` + `mif-filter` (bleu professionnel `#0072c6`, texte blanc)
+- Réinitialiser : `button light` + `mif-reload` (gris clair neutre `#e2e8f0`, texte sombre `#334155`)
+- *Règle : Le rouge est strictement réservé aux suppressions (`mif-bin`, bouton `alert`). Le marron (`secondary` Metro) est interdit.*
 
 ---
 

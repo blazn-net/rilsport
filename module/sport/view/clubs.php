@@ -38,8 +38,8 @@ ob_start(); ?>
     </div>
 
     <div style="flex: 0 0 auto; padding-bottom: 2px;">
-        <button type="submit" class="button primary mr-1"><span class="mif-filter"></span> <span class="btn-text">Filtrer</span></button>
-        <a href="<?php echo URLROOT; ?>/sport/clubs" class="button secondary"><span class="mif-reload"></span> <span class="btn-text">Réinitialiser</span></a>
+        <button type="submit" class="button info mr-1"><span class="mif-filter"></span> <span class="btn-text">Filtrer</span></button>
+        <a href="<?php echo URLROOT; ?>/sport/clubs" class="button light"><span class="mif-reload"></span> <span class="btn-text">Réinitialiser</span></a>
     </div>
 </form>
 <?php $clubsFiltersHtml = ob_get_clean();

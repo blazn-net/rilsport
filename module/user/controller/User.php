@@ -37,6 +37,7 @@ class User extends Controller
             'error'             => $_SESSION['flash_error'] ?? '',
             'mode'              => $id ? 'edit' : 'add',
             'id'                => $id,
+            'isAdmin'           => $isAdmin,
             'is_admin'          => $isAdmin,
             'available_roles'   => $this->userModel->getAllRoles(),
             'available_statuses'=> $this->userModel->getUserStatuses()

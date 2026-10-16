@@ -87,12 +87,14 @@ $listConfig = [
             'render' => $renderDate,
         ],
     ],
-    // Pas de 'actions' standard (Modifier/Désactiver) : on garde les actions existantes
-    // Note : colonne Actions standard du template (Modifier = /user/{id}, Supprimer = GET ?action=delete&id={id})
     'actions' => [
-        'editUrl'    => URLROOT . '/user/{id}',
-        'deleteUrl'  => URLROOT . '/user/users?action=delete&id={id}',
-        'deleteConfirm' => $data['txt']['USER_DELETE_USER_CONFIRM'] ?? 'Voulez-vous vraiment supprimer cet utilisateur ?',
+        'editUrl'         => URLROOT . '/user/{id}',
+        'disableUrl'      => URLROOT . '/user/users?action=disable&id={id}',
+        'activateUrl'     => URLROOT . '/user/users?action=activate&id={id}',
+        'deleteUrl'       => URLROOT . '/user/users?action=delete&id={id}',
+        'disableConfirm'  => $data['txt']['USER_DISABLE_USER_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cet utilisateur ?',
+        'activateConfirm' => $data['txt']['USER_ACTIVATE_USER_CONFIRM'] ?? 'Voulez-vous vraiment réactiver cet utilisateur ?',
+        'deleteConfirm'   => $data['txt']['USER_DELETE_USER_CONFIRM'] ?? 'Voulez-vous vraiment supprimer cet utilisateur ?',
     ],
 ];
 

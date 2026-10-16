@@ -77,7 +77,7 @@ Format standardisé du routage :
 
 ### A. Bouton « + Ajouter »
 - **Couleur obligatoire : `info` (bleu)** — classe Metro UI `button info`
-- Visible **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`)
+- Visible **uniquement pour les administrateurs** (`!empty($isAdmin)`)
 - Placé en haut à droite de la page, aligné avec le titre `<h2>`
 - **Libellé affiché : toujours « Ajouter »** (clé `SYS_BTN_ADD`) — jamais un libellé objet-spécifique
 - `addBtnText` (config) = infobulle `title` uniquement (ex : « Ajouter un sport »)
@@ -93,7 +93,7 @@ Format standardisé du routage :
 | Supprimer | `button small alert` | `mif-bin` |
 
 ### C. Colonnes admin-only
-- Les colonnes **Statut** et **Actions** sont visibles **uniquement pour les admins** (`!empty($data['isAdmin'])`).
+- Les colonnes **Statut** et **Actions** sont visibles **uniquement pour les admins** (`!empty($isAdmin)`).
 - Les visiteurs non-admins ne voient ni statut ni actions.
 
 ### D. Badges de statut
@@ -104,8 +104,9 @@ Format standardisé du routage :
 | Brouillon (`status_id = 3`) | `badge warning` |
 
 ### E. Boutons Filtrer / Réinitialiser
-- **Filtrer** : `button primary` avec icône `mif-filter`
-- **Réinitialiser** : `button secondary` avec icône `mif-reload`
+- **Filtrer** : `button info` avec icône `mif-filter` (bleu professionnel `#0072c6`)
+- **Réinitialiser** : `button light` avec icône `mif-reload` (gris clair neutre `#e2e8f0`, texte sombre `#334155`)
+- *Règle : Le rouge est strictement réservé aux suppressions (`mif-bin`, `button alert`). Le marron (`secondary` Metro) est interdit.*
 - Ces boutons sont générés automatiquement par `list_template.php`
 
 ### F. Héritage obligatoire

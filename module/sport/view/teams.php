@@ -49,8 +49,8 @@ ob_start();
     </div>
 
     <div style="flex: 0 0 auto; padding-bottom: 2px;">
-        <button type="submit" class="button primary mr-1"><span class="mif-filter"></span> Filtrer</button>
-        <a href="<?php echo URLROOT; ?>/sport/teams" class="button secondary">Réinitialiser</a>
+        <button type="submit" class="button info mr-1"><span class="mif-filter"></span> <span class="btn-text">Filtrer</span></button>
+        <a href="<?php echo URLROOT; ?>/sport/teams" class="button light"><span class="mif-reload"></span> <span class="btn-text">Réinitialiser</span></a>
     </div>
 </form>
 <?php

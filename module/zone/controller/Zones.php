@@ -22,7 +22,7 @@ class Zones extends Controller {
     }
 
     public function index() {
-        $txt      = $this->loadLanguage('zone');
+        $txt      = array_merge($this->loadLanguage('system'), $this->loadLanguage('zone'));
         $langCode = $_SESSION['lang_code'] ?? 'fr';
         $root       = $this->zoneModel->getRootZone($langCode);
         $continents = $root ? $this->zoneModel->getChildren((int) $root['id'], $langCode) : [];

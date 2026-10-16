@@ -219,6 +219,24 @@ class User
         return false;
     }
 
+    // Désactiver un utilisateur (status_id = 2)
+    public function disableUser($id, $userId = null)
+    {
+        $this->db->query('UPDATE t_user_user SET status_id = 2, modified_by = :userId, modified_at = CURRENT_TIMESTAMP WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $this->db->bind(':userId', $userId);
+        return $this->db->execute();
+    }
+
+    // Réactiver un utilisateur (status_id = 1)
+    public function activateUser($id, $userId = null)
+    {
+        $this->db->query('UPDATE t_user_user SET status_id = 1, modified_by = :userId, modified_at = CURRENT_TIMESTAMP WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $this->db->bind(':userId', $userId);
+        return $this->db->execute();
+    }
+
     // Supprimer un utilisateur
     public function deleteUser($id)
     {

@@ -262,6 +262,59 @@ class Zone extends Controller {
     }
 
     // -------------------------------------------------------
+    // disable($id) : désactiver une zone (status_id = 2)
+    // -------------------------------------------------------
+
+    public function disable(int $id) {
+        $txt      = $this->loadLanguage('zone');
+        $langCode = $_SESSION['lang_code'] ?? 'fr';
+
+        $zone = $this->zoneModel->getZoneById($id, $langCode);
+        if (!$zone) {
+            $_SESSION['flash_error'] = 'Zone introuvable.';
+            return $this->redirect('zone/zones');
+        }
+
+        if ($zone['type_code'] === 'world' || empty($zone['parent_id'])) {
+            $_SESSION['flash_error'] = 'La zone racine Monde ne peut pas être désactivée.';
+            return $this->redirect('zone/zones');
+        }
+
+        try {
+            $this->zoneModel->disableZone($id, $_SESSION['user_id'] ?? null);
+            $_SESSION['flash_message'] = "« {$zone['name']} » a été désactivée.";
+        } catch (\Exception $e) {
+            $_SESSION['flash_error'] = 'Erreur : ' . $e->getMessage();
+        }
+
+        return $this->redirect('zone/zones');
+    }
+
+    // -------------------------------------------------------
+    // activate($id) : réactiver une zone (status_id = 1)
+    // -------------------------------------------------------
+
+    public function activate(int $id) {
+        $txt      = $this->loadLanguage('zone');
+        $langCode = $_SESSION['lang_code'] ?? 'fr';
+
+        $zone = $this->zoneModel->getZoneById($id, $langCode);
+        if (!$zone) {
+            $_SESSION['flash_error'] = 'Zone introuvable.';
+            return $this->redirect('zone/zones');
+        }
+
+        try {
+            $this->zoneModel->activateZone($id, $_SESSION['user_id'] ?? null);
+            $_SESSION['flash_message'] = "« {$zone['name']} » a été réactivée.";
+        } catch (\Exception $e) {
+            $_SESSION['flash_error'] = 'Erreur : ' . $e->getMessage();
+        }
+
+        return $this->redirect('zone/zones');
+    }
+
+    // -------------------------------------------------------
     // children : AJAX — retourne les enfants d'une zone (JSON)
     // -------------------------------------------------------
 

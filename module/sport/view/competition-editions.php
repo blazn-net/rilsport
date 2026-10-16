@@ -34,8 +34,8 @@ ob_start(); ?>
         </select>
     </div>
     <div style="flex: 0 0 auto; padding-bottom: 2px;">
-        <button type="submit" class="button primary mr-1"><span class="mif-filter"></span> <span class="btn-text">Filtrer</span></button>
-        <a href="<?php echo URLROOT; ?>/sport/competition-editions" class="button secondary"><span class="mif-reload"></span> <span class="btn-text">Réinitialiser</span></a>
+        <button type="submit" class="button info mr-1"><span class="mif-filter"></span> <span class="btn-text">Filtrer</span></button>
+        <a href="<?php echo URLROOT; ?>/sport/competition-editions" class="button light"><span class="mif-reload"></span> <span class="btn-text">Réinitialiser</span></a>
     </div>
 </form>
 <?php $editionsFiltersHtml = ob_get_clean();
@@ -136,8 +136,10 @@ $listConfig = [
     ],
     'actions' => [
         'editUrl'        => URLROOT . '/sport/competition-edition/edit/{id}',
-        'disableUrl'     => URLROOT . '/sport/competition-edition/delete/{id}',
+        'disableUrl'     => URLROOT . '/sport/competition-edition/delete/{id}?return=list',
+        'deleteUrl'      => URLROOT . '/sport/competition-edition/delete/{id}?force=1&return=list',
         'disableConfirm' => $data['txt']['COMPETITION_EDITION_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette édition ?',
+        'deleteConfirm'  => $data['txt']['COMPETITION_EDITION_FORCE_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment supprimer définitivement cette édition ?',
     ],
 ];
 

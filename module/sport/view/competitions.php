@@ -34,8 +34,8 @@ ob_start(); ?>
         </select>
     </div>
     <div style="flex: 0 0 auto; padding-bottom: 2px;">
-        <button type="submit" class="button primary mr-1"><span class="mif-filter"></span> <span class="btn-text">Filtrer</span></button>
-        <a href="<?php echo URLROOT; ?>/sport/competitions" class="button secondary"><span class="mif-reload"></span> <span class="btn-text">Réinitialiser</span></a>
+        <button type="submit" class="button info mr-1"><span class="mif-filter"></span> <span class="btn-text">Filtrer</span></button>
+        <a href="<?php echo URLROOT; ?>/sport/competitions" class="button light"><span class="mif-reload"></span> <span class="btn-text">Réinitialiser</span></a>
     </div>
 </form>
 <?php $compFiltersHtml = ob_get_clean();
@@ -128,7 +128,9 @@ $listConfig = [
     'actions' => [
         'editUrl'        => URLROOT . '/sport/competition/edit/{id}',
         'disableUrl'     => URLROOT . '/sport/competition/delete/{id}',
+        'deleteUrl'      => URLROOT . '/sport/competition/delete/{id}?force=1',
         'disableConfirm' => $data['txt']['COMPETITION_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment désactiver cette compétition ?',
+        'deleteConfirm'  => $data['txt']['COMPETITION_FORCE_DELETE_CONFIRM'] ?? 'Voulez-vous vraiment supprimer définitivement cette compétition ?',
     ],
 ];
 

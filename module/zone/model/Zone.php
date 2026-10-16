@@ -186,6 +186,28 @@ class Zone {
     }
 
     // -------------------------------------------------------
+    // Désactiver une zone (status_id = 2)
+    // -------------------------------------------------------
+
+    public function disableZone(int $zoneId, ?int $modifiedBy = null): bool {
+        $this->db->query("UPDATE t_zone_zone SET status_id = 2, modified_at = CURRENT_TIMESTAMP, modified_by = :modified_by WHERE id = :id");
+        $this->db->bind(':id',          $zoneId);
+        $this->db->bind(':modified_by', $modifiedBy);
+        return $this->db->execute();
+    }
+
+    // -------------------------------------------------------
+    // Réactiver une zone (status_id = 1)
+    // -------------------------------------------------------
+
+    public function activateZone(int $zoneId, ?int $modifiedBy = null): bool {
+        $this->db->query("UPDATE t_zone_zone SET status_id = 1, modified_at = CURRENT_TIMESTAMP, modified_by = :modified_by WHERE id = :id");
+        $this->db->bind(':id',          $zoneId);
+        $this->db->bind(':modified_by', $modifiedBy);
+        return $this->db->execute();
+    }
+
+    // -------------------------------------------------------
     // Liste des parents potentiels (world, continent, country, admin1)
     // -------------------------------------------------------
 

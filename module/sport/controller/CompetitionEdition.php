@@ -156,7 +156,9 @@ class CompetitionEdition extends Controller {
         }
 
         $edition    = $this->editionModel->getEditionById((int)$id);
-        $returnUrl  = $edition ? 'sport/competition/' . $edition['competition_id'] : 'sport/competition-editions';
+        $returnUrl  = (isset($_GET['return']) && $_GET['return'] === 'list') 
+            ? 'sport/competition-editions' 
+            : ($edition ? 'sport/competition/' . $edition['competition_id'] : 'sport/competition-editions');
 
         $force  = isset($_GET['force']) && $_GET['force'] == 1;
         $userId = $_SESSION['user_id'] ?? null;

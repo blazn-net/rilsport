@@ -23,6 +23,8 @@ class Users extends Controller
         $data = [
             'txt'               => $txt,
             'title'             => ($txt['USER_USERS_LIST'] ?? 'USER_USERS_LIST') . ' - ' . SITENAME,
+            'isAdmin'           => true,
+            'is_admin'          => true,
             'users'             => [],
             'message'           => '',
             'error'             => '',
@@ -30,17 +32,32 @@ class Users extends Controller
             'available_statuses'=> $this->userModel->getUserStatuses()
         ];
 
-        // Gérer la suppression si demandée
-        if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
+        // Gérer les actions (désactiver, réactiver, supprimer)
+        if (isset($_GET['action']) && isset($_GET['id'])) {
+            $action = $_GET['action'];
             $id = (int) $_GET['id'];
-            if ($id !== $_SESSION['user_id']) {
-                if ($this->userModel->deleteUser($id)) {
-                    $data['message'] = $txt['USER_MSG_USER_DELETED'] ?? 'USER_MSG_USER_DELETED';
-                } else {
-                    $data['error'] = $txt['USER_ERR_DELETE_FAIL'] ?? 'USER_ERR_DELETE_FAIL';
-                }
+            if ($id === (int)$_SESSION['user_id'] && in_array($action, ['disable', 'delete'])) {
+                $data['error'] = $txt['USER_ERR_ACTION_SELF'] ?? 'Vous ne pouvez pas effectuer cette action sur votre propre compte.';
             } else {
-                $data['error'] = $txt['USER_ERR_DELETE_SELF'] ?? 'USER_ERR_DELETE_SELF';
+                if ($action === 'disable') {
+                    if ($this->userModel->disableUser($id, $_SESSION['user_id'])) {
+                        $data['message'] = $txt['USER_MSG_USER_DISABLED'] ?? 'Utilisateur désactivé avec succès.';
+                    } else {
+                        $data['error'] = $txt['USER_ERR_DISABLE_FAIL'] ?? 'Erreur lors de la désactivation.';
+                    }
+                } elseif ($action === 'activate') {
+                    if ($this->userModel->activateUser($id, $_SESSION['user_id'])) {
+                        $data['message'] = $txt['USER_MSG_USER_ACTIVATED'] ?? 'Utilisateur réactivé avec succès.';
+                    } else {
+                        $data['error'] = $txt['USER_ERR_ACTIVATE_FAIL'] ?? 'Erreur lors de la réactivation.';
+                    }
+                } elseif ($action === 'delete') {
+                    if ($this->userModel->deleteUser($id)) {
+                        $data['message'] = $txt['USER_MSG_USER_DELETED'] ?? 'Utilisateur supprimé avec succès.';
+                    } else {
+                        $data['error'] = $txt['USER_ERR_DELETE_FAIL'] ?? 'Erreur lors de la suppression.';
+                    }
+                }
             }
         }
 

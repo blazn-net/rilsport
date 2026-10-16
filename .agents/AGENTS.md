@@ -31,7 +31,7 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
   - Toute page List s'appuie de préférence sur le template universel `module/system/view/common/list_template.php`.
   - Le clic sur le nom de l'objet dans la liste ouvre **toujours** la fiche en mode **Consultation (`View`)** pour tous (visiteurs et admins).
   - Le mode Édition (`Edit`) est accessible aux admins via le bouton Modifier (crayon `mif-pencil`) de la colonne Actions ou via le bouton « Modifier » en haut de la fiche `View`.
-  - La colonne **Actions** et la colonne **Statut** sont visibles **uniquement pour les administrateurs** (`!empty($data['isAdmin'])`), totalement masquées pour les non-admins.
+  - Le **bouton « + Ajouter »**, la colonne **Actions** et la colonne **Statut** sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les non-admins.
   - Libellés de dates : Intitulés concis « Début » et « Fin » (et non « Date de début / fin »).
 - **Pages Form & View standardisées (`form_template.php`)** :
   - Toute fiche individuelle Form / View s'appuie obligatoirement sur le template universel `module/system/view/common/form_template.php`.

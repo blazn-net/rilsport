@@ -120,6 +120,11 @@
     color: #dc2626;
     border-color: #fca5a5;
 }
+.zone-btn-action.action-disable:hover {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fdba74;
+}
 
 .zone-children {
     border-left: 2px solid #e2e8f0;
@@ -142,31 +147,82 @@
 }
 </style>
 
-<main class="p-4" style="margin-top: 60px;">
-    <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4">
+<?php
+$isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+?>
+<main class="list-page" style="padding-top: 68px;">
+
+    <!-- En-tête : Titre & Bouton Ajouter (admin uniquement) -->
+    <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4" style="flex-shrink: 0;">
         <h2>
             <span class="mif-earth mr-2"></span>
-            <?php echo $data['txt']['ZONE_TITLE_ZONES'] ?? 'Zones géographiques'; ?>
+            <?php echo htmlspecialchars($data['txt']['ZONE_TITLE_ZONES'] ?? 'Zones géographiques'); ?>
         </h2>
-        <a href="<?php echo URLROOT; ?>/zone/add" class="button primary">
-            <span class="mif-plus mr-1"></span>
-            <?php echo $data['txt']['ZONE_TITLE_ZONE_ADD'] ?? 'Ajouter une zone'; ?>
-        </a>
+
+        <?php if (!empty($isAdmin)): ?>
+            <a href="<?php echo URLROOT; ?>/zone/add"
+               class="button info mt-2 mt-md-0"
+               id="btn-add-main"
+               title="<?php echo htmlspecialchars($data['txt']['ZONE_BTN_ADD'] ?? $data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?>">
+                <span class="mif-plus"></span>
+                <span class="btn-text"><?php echo htmlspecialchars($data['txt']['ZONE_BTN_ADD'] ?? $data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?></span>
+            </a>
+        <?php endif; ?>
     </div>
 
+    <!-- Alertes Flash -->
     <?php if (!empty($data['message'])): ?>
-        <div class="remark success"><?php echo htmlspecialchars($data['message']); ?></div>
+        <div class="remark success mb-3"><?php echo htmlspecialchars($data['message']); ?></div>
     <?php endif; ?>
 
     <?php if (!empty($data['error'])): ?>
-        <div class="remark alert"><?php echo htmlspecialchars($data['error']); ?></div>
+        <div class="remark alert mb-3"><?php echo htmlspecialchars($data['error']); ?></div>
     <?php endif; ?>
 
-    <!-- Barre de recherche -->
-    <div class="input-control mb-4" style="max-width: 420px;">
-        <input type="text" id="zone-search" placeholder="<?php echo htmlspecialchars($data['txt']['ZONE_PLACEHOLDER_SEARCH'] ?? 'Rechercher une zone...'); ?>" class="metro-input">
-        <button class="button" type="button"><span class="mif-search"></span></button>
+    <!-- Barre de filtres (standard pages List) -->
+    <div class="list-filter-section mb-3" id="zone-filter-section" style="flex-shrink: 0;">
+        <div class="list-filter-summary"
+             onclick="event.preventDefault(); event.stopPropagation(); document.getElementById('zone-filter-section').classList.toggle('collapsed'); return false;">
+            <span class="list-filter-arrow">▾</span>
+            <?php echo htmlspecialchars($data['txt']['SYS_FILTERS'] ?? 'Filtres'); ?>
+        </div>
+        <div class="list-filter-body">
+            <div class="d-flex flex-row flex-wrap flex-align-end" style="gap: 10px;">
+                <div style="flex: 2; min-width: 200px;">
+                    <label class="text-bold d-block">
+                        <span class="mif-search mr-1"></span>
+                        <?php echo htmlspecialchars($data['txt']['SYS_SEARCH'] ?? 'Recherche'); ?>
+                    </label>
+                    <input type="text" id="zone-search" data-role="input"
+                           placeholder="<?php echo htmlspecialchars($data['txt']['ZONE_PLACEHOLDER_SEARCH'] ?? 'Rechercher une zone...'); ?>">
+                </div>
+                <div style="flex: 0 0 auto; padding-bottom: 2px;">
+                    <button type="button" class="button info mr-1" id="btn-zone-filter" onclick="applyZoneSearch()">
+                        <span class="mif-filter"></span>
+                        <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_FILTER'] ?? 'Filtrer'); ?></span>
+                    </button>
+                    <button type="button" class="button light" id="btn-zone-reset" onclick="resetZoneSearch()">
+                        <span class="mif-reload"></span>
+                        <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_RESET'] ?? 'Réinitialiser'); ?></span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+    <style>
+        .list-filter-section { background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; }
+        .list-filter-summary { padding: 10px 14px; font-size: 13px; font-weight: 600; color: #444; cursor: pointer; user-select: none; border-bottom: 1px solid #eee; }
+        .list-filter-arrow { display: inline-block; font-size: 11px; color: #999; transition: transform .15s; }
+        .list-filter-section.collapsed .list-filter-arrow { transform: rotate(-90deg); }
+        .list-filter-section.collapsed .list-filter-summary { border-bottom: none; }
+        .list-filter-section.collapsed .list-filter-body { display: none; }
+        .list-filter-body { padding: 12px 14px; }
+        .list-filter-section .button.info { background-color: #0072c6 !important; border-color: #0072c6 !important; color: #ffffff !important; }
+        .list-filter-section .button.info:hover { background-color: #005a9e !important; border-color: #005a9e !important; }
+        .list-filter-section .button.light { background-color: #f1f3f5 !important; border-color: #ced4da !important; color: #495057 !important; }
+        .list-filter-section .button.light:hover { background-color: #e2e6ea !important; border-color: #adb5bd !important; }
+    </style>
+
 
     <!-- Treeview -->
     <div class="zone-tree-container">
@@ -223,6 +279,12 @@
                                                class="zone-btn-action" title="Modifier">
                                                 <span class="mif-pencil"></span>
                                             </a>
+                                            <a href="<?php echo URLROOT; ?>/zone/disable/<?php echo (int) $continent['id']; ?>"
+                                               class="zone-btn-action action-disable"
+                                               onclick="return confirm('Désactiver « <?php echo addslashes($continent['name']); ?> » ?');"
+                                               title="Désactiver">
+                                                <span class="mif-cancel"></span>
+                                            </a>
                                             <a href="<?php echo URLROOT; ?>/zone/delete/<?php echo (int) $continent['id']; ?>"
                                                class="zone-btn-action action-delete"
                                                onclick="return confirm('Confirmer la suppression de « <?php echo addslashes($continent['name']); ?> » ?');"
@@ -248,6 +310,16 @@
 <script>
 (function () {
     const URLROOT = '<?php echo URLROOT; ?>';
+
+    // Exposé globalement pour les boutons onclick du HTML
+    window.applyZoneSearch = function() {
+        const searchInput = document.getElementById('zone-search');
+        if (searchInput) searchInput.dispatchEvent(new Event('input'));
+    };
+    window.resetZoneSearch = function() {
+        const searchInput = document.getElementById('zone-search');
+        if (searchInput) { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); }
+    };
 
     // -------------------------------------------------------
     // Icônes et badges par type de zone
@@ -303,6 +375,12 @@
                     <a href="${URLROOT}/zone/${zone.id}"
                        class="zone-btn-action" title="Modifier">
                         <span class="mif-pencil"></span>
+                    </a>
+                    <a href="${URLROOT}/zone/disable/${zone.id}"
+                       class="zone-btn-action action-disable"
+                       onclick="return confirm('Désactiver cette zone ?');"
+                       title="Désactiver">
+                        <span class="mif-cancel"></span>
                     </a>
                     <a href="${URLROOT}/zone/delete/${zone.id}"
                        class="zone-btn-action action-delete"
@@ -408,40 +486,58 @@
     }
 
     // -------------------------------------------------------
-    // Recherche côté client
+    // Recherche côté client (filtrage du treeview)
     // -------------------------------------------------------
-    const searchInput = document.getElementById('zone-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', function () {
-            const q = this.value.trim().toLowerCase();
-            document.querySelectorAll('.zone-node').forEach(li => {
-                const label = li.querySelector(':scope > .zone-row .zone-label');
-                if (!label) return;
-                if (!q) {
-                    li.style.display = '';
-                    return;
-                }
-                const match = label.textContent.toLowerCase().includes(q);
-                li.style.display = match ? '' : 'none';
-                if (match) {
-                    // Déplier les ancêtres
-                    let p = li.parentElement;
-                    while (p && p.classList.contains('zone-children')) {
-                        p.style.display = 'block';
-                        const parentLi = p.closest('.zone-node');
-                        if (parentLi) {
-                            parentLi.style.display = '';
-                            const t = parentLi.querySelector(':scope > .zone-row .zone-toggle');
-                            if (t && t.classList.contains('mif-chevron-right')) {
-                                t.className = 'zone-toggle mif-chevron-down';
-                            }
+    function applyZoneSearch() {
+        const searchInput = document.getElementById('zone-search');
+        const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        document.querySelectorAll('.zone-node').forEach(li => {
+            const label = li.querySelector(':scope > .zone-row .zone-label');
+            if (!label) return;
+            if (!q) {
+                li.style.display = '';
+                return;
+            }
+            const match = label.textContent.toLowerCase().includes(q);
+            li.style.display = match ? '' : 'none';
+            if (match) {
+                // Déplier les ancêtres
+                let p = li.parentElement;
+                while (p && p.classList.contains('zone-children')) {
+                    p.style.display = 'block';
+                    const parentLi = p.closest('.zone-node');
+                    if (parentLi) {
+                        parentLi.style.display = '';
+                        const t = parentLi.querySelector(':scope > .zone-row .zone-toggle');
+                        if (t && t.classList.contains('mif-chevron-right')) {
+                            t.className = 'zone-toggle mif-chevron-down';
                         }
-                        p = parentLi ? parentLi.parentElement : null;
                     }
+                    p = parentLi ? parentLi.parentElement : null;
                 }
-            });
+            }
         });
     }
+
+    function resetZoneSearch() {
+        const searchInput = document.getElementById('zone-search');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        document.querySelectorAll('.zone-node').forEach(li => {
+            li.style.display = '';
+        });
+    }
+
+    // Filtrage en temps réel sur saisie
+    const searchInput = document.getElementById('zone-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', applyZoneSearch);
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); applyZoneSearch(); }
+        });
+    }
+
 
     // -------------------------------------------------------
     // Utilitaire escHtml

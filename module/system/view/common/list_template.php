@@ -20,6 +20,9 @@
  * - actions        : URLs d'actions avec placeholder {id} ('editUrl', 'disableUrl', 'activateUrl', 'deleteUrl')
  */
 $config = $listConfig ?? $data['listConfig'] ?? [];
+$isAdmin = !empty($data['isAdmin']) 
+    || !empty($data['is_admin']) 
+    || (isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']));
 ?>
 <main class="list-page" style="padding-top: 68px;">
     <!-- En-tête : Titre & Bouton "+ Ajouter" -->
@@ -31,7 +34,7 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
             <?php echo htmlspecialchars($config['title'] ?? ''); ?>
         </h2>
 
-        <?php if (!empty($data['isAdmin']) && !empty($config['addUrl'])): ?>
+        <?php if (!empty($isAdmin) && !empty($config['addUrl'])): ?>
             <a href="<?php echo htmlspecialchars($config['addUrl']); ?>"
                class="button info mt-2 mt-md-0"
                id="btn-add-main"
@@ -88,11 +91,11 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
                     </div>
 
                     <div style="flex: 0 0 auto; padding-bottom: 2px;">
-                        <button type="submit" class="button primary mr-1">
+                        <button type="submit" class="button info mr-1" id="btn-filter-submit">
                             <span class="mif-filter"></span>
                             <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_FILTER'] ?? 'Filtrer'); ?></span>
                         </button>
-                        <a href="<?php echo htmlspecialchars($listUrl); ?>" class="button secondary">
+                        <a href="<?php echo htmlspecialchars($listUrl); ?>" class="button light" id="btn-filter-reset">
                             <span class="mif-reload"></span>
                             <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_RESET'] ?? 'Réinitialiser'); ?></span>
                         </a>
@@ -113,6 +116,27 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
             .list-filter-section.collapsed .list-filter-arrow { transform: rotate(-90deg); }
             .list-filter-section.collapsed .list-filter-summary { border-bottom: none; }
             .list-filter-body { padding: 12px 14px; }
+            /* Boutons Filtrer (bleu professionnel) et Réinitialiser (gris clair neutre) */
+            .list-filter-section .button.info {
+                background-color: #0072c6 !important;
+                border-color: #0072c6 !important;
+                color: #ffffff !important;
+            }
+            .list-filter-section .button.info:hover {
+                background-color: #005a9e !important;
+                border-color: #005a9e !important;
+                color: #ffffff !important;
+            }
+            .list-filter-section .button.light {
+                background-color: #e2e8f0 !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #334155 !important;
+            }
+            .list-filter-section .button.light:hover {
+                background-color: #cbd5e1 !important;
+                border-color: #94a3b8 !important;
+                color: #1e293b !important;
+            }
             .list-filter-section.collapsed .list-filter-body { display: none; }
         </style>
     <?php endif; ?>
@@ -140,7 +164,7 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
                     </th>
                 <?php endforeach; ?>
 
-                <?php if (!empty($data['isAdmin'])): ?>
+                <?php if (!empty($isAdmin)): ?>
                     <th><?php echo htmlspecialchars($data['txt']['SYS_COL_STATUS'] ?? 'Statut'); ?></th>
                     <th><?php echo htmlspecialchars($data['txt']['SYS_COL_ACTIONS'] ?? 'Actions'); ?></th>
                 <?php endif; ?>
@@ -185,7 +209,7 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
                             </td>
                         <?php endforeach; ?>
 
-                        <?php if (!empty($data['isAdmin'])): ?>
+                        <?php if (!empty($isAdmin)): ?>
                             <!-- Colonne Statut (Admin uniquement) -->
                             <td data-label="<?php echo htmlspecialchars($data['txt']['SYS_COL_STATUS'] ?? 'Statut'); ?>">
                                 <span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($statusText); ?></span>
@@ -254,7 +278,7 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="<?php echo count($config['columns']) + (!empty($data['isAdmin']) ? 2 : 0); ?>" class="text-center p-4 fg-gray">
+                    <td colspan="<?php echo count($config['columns']) + (!empty($isAdmin) ? 2 : 0); ?>" class="text-center p-4 fg-gray">
                         Aucun enregistrement trouvé.
                     </td>
                 </tr>
