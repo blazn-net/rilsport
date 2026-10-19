@@ -1,5 +1,6 @@
 # TODO Liste
 ## Légende
+- **Type** : `Évolution` | `Bug` | `Question / Idées` | `Refactoring` | `Test`
 - **Statut** : `Nouveau` | `En cours` | `Réalisé`
 - **Sous-tâches** : cases à cocher classiques (`[ ]` à faire, `[-]` en cours, `[x]` réalisé)
 - Chaque tâche est un nœud autonome, identifié par un ID horodaté unique `[AAAAMMJJ-HHMM]`
@@ -8,7 +9,7 @@
 - **Snippets TODO** (Antigravity et VS Code) :
     - `todo` puis `Entrée`/`Tab` : insère la structure complète d'une tâche avec navigation au <kbd>Tab</kbd> :
         - **Titre** : préfixé de l'ID horodaté automatique `[AAAAMMJJ-HHMM]`
-        - **Type** : liste déroulante (`Évolution`, `Bug`, `Question / Idées`, `Refactoring`)
+        - **Type** : liste déroulante (`Évolution`, `Bug`, `Question / Idées`, `Refactoring`, `Test`)
         - **Priorité** : liste déroulante (`P4`, `P1`, `P2`, `P3`)
         - **Statut** : liste déroulante (`Nouveau`, `En cours`, `Réalisé`)
         - **Description** : pré-rempli avec `_À compléter_`

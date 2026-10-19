@@ -152,11 +152,15 @@ require 'module/system/view/common/entity_template.php';
 
 ## 5. Mode VIEW — Consultation (règles strictes)
 
+- **Règle stricte de parité de visibilité (List vs Entity)** : Les champs visibles ou non visibles doivent être **strictement identiques** entre la page List et la fiche Entity pour un même profil d'utilisateur (visiteur vs administrateur).
+- **Identifiant technique (`id`)** : L'ID numérique dans l'en-tête est visible **uniquement pour les administrateurs** (`!empty($isAdmin)`). Les visiteurs et non-admins ne voient que le code métier et le nom.
+- **Badge Statut (`status_id`)** : Le badge de statut dans l'en-tête est visible **uniquement pour les administrateurs** (`!empty($isAdmin)`). Il est totalement masqué pour les visiteurs et non-administrateurs, à l'identique de la colonne « Statut » du grid List.
+- **Bouton Modifier** : Présent en haut à droite de l'en-tête pour les administrateurs (`button info`, bleu, `mif-pencil`).
 - **ZÉRO balise d'entrée** : Interdiction totale de `<input>`, `<select>`, `<textarea>`, même `readonly` ou `disabled`.
 - **ZÉRO bouton `submit`**.
 - Données présentées sous forme de **blocs d'information stylisés** (`style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;"`), textes avec icônes colorées, et badges.
+- **Données métier protégées** : Toute donnée masquée aux visiteurs sur la liste doit également être conditionnée à `$isAdmin` dans `viewContent`.
 - **Panneau d'audit** : Automatiquement affiché et **déplié par défaut** (`data-collapsed="false"`).
-- **Bouton Modifier** : Présent en haut à droite de l'en-tête pour les administrateurs (`button info`, bleu, `mif-pencil`).
 
 ---
 
@@ -273,6 +277,7 @@ class MonObjet extends EntityController {
 - [ ] Le contrôleur hérite de `Core\EntityController` et appelle `$this->renderEntity(...)`
 - [ ] Résolution d'entité via `$this->resolveEntity(...)` (code métier prioritaire, redirection 302 pour ID)
 - [ ] En mode **View** : **aucun input**, blocs d'informations propres, panneau d'audit déplié par défaut
+- [ ] Parité List / Entity respectée : ID (#), badge Statut et informations admin sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`)
 - [ ] En mode **Edit/Add** : champ Code `readonly` en edit, boutons de soumission `button success` (vert)
 - [ ] Bouton d'annulation présent en pied de formulaire (`button secondary`)
 - [ ] Bouton « Modifier » visible uniquement pour les admins en mode View

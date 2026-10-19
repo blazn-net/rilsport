@@ -152,7 +152,7 @@ foreach ($tasks as $t) {
     $grouped[$type][$prio][] = $t;
 }
 $prioOrder = ['P1' => 1, 'P2' => 2, 'P3' => 3, 'P4' => 4];
-$typeOrder = ['Bug' => 1, 'Évolution' => 2, 'Question / Idées' => 3];
+$typeOrder = ['Bug' => 1, 'Évolution' => 2, 'Question / Idées' => 3, 'Refactoring' => 4, 'Test' => 5];
 uksort($grouped, fn($a, $b) => ($typeOrder[$a] ?? 99) <=> ($typeOrder[$b] ?? 99));
 foreach ($grouped as &$byPrio) {
     uksort($byPrio, fn($a, $b) => ($prioOrder[$a] ?? 99) <=> ($prioOrder[$b] ?? 99));
@@ -306,7 +306,7 @@ if ($isCli) {
 header('Content-Type: text/html; charset=utf-8');
 
 $statusColor = ['Nouveau' => '#0072c6', 'En cours' => '#e3a21a', 'Réalisé' => '#4caf50'];
-$typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées' => '#8e44ad'];
+$typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées' => '#8e44ad', 'Refactoring' => '#f39c12', 'Test' => '#16a085'];
 
 ?><!DOCTYPE html>
 <html lang="fr">
@@ -876,6 +876,28 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
             color: #fff;
         }
 
+        .pill.c-type-Refactoring {
+            color: #d35400;
+            border-color: #edbb99;
+            background: #fdf2e9;
+        }
+
+        .pill.c-type-Refactoring.active {
+            background: #e67e22;
+            color: #fff;
+        }
+
+        .pill.c-type-Test {
+            color: #16a085;
+            border-color: #a3e4d7;
+            background: #e8f8f5;
+        }
+
+        .pill.c-type-Test.active {
+            background: #16a085;
+            color: #fff;
+        }
+
         .pill.c-tout.active {
             background: #333;
             color: #fff;
@@ -906,7 +928,7 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
     $curType = $_GET['type'] ?? '';
     $curPrio = $_GET['priority'] ?? '';
     $statusClassMap = ['Nouveau' => 'Nouveau', 'En cours' => 'Encours', 'Réalisé' => 'Réalisé'];
-    $typeClassMap = ['Bug' => 'Bug', 'Évolution' => 'Évolution', 'Question / Idées' => 'QuestionIdées'];
+    $typeClassMap = ['Bug' => 'Bug', 'Évolution' => 'Évolution', 'Question / Idées' => 'QuestionIdées', 'Refactoring' => 'Refactoring', 'Test' => 'Test'];
     ?>
     <?php $activeFilterCount = ($curType !== '' ? 1 : 0) + ($curPrio !== '' ? 1 : 0) + ($curStatus !== '' ? 1 : 0); ?>
     <details class="filter-section"<?= $activeFilterCount > 0 ? ' open' : '' ?>>
@@ -924,6 +946,10 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
                     href="<?= filterUrl(['type' => 'Évolution']) ?>">Évolutions</a>
                 <a class="pill <?= $curType === 'Question / Idées' ? 'active' : '' ?> c-type-QuestionIdées"
                     href="<?= filterUrl(['type' => 'Question / Idées']) ?>">Questions / Idées</a>
+                <a class="pill <?= $curType === 'Refactoring' ? 'active' : '' ?> c-type-Refactoring"
+                    href="<?= filterUrl(['type' => 'Refactoring']) ?>">Refactoring</a>
+                <a class="pill <?= $curType === 'Test' ? 'active' : '' ?> c-type-Test"
+                    href="<?= filterUrl(['type' => 'Test']) ?>">Tests</a>
             </div>
             <div class="filter-group">
                 <span class="filter-label">Priorité</span>
@@ -953,7 +979,7 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
     <?php endif; ?>
 
     <?php
-    $typePlural = ['Bug' => 'Bugs', 'Évolution' => 'Évolutions', 'Question / Idées' => 'Questions / Idées'];
+    $typePlural = ['Bug' => 'Bugs', 'Évolution' => 'Évolutions', 'Question / Idées' => 'Questions / Idées', 'Refactoring' => 'Refactoring', 'Test' => 'Tests'];
     ?>
     <?php foreach ($grouped as $type => $byPrio): ?>
         <?php $typeTotal = array_sum(array_map('count', $byPrio)); ?>

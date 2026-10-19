@@ -96,8 +96,8 @@ Format standardisé du routage :
 | Supprimer | `button small alert` | `mif-bin` |
 
 ### C. Colonnes admin-only
-- Les colonnes **Statut** et **Actions** sont visibles **uniquement pour les admins** (`!empty($isAdmin)`).
-- Les visiteurs non-admins ne voient ni statut ni actions.
+- Les colonnes **`#` (`id`)**, **Statut** et **Actions** sont visibles **uniquement pour les admins** (`!empty($isAdmin)`).
+- Les visiteurs non-admins ne voient ni identifiant technique, ni statut, ni actions.
 
 ### D. Badges de statut
 | Statut | Classe badge |
@@ -114,11 +114,11 @@ Format standardisé du routage :
 
 ### F. Héritage obligatoire
 > Toute page de type List **doit** utiliser `module/system/view/common/list_template.php`.  
-> Ce template centralise : en-tête, alertes flash, barre de recherche GET, tableau responsive Metro UI, colonnes admin-only, pagination et contrôles de défilement horizontal.
+> Ce template centralise : en-tête, alertes flash, barre de recherche GET, tableau responsive Metro UI, colonnes admin-only (ID, Statut, Actions), pagination et contrôles de défilement horizontal.
 
 ### G. Structure standardisée du Grid (colonnes du tableau)
 Chaque tableau (grid) de page List doit obligatoirement comporter les colonnes ordonnées suivantes :
-1. **`#` (id)** : Identifiant unique de l'enregistrement.
+1. **`#` (id)** : Identifiant unique de l'enregistrement (masqué pour les visiteurs, visible **uniquement pour les administrateurs**).
 2. **`Icône ou Logo`** : Représentation visuelle compacte (logo officiel du club/compétition, icône Metro UI `mif-...`, drapeau ou avatar).
 3. **`Code`** : Identifiant court / code unique (affiché en format monospace `<code>`).
 4. **`Nom`** : Nom de l'entité, obligatoirement avec un lien cliquable ouvrant la fiche en mode **Consultation (View)**.
@@ -138,6 +138,9 @@ Chaque tableau (grid) de page List doit obligatoirement comporter les colonnes o
 
 ### B. Dualité Consultation (`View`) vs Formulaire (`Edit` / `Add`)
 - **Mode `view` (consultation pure)** :
+  - **Règle de parité List / Entity** : Les champs visibles ou non visibles doivent être rigoureusement identiques entre la page List et la fiche Entity.
+  - **Identifiant technique (`id`)** : L'ID est masqué pour les visiteurs et visible **uniquement pour les administrateurs** dans l'en-tête (les visiteurs n'identifient les entités que par leur code métier et leur nom).
+  - **Badge Statut** : Le badge de statut dans l'en-tête est visible **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqué pour les visiteurs et non-admins (à l'identique de la colonne Statut sur la page List).
   - **Interdiction formelle** de toute balise d'entrée (`<input>`, `<select>`, `<textarea>`) même `readonly` ou `disabled`.
   - **Zéro bouton `submit`**.
   - Données structurées sous forme de blocs d'informations (`style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;"`), avec icônes colorées et typographie lisible.

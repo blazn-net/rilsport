@@ -23,6 +23,19 @@ $config = $listConfig ?? $data['listConfig'] ?? [];
 $isAdmin = !empty($data['isAdmin']) 
     || !empty($data['is_admin']) 
     || (isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']));
+
+// L'identifiant (id / #) est visible uniquement par les administrateurs
+if (empty($isAdmin) && !empty($config['columns'])) {
+    $idField = $config['idField'] ?? 'id';
+    $config['columns'] = array_values(array_filter($config['columns'], function($col) use ($idField) {
+        $field = $col['field'] ?? '';
+        $label = $col['label'] ?? '';
+        if ($field === $idField || $field === 'id' || $label === '#') {
+            return false;
+        }
+        return empty($col['adminOnly']);
+    }));
+}
 ?>
 <main class="list-page" style="padding-top: 68px;">
     <!-- En-tête : Titre & Bouton "+ Ajouter" -->

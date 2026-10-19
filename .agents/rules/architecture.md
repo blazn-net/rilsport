@@ -29,9 +29,18 @@ Tout module sous `module/[nom]/` comprend :
   - Destiné aux utilisateurs avec droit de modification (Admins).
   - Composants interactifs de formulaire et boutons Enregistrer/Mettre à jour et Annuler.
 
-## 4. Visibilité des Statuts (Point [20260908-2330])
-- Les statuts des entités ne doivent être visibles **que pour les administrateurs** (`!empty($data['isAdmin'])`), sauf exceptions métier.
-- Sur les pages List, la colonne "Statut" est masquée pour les visiteurs et utilisateurs non-administrateurs.
+## 4. Visibilité des Données Techniques (ID, Statut) et Règle de Parité (List vs Entity) (Point [20260908-2330])
+- **Règle de parité absolue List vs Entity** : Les champs, colonnes et informations visibles ou masqués selon les privilèges de l'utilisateur (visiteur vs administrateur) doivent être **rigoureusement identiques** entre la page List et la page Entity.
+- **Identifiant technique (`id` / `#`)** : Les identifiants techniques internes ne doivent être visibles **que pour les administrateurs** (`!empty($data['isAdmin'])`) :
+  - Sur les pages **List**, la colonne `#` (`id`) est masquée pour les visiteurs et non-administrateurs (géré automatiquement par `list_template.php`).
+  - Sur les pages **Entity**, l'ID technique est masqué pour les visiteurs (qui n'utilisent que le code métier et le nom) et visible uniquement pour les administrateurs dans l'en-tête.
+- **Statut (`status_id`)** : Les statuts des entités ne doivent être visibles **que pour les administrateurs** (`!empty($data['isAdmin'])`), sauf exceptions métier dûment justifiées :
+  - Sur les pages **List**, la colonne "Statut" est masquée pour les visiteurs et non-administrateurs.
+  - Sur les pages **Entity**, le badge de statut dans l'en-tête (mode View) et le champ statut (mode Edit) sont masqués pour les non-administrateurs et visibles **uniquement pour les administrateurs**.
+- **Actions et formulaires** :
+  - Sur les pages **List**, le bouton « + Ajouter » et la colonne « Actions » sont visibles uniquement pour les administrateurs.
+  - Sur les pages **Entity**, le bouton « Modifier » et l'accès au mode Formulaire interactif (`Edit` / `Add`) sont réservés uniquement aux administrateurs.
+- **Données métier** : Tout champ masqué sur la page List en raison de permissions ou de droits d'accès doit également être masqué sur la fiche Entity (et réciproquement). Zéro divulgation d'information réservée aux administrateurs sur la fiche Entity.
 
 ## 5. Pages List Standardisées et Accès aux Fiches (Point [20260908-2304])
 - **Template universel** : Toute page List s'appuie sur `module/system/view/common/list_template.php`.

@@ -27,17 +27,23 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 - **Dualité des Fiches Entity : Consultation (`View`) vs Formulaire (`Edit` / `Add`)** :
   - **Consultation (`View`)** : Textes et badges HTML purs, **interdiction formelle** de balises `<input>`, `<select>`, `<textarea>` (même `readonly` ou `disabled`), aucun bouton de soumission.
   - **Formulaire (`Edit` / `Add`)** : Éléments interactifs réservés aux utilisateurs avec privilèges d'édition (Admins).
+- **Règle de Parité Stricte de Visibilité (List vs Entity)** :
+  - Les champs, colonnes et informations visibles ou non visibles doivent être **strictement identiques** entre la page List et la page Entity pour chaque profil d'utilisateur (visiteurs vs administrateurs).
+  - **Identifiant technique (`id` / `#`)** : La colonne `#` (`id`) sur la page List ET la mention de l'ID technique sur la fiche Entity (mode View) sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les non-admins (qui n'identifient les entités que par leur code métier et leur nom).
+  - **Statut (`status_id`)** : La colonne « Statut » sur la page List ET le badge « Statut » dans l'en-tête de la fiche Entity (mode View) sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les non-admins sur les deux pages.
+  - **Actions & Modification** : Le bouton « + Ajouter » et la colonne « Actions » sur la page List, ainsi que le bouton « Modifier » et l'accès aux formulaires interactifs (`Edit` / `Add`) sur la page Entity, sont réservés **uniquement aux administrateurs**.
+  - **Données métier** : Tout champ ou donnée restreinte aux administrateurs sur la page List doit l'être également sur la page Entity (et inversement). Zéro fuite d'information d'administration vers les visiteurs sur la fiche Entity.
 - **Pages List standardisées (`list_template.php`)** :
   - Toute page List s'appuie de préférence sur le template universel `module/system/view/common/list_template.php`.
   - Le clic sur le nom de l'objet dans la liste ouvre **toujours** la fiche en mode **Consultation (`View`)** pour tous (visiteurs et admins).
   - Le mode Édition (`Edit`) est accessible aux admins via le bouton Modifier (crayon `mif-pencil`) de la colonne Actions ou via le bouton « Modifier » en haut de la fiche `View`.
-  - Le **bouton « + Ajouter »**, la colonne **Actions** et la colonne **Statut** sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les non-admins.
+  - Le **bouton « + Ajouter »**, la colonne **Actions**, la colonne **Statut** et la colonne **`#` (`id`)** sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les non-admins.
   - Libellés de dates : Intitulés concis « Début » et « Fin » (et non « Date de début / fin »).
 - **Fiches Individuelles Entity standardisées (`entity_template.php`)** :
   - Toute fiche individuelle s'appuie obligatoirement sur le template universel `module/system/view/common/entity_template.php`.
   - Les contrôleurs héritent de `Core\EntityController` avec résolution prioritaire par code métier et redirection 302 pour les IDs.
-  - **Mode View (Consultation)** : Zéro balise d'entrée (`<input>`, `<select>`), textes et blocs d'informations stylisés, panneau d'audit déplié par défaut, bouton Modifier (bleu `button info`) visible uniquement pour les administrateurs.
-  - **Mode Edit / Add (Formulaire)** : Formulaire dans une card, champ Code `readonly` en mode édition, validation stricte, boutons de pied Enregistrer/Mettre à jour (vert `button success`, `mif-floppy-disk`) et Annuler (neutre `button secondary`, `mif-cancel`).
+  - **Mode View (Consultation)** : Zéro balise d'entrée (`<input>`, `<select>`), textes et blocs d'informations stylisés, panneau d'audit déplié par défaut, mention de l'ID, badge Statut et bouton Modifier (bleu `button info`) visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`).
+  - **Mode Edit / Add (Formulaire)** : Formulaire dans une card réservé aux administrateurs, champ Code `readonly` en mode édition, validation stricte, boutons de pied Enregistrer/Mettre à jour (vert `button success`, `mif-floppy-disk`) et Annuler (neutre `button secondary`, `mif-cancel`).
 - **Règles Mobile First (Point [20260908-2319]) — Viewport étroit ≤ 414px** :
   - **Boutons avec icône seule** : Sur mobile (≤ 414px), les boutons n'affichent **que leur icône** (pas de texte, classe `.btn-text` masquée), format carré ergonomique 36×36px avec infobulle `title`.
   - **Tableaux avec ascenseur horizontal** : Les données restent sous forme de tableau. Si les colonnes dépassent la largeur mobile, un ascenseur horizontal est obligatoire (via `data-horizontal-scroll="true"` sur la table, styles sur `.table-container`, et contrôles `.table-scroll-controls` avec boutons `[ ◄ ]` / `[ ► ]`).

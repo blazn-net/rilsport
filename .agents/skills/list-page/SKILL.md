@@ -94,7 +94,7 @@ Chaque page de type List **DOIT** posséder un tableau (grid) contenant les colo
 
 | N° | Colonne | Rôle | Configuration / Rendu |
 |----|---------|------|------------------------|
-| 1 | **`#` (id)** | Identifiant unique | `['field' => 'id', 'label' => '#', 'type' => 'text']` |
+| 1 | **`#` (id)** | Identifiant unique (visible **uniquement pour les administrateurs**) | `['field' => 'id', 'label' => '#', 'type' => 'text']` (masqué automatiquement pour les visiteurs par `list_template.php`) |
 | 2 | **`Icône ou Logo`** | Visuel représentatif (logo club/compétition, icône Metro UI `mif-...`, drapeau ou avatar) | `['field' => 'icon', 'label' => 'Icône', 'render' => ...]` ou `renderLogo` |
 | 3 | **`Code`** | Code court unique de l'entité | `['field' => 'code', 'label' => 'Code', 'type' => 'code']` |
 | 4 | **`Nom`** | Nom de l'entité avec **lien de consultation** vers la fiche View | `['field' => 'name', 'label' => 'Nom', 'type' => 'link', 'linkUrl' => URLROOT . '/module/objet/{id}']` |
@@ -102,7 +102,8 @@ Chaque page de type List **DOIT** posséder un tableau (grid) contenant les colo
 | 6 | **`Statut`** | Badge Actif / Inactif (visible **uniquement pour les administrateurs**) | Géré automatiquement par `list_template.php` en fin de tableau |
 | 7 | **`Actions`** | Boutons d'action (Modifier, Désactiver/Activer, Supprimer — visible **admins uniquement**) | Géré automatiquement par `list_template.php` via la clé `'actions'` |
 
-> **Règle stricte** : **Ne pas toucher à la zone de filtres ni à la pagination**. Elles sont gérées automatiquement par `list_template.php`.
+> **Règle stricte de parité List / Entity** : Tout champ visible ou masqué sur la page List pour un profil utilisateur (visiteur vs administrateur) doit avoir **exactement la même visibilité sur la page Entity correspondante**. Notamment, l'**Identifiant technique** (`#` / `id`), le **Statut** (`status_id`) et les boutons d'action sont réservés aux administrateurs sur les deux pages, et totalement invisibles aux visiteurs.
+> **Règle de structure** : **Ne pas toucher à la zone de filtres ni à la pagination**. Elles sont gérées automatiquement par `list_template.php`.
 
 ### Exemple de configuration `$listConfig['columns']` :
 
@@ -273,7 +274,7 @@ Tout nouvel objet List **DOIT** avoir un lien dans `module/system/view/navview.p
 - [ ] Modèle `getAllXxx(string $search = '')` supporte LIKE
 - [ ] Bouton "+ Ajouter" : `button info`, libellé "Ajouter", admin-only
 - [ ] Clic sur le nom → fiche **View** (lecture), jamais Edit
-- [ ] Colonnes Statut & Actions : admin-only (géré par le template)
+- [ ] Colonnes ID (#), Statut & Actions : admin-only (géré automatiquement par list_template.php)
 - [ ] Lien `navview.php` (pluriel, sans "Gestion")
 - [ ] Mobile : icône-only pour les boutons, scroll horizontal tableau
 

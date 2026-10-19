@@ -149,14 +149,19 @@ $auditModifiedBy = !empty($auditObj['modified_by_name']) ? htmlspecialchars($aud
                         <?php if ($itemCode !== ''): ?>
                             <small class="fg-gray">Code : <code class="p-1 text-bold" style="background:#f1f5f9; color:#0284c7; border-radius:4px; font-size:12px;"><?php echo htmlspecialchars($itemCode); ?></code></small>
                         <?php endif; ?>
+                        <?php if (!empty($isAdmin) && !empty($itemId)): ?>
+                            <small class="fg-gray ml-2">ID : <span class="text-bold"><?php echo htmlspecialchars((string)$itemId); ?></span></small>
+                        <?php endif; ?>
                     </div>
 
-                    <div class="ml-auto">
-                        <span class="badge <?php echo $badgeClass; ?> p-2 text-bold" style="font-size: 12px;">
-                            <span class="<?php echo $isActive ? 'mif-checkmark' : 'mif-cross'; ?> mr-1"></span>
-                            <?php echo htmlspecialchars($statusText); ?>
-                        </span>
-                    </div>
+                    <?php if (!empty($isAdmin)): ?>
+                        <div class="ml-auto">
+                            <span class="badge <?php echo $badgeClass; ?> p-2 text-bold" style="font-size: 12px;">
+                                <span class="<?php echo $isActive ? 'mif-checkmark' : 'mif-cross'; ?> mr-1"></span>
+                                <?php echo htmlspecialchars($statusText); ?>
+                            </span>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="divider my-3"></div>
