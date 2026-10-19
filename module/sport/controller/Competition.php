@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\Controller;
+use Core\FormController;
 
-class Competition extends Controller {
+class Competition extends FormController {
     private $competitionModel;
     private $sportModel;
     const MAX_FILE_SIZE = 2097152; // 2 Mo
@@ -14,37 +14,25 @@ class Competition extends Controller {
     }
 
     public function index($id = null, $action = null) {
-        $txt = array_merge(
-            $this->loadLanguage('system'),
-            $this->loadLanguage('user'),
-            $this->loadLanguage('sport')
-        );
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         if (!$id && !$isAdmin) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Acces non autorise.');
         }
 
-        $competitionData = null;
-        $editions = [];
+        $competitionData = $this->resolveEntity(
+            [$this->competitionModel, 'getCompetitionByCode'],
+            [$this->competitionModel, 'getCompetitionById'],
+            $id,
+            'sport/competition',
+            'sport/competitions',
+            $action
+        );
+        $editions = $competitionData ? $this->competitionModel->getEditionsByCompetition($competitionData['id']) : [];
 
-        if ($id !== null && $id !== '') {
-            if (is_numeric($id)) {
-                $competitionData = $this->competitionModel->getCompetitionById((int)$id);
-                if ($competitionData && !empty($competitionData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-                    return $this->redirect('sport/competition/' . ($action === 'edit' ? 'edit/' : '') . $competitionData['code']);
-                }
-            } else {
-                $competitionData = $this->competitionModel->getCompetitionByCode($id);
-            }
-
-            if (!$competitionData) {
-                return $this->redirect('sport/competitions');
-            }
-            $editions = $this->competitionModel->getEditionsByCompetition($competitionData['id']);
-        }
-
-        $mode = $id ? (($action === 'edit' && $isAdmin) ? 'edit' : 'view') : 'add';
+        $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $mode   = $this->resolveMode($id, $action, $isPost);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$isAdmin) {
@@ -148,16 +136,7 @@ class Competition extends Controller {
             'message'     => $_SESSION['flash_message'] ?? '',
         ];
 
-        unset($_SESSION['flash_message'], $_SESSION['flash_error']);
-
-        $this->view('system/header',  $data);
-        $this->view('system/navview', $data);
-        $this->view('sport/competition', $data);
-        $this->view('system/footer',  $data);
-    }
-
-    public function edit($id = null) {
-        return $this->index($id, 'edit');
+        $this->renderForm('sport/competition', $data);
     }
 
     public function delete($id = null) {

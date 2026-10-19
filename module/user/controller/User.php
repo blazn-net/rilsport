@@ -1,16 +1,16 @@
 <?php
 namespace Module\User\Controller;
 
-use Core\Controller;
+use Core\FormController;
 
-class User extends Controller
+class User extends FormController
 {
     private $userModel;
 
     public function __construct()
     {
         if (!isset($_SESSION['user_id'])) {
-            $txt = $this->loadLanguage('user');
+            $txt = $this->loadLanguages();
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
         }
         $this->userModel = $this->model('user/User');
@@ -18,35 +18,24 @@ class User extends Controller
 
     public function index($id = null, $action = null)
     {
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
-        
-        $userData = null;
-        if ($id !== null && $id !== '') {
-            $userData = is_numeric($id)
-                ? $this->userModel->getUserById((int)$id)
-                : $this->userModel->findUserByEmailOrUsername($id);
-            if (!$userData) {
-                if ($isAdmin) {
-                    return $this->redirect('user/users');
-                } else {
-                    return $this->redirect('main');
-                }
-            }
-        }
+        $txt     = $this->loadLanguages();
+        $isAdmin = $this->isAdmin();
+
+        $userData = $this->resolveEntity(
+            [$this->userModel, 'findUserByEmailOrUsername'],
+            [$this->userModel, 'getUserById'],
+            $id,
+            'user',
+            $isAdmin ? 'user/users' : 'main',
+            $action,
+            'username'
+        );
 
         if (!$isAdmin) {
             if ($id === null || ((int)($userData['id'] ?? 0) !== (int)$_SESSION['user_id'])) {
-                $txt = $this->loadLanguage('user');
                 die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
             }
         }
-
-        // Redirige vers le username si appelé avec un identifiant numérique
-        if ($id !== null && is_numeric($id) && !empty($userData['username']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->redirect('user/' . ($action === 'edit' ? 'edit/' : '') . urlencode($userData['username']));
-        }
-
-        $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
 
         $userObj = $userData ? (object) $userData : null;
         if ($userObj) {
@@ -56,7 +45,7 @@ class User extends Controller
 
         $isPost  = ($_SERVER['REQUEST_METHOD'] === 'POST');
         $canEdit = $isAdmin || ($userData !== null && (int)$userData['id'] === (int)$_SESSION['user_id']);
-        $mode    = $id ? ((($action === 'edit' || $isPost) && $canEdit) ? 'edit' : 'view') : 'add';
+        $mode    = $this->resolveMode($id, $action, $isPost, $canEdit);
 
         $title = $id
             ? ($mode === 'edit'
@@ -65,23 +54,20 @@ class User extends Controller
             : ($txt['USER_ADD_USER_BTN'] ?? 'Ajouter un utilisateur');
 
         $data = [
-            'txt'               => $txt,
-            'title'             => $title . ' - ' . SITENAME,
-            'user'              => $userObj,
-            'message'           => $_SESSION['flash_message'] ?? '',
-            'error'             => $_SESSION['flash_error'] ?? '',
-            'mode'              => $mode,
-            'id'                => $id,
-            'isAdmin'           => $isAdmin,
-            'is_admin'          => $isAdmin,
-            'available_roles'   => $this->userModel->getAllRoles(),
-            'available_statuses'=> $this->userModel->getUserStatuses()
+            'txt'                => $txt,
+            'title'              => $title . ' - ' . SITENAME,
+            'user'               => $userObj,
+            'message'            => $_SESSION['flash_message'] ?? '',
+            'error'              => $_SESSION['flash_error'] ?? '',
+            'mode'               => $mode,
+            'id'                 => $id,
+            'isAdmin'            => $isAdmin,
+            'is_admin'           => $isAdmin,
+            'available_roles'    => $this->userModel->getAllRoles(),
+            'available_statuses' => $this->userModel->getUserStatuses()
         ];
 
-        unset($_SESSION['flash_message']);
-        unset($_SESSION['flash_error']);
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$canEdit) {
                 die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
             }
@@ -135,17 +121,6 @@ class User extends Controller
             }
         }
 
-        $this->view('system/header', $data);
-        $this->view('system/navview', $data);
-        $this->view('user/user', $data);
-        $this->view('system/footer', $data);
-    }
-
-    /**
-     * Accès direct au formulaire d'édition
-     */
-    public function edit($id = null)
-    {
-        return $this->index($id, 'edit');
+        $this->renderForm('user/user', $data);
     }
 }

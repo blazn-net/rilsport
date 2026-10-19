@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\Controller;
+use Core\FormController;
 
-class CompetitionEdition extends Controller {
+class CompetitionEdition extends FormController {
     private $editionModel;
     private $competitionModel;
 
@@ -13,45 +13,31 @@ class CompetitionEdition extends Controller {
     }
 
     public function index($id = null, $action = null) {
-        $txt = array_merge(
-            $this->loadLanguage('system'),
-            $this->loadLanguage('user'),
-            $this->loadLanguage('sport')
-        );
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         if (!$id && !$isAdmin) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Acces non autorise.');
         }
 
-        $editionData = null;
-        $phases      = [];
-        $entries     = [];
-        $subEditions = [];
-
         // Preselection competition via GET (creation depuis la fiche competition)
         $preselectedCompetitionId = !empty($_GET['competition_id']) ? (int)$_GET['competition_id'] : null;
 
-        if ($id !== null && $id !== '') {
-            if (is_numeric($id)) {
-                $editionData = $this->editionModel->getEditionById((int)$id);
-                if ($editionData && !empty($editionData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-                    return $this->redirect('sport/competition-edition/' . ($action === 'edit' ? 'edit/' : '') . $editionData['code']);
-                }
-            } else {
-                $editionData = $this->editionModel->getEditionByCode($id);
-            }
+        $editionData = $this->resolveEntity(
+            [$this->editionModel, 'getEditionByCode'],
+            [$this->editionModel, 'getEditionById'],
+            $id,
+            'sport/competition-edition',
+            'sport/competition-editions',
+            $action
+        );
 
-            if (!$editionData) {
-                return $this->redirect('sport/competition-editions');
-            }
+        $phases      = $editionData ? $this->editionModel->getPhasesByEdition($editionData['id']) : [];
+        $entries     = $editionData ? $this->editionModel->getEntriesByEdition($editionData['id']) : [];
+        $subEditions = $editionData ? $this->editionModel->getSubEditions($editionData['id']) : [];
 
-            $phases      = $this->editionModel->getPhasesByEdition($editionData['id']);
-            $entries     = $this->editionModel->getEntriesByEdition($editionData['id']);
-            $subEditions = $this->editionModel->getSubEditions($editionData['id']);
-        }
-
-        $mode = $id ? (($action === 'edit' && $isAdmin) ? 'edit' : 'view') : 'add';
+        $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $mode   = $this->resolveMode($id, $action, $isPost);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$isAdmin) {
@@ -137,25 +123,14 @@ class CompetitionEdition extends Controller {
             'preselectedCompetitionId' => $preselectedCompetitionId,
             'mode'              => $mode,
             'isAdmin'           => $isAdmin,
-            'error'             => $_SESSION['flash_error']   ?? '',
-            'message'           => $_SESSION['flash_message'] ?? '',
         ];
 
-        unset($_SESSION['flash_message'], $_SESSION['flash_error']);
-
-        $this->view('system/header',  $data);
-        $this->view('system/navview', $data);
-        $this->view('sport/competition-edition', $data);
-        $this->view('system/footer',  $data);
-    }
-
-    public function edit($id = null) {
-        return $this->index($id, 'edit');
+        $this->renderForm('sport/competition-edition', $data);
     }
 
     public function delete($id = null) {
-        $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('sport'));
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         if (!$isAdmin || !$id) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Acces non autorise.');

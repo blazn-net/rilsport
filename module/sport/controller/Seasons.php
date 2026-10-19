@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\Controller;
+use Core\ListController;
 
-class Seasons extends Controller {
+class Seasons extends ListController {
     private $seasonModel;
 
     public function __construct() {
@@ -11,28 +11,16 @@ class Seasons extends Controller {
     }
 
     public function index() {
-        $txt    = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
-        $search = trim($_GET['search'] ?? '');
+        $txt     = $this->loadLanguages(['sport']);
+        $search  = trim($_GET['search'] ?? '');
         $seasons = $this->seasonModel->getAllSeasons($search);
 
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $data = $this->prepareListData(
+            $txt,
+            $txt['SPORT_SEASONS_MGT'] ?? 'Saisons',
+            ['seasons' => $seasons]
+        );
 
-        $data = [
-            'txt'         => $txt,
-            'title'       => ($txt['SPORT_SEASONS_MGT'] ?? 'Saisons') . ' - ' . SITENAME,
-            'seasons'     => $seasons,
-            'search'      => $search,
-            'isAdmin'     => $isAdmin,
-            'message'     => $_SESSION['flash_message'] ?? '',
-            'error'       => $_SESSION['flash_error'] ?? ''
-        ];
-
-        unset($_SESSION['flash_message']);
-        unset($_SESSION['flash_error']);
-
-        $this->view('system/header', $data);
-        $this->view('system/navview', $data);
-        $this->view('sport/seasons', $data);
-        $this->view('system/footer', $data);
+        $this->renderList('sport/seasons', $data);
     }
 }

@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\Controller;
+use Core\FormController;
 
-class Club extends Controller {
+class Club extends FormController {
     private $clubModel;
     private $sportModel;
     const MAX_FILE_SIZE = 2097152; // 2 Mo en octets
@@ -14,39 +14,27 @@ class Club extends Controller {
     }
 
     public function index($id = null, $action = null) {
-        $txt     = array_merge(
-            $this->loadLanguage('system'),
-            $this->loadLanguage('user'),
-            $this->loadLanguage('sport')
-        );
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         // Seuls les admins peuvent créer un nouveau club
         if (!$id && !$isAdmin) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.');
         }
 
-        $clubData = null;
-        $sections = [];
-
-        if ($id !== null && $id !== '') {
-            if (is_numeric($id)) {
-                $clubData = $this->clubModel->getClubById((int)$id);
-                if ($clubData && !empty($clubData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-                    return $this->redirect('sport/club/' . ($action === 'edit' ? 'edit/' : '') . $clubData['code']);
-                }
-            } else {
-                $clubData = $this->clubModel->getClubByCode($id);
-            }
-
-            if (!$clubData) {
-                return $this->redirect('sport/clubs');
-            }
-            $sections = $this->clubModel->getClubSections($clubData['id']);
-        }
+        $clubData = $this->resolveEntity(
+            [$this->clubModel, 'getClubByCode'],
+            [$this->clubModel, 'getClubById'],
+            $id,
+            'sport/club',
+            'sport/clubs',
+            $action
+        );
+        $sections = $clubData ? $this->clubModel->getClubSections($clubData['id']) : [];
 
         // Mode : view (consultation simple) ou edit/add (formulaire)
-        $mode = $id ? (($action === 'edit' && $isAdmin) ? 'edit' : 'view') : 'add';
+        $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $mode   = $this->resolveMode($id, $action, $isPost);
 
         // Traitement du formulaire POST (création / modification)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -197,20 +185,7 @@ class Club extends Controller {
             'message'         => $_SESSION['flash_message'] ?? ''
         ];
 
-        unset($_SESSION['flash_message']);
-        unset($_SESSION['flash_error']);
-
-        $this->view('system/header', $data);
-        $this->view('system/navview', $data);
-        $this->view('sport/club', $data);
-        $this->view('system/footer', $data);
-    }
-
-    /**
-     * Accès direct au formulaire d'édition (Admin)
-     */
-    public function edit($id = null) {
-        return $this->index($id, 'edit');
+        $this->renderForm('sport/club', $data);
     }
 
     /**

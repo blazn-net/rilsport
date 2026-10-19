@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\Controller;
+use Core\FormController;
 
-class Team extends Controller {
+class Team extends FormController {
     private $teamModel;
 
     public function __construct() {
@@ -11,37 +11,25 @@ class Team extends Controller {
     }
 
     public function index($id = null, $action = null) {
-        $txt     = array_merge(
-            $this->loadLanguage('system'),
-            $this->loadLanguage('user'),
-            $this->loadLanguage('sport')
-        );
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         // Seuls les admins peuvent créer une nouvelle équipe
         if (!$id && !$isAdmin) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.');
         }
 
-        $teamData = null;
-
-        if ($id !== null && $id !== '') {
-            if (is_numeric($id)) {
-                $teamData = $this->teamModel->getTeamById((int)$id);
-                if ($teamData && !empty($teamData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-                    return $this->redirect('sport/team/' . ($action === 'edit' ? 'edit/' : '') . $teamData['code']);
-                }
-            } else {
-                $teamData = $this->teamModel->getTeamByCode($id);
-            }
-
-            if (!$teamData) {
-                return $this->redirect('sport/teams');
-            }
-        }
+        $teamData = $this->resolveEntity(
+            [$this->teamModel, 'getTeamByCode'],
+            [$this->teamModel, 'getTeamById'],
+            $id,
+            'sport/team',
+            'sport/teams',
+            $action
+        );
 
         $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
-        $mode   = $id ? ((($action === 'edit' || $isPost) && $isAdmin) ? 'edit' : 'view') : 'add';
+        $mode   = $this->resolveMode($id, $action, $isPost);
 
         // Traitement du formulaire POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -120,20 +108,7 @@ class Team extends Controller {
             'message'     => $_SESSION['flash_message'] ?? ''
         ];
 
-        unset($_SESSION['flash_message']);
-        unset($_SESSION['flash_error']);
-
-        $this->view('system/header', $data);
-        $this->view('system/navview', $data);
-        $this->view('sport/team', $data);
-        $this->view('system/footer', $data);
-    }
-
-    /**
-     * Accès direct au formulaire d'édition (Admin)
-     */
-    public function edit($id = null) {
-        return $this->index($id, 'edit');
+        $this->renderForm('sport/team', $data);
     }
 
     /**

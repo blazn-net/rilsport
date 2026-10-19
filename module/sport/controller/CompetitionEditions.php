@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\Controller;
+use Core\ListController;
 
-class CompetitionEditions extends Controller {
+class CompetitionEditions extends ListController {
     private $editionModel;
     private $competitionModel;
 
@@ -13,12 +13,7 @@ class CompetitionEditions extends Controller {
     }
 
     public function index() {
-        $txt = array_merge(
-            $this->loadLanguage('system'),
-            $this->loadLanguage('user'),
-            $this->loadLanguage('sport')
-        );
-
+        $txt           = $this->loadLanguages(['sport']);
         $search        = trim($_GET['search'] ?? '');
         $competitionId = !empty($_GET['competition']) ? (int)$_GET['competition'] : null;
         $seasonId      = !empty($_GET['season'])      ? (int)$_GET['season']      : null;
@@ -27,27 +22,18 @@ class CompetitionEditions extends Controller {
         $competitions  = $this->competitionModel->getAllCompetitions();
         $seasons       = $this->editionModel->getAllSeasons();
 
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $data = $this->prepareListData(
+            $txt,
+            $txt['COMPETITION_EDITIONS_MGT'] ?? 'Editions',
+            [
+                'editions'            => $editions,
+                'competitions'        => $competitions,
+                'seasons'             => $seasons,
+                'selectedCompetition' => $competitionId,
+                'selectedSeason'      => $seasonId,
+            ]
+        );
 
-        $data = [
-            'txt'                 => $txt,
-            'title'               => ($txt['COMPETITION_EDITIONS_MGT'] ?? 'Editions') . ' - ' . SITENAME,
-            'editions'            => $editions,
-            'competitions'        => $competitions,
-            'seasons'             => $seasons,
-            'search'              => $search,
-            'selectedCompetition' => $competitionId,
-            'selectedSeason'      => $seasonId,
-            'isAdmin'             => $isAdmin,
-            'message'             => $_SESSION['flash_message'] ?? '',
-            'error'               => $_SESSION['flash_error']   ?? '',
-        ];
-
-        unset($_SESSION['flash_message'], $_SESSION['flash_error']);
-
-        $this->view('system/header',  $data);
-        $this->view('system/navview', $data);
-        $this->view('sport/competition-editions', $data);
-        $this->view('system/footer',  $data);
+        $this->renderList('sport/competition-editions', $data);
     }
 }

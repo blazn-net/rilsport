@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\Controller;
+use Core\ListController;
 
-class Persons extends Controller {
+class Persons extends ListController {
     private $personModel;
 
     public function __construct() {
@@ -11,28 +11,16 @@ class Persons extends Controller {
     }
 
     public function index() {
-        $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
+        $txt     = $this->loadLanguages(['sport']);
         $search  = trim($_GET['search'] ?? '');
         $persons = $this->personModel->getAllPersons($search);
 
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $data = $this->prepareListData(
+            $txt,
+            $txt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs',
+            ['persons' => $persons]
+        );
 
-        $data = [
-            'txt'     => $txt,
-            'title'   => ($txt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs') . ' - ' . SITENAME,
-            'persons' => $persons,
-            'search'  => $search,
-            'isAdmin' => $isAdmin,
-            'message' => $_SESSION['flash_message'] ?? '',
-            'error'   => $_SESSION['flash_error'] ?? ''
-        ];
-
-        unset($_SESSION['flash_message']);
-        unset($_SESSION['flash_error']);
-
-        $this->view('system/header', $data);
-        $this->view('system/navview', $data);
-        $this->view('sport/persons', $data);
-        $this->view('system/footer', $data);
+        $this->renderList('sport/persons', $data);
     }
 }

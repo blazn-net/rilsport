@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\Controller;
+use Core\FormController;
 
-class Person extends Controller {
+class Person extends FormController {
     private $personModel;
 
     public function __construct() {
@@ -11,34 +11,26 @@ class Person extends Controller {
     }
 
     public function index($id = null, $action = null) {
-        $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         // Seuls les admins peuvent créer une nouvelle personne
         if (!$id && !$isAdmin) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.');
         }
 
-        $personData = null;
-
-        if ($id !== null && $id !== '') {
-            if (is_numeric($id)) {
-                $personData = $this->personModel->getPersonById((int)$id);
-                if ($personData && !empty($personData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-                    return $this->redirect('sport/person/' . ($action === 'edit' ? 'edit/' : '') . $personData['code']);
-                }
-            } else {
-                $personData = $this->personModel->getPersonByCode($id);
-            }
-
-            if (!$personData) {
-                return $this->redirect('sport/persons');
-            }
-        }
+        $personData = $this->resolveEntity(
+            [$this->personModel, 'getPersonByCode'],
+            [$this->personModel, 'getPersonById'],
+            $id,
+            'sport/person',
+            'sport/persons',
+            $action
+        );
 
         $roles  = $this->personModel->getAllRoles();
         $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
-        $mode   = $id ? ((($action === 'edit' || $isPost) && $isAdmin) ? 'edit' : 'view') : 'add';
+        $mode   = $this->resolveMode($id, $action, $isPost);
 
         $data = [
             'txt'     => $txt,
@@ -98,20 +90,7 @@ class Person extends Controller {
             }
         }
 
-        unset($_SESSION['flash_message']);
-        unset($_SESSION['flash_error']);
-
-        $this->view('system/header', $data);
-        $this->view('system/navview', $data);
-        $this->view('sport/person', $data);
-        $this->view('system/footer', $data);
-    }
-
-    /**
-     * Accès direct au formulaire d'édition (Admin)
-     */
-    public function edit($id = null) {
-        return $this->index($id, 'edit');
+        $this->renderForm('sport/person', $data);
     }
 
     public function delete($id = null) {
