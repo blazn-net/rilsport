@@ -24,6 +24,9 @@ class Person extends Controller {
         if ($id !== null && $id !== '') {
             if (is_numeric($id)) {
                 $personData = $this->personModel->getPersonById((int)$id);
+                if ($personData && !empty($personData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    return $this->redirect('sport/person/' . ($action === 'edit' ? 'edit/' : '') . $personData['code']);
+                }
             } else {
                 $personData = $this->personModel->getPersonByCode($id);
             }

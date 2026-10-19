@@ -29,9 +29,14 @@ class Competition extends Controller {
         $editions = [];
 
         if ($id !== null && $id !== '') {
-            $competitionData = is_numeric($id)
-                ? $this->competitionModel->getCompetitionById((int)$id)
-                : $this->competitionModel->getCompetitionByCode($id);
+            if (is_numeric($id)) {
+                $competitionData = $this->competitionModel->getCompetitionById((int)$id);
+                if ($competitionData && !empty($competitionData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    return $this->redirect('sport/competition/' . ($action === 'edit' ? 'edit/' : '') . $competitionData['code']);
+                }
+            } else {
+                $competitionData = $this->competitionModel->getCompetitionByCode($id);
+            }
 
             if (!$competitionData) {
                 return $this->redirect('sport/competitions');

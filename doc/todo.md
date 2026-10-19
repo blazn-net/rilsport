@@ -226,7 +226,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Terminé
-- **Description** : Standardisation des URLs pour les fiches individuelles (consultation `view` et édition `edit`) afin d'utiliser le code unique de l'objet métier (ex: `/sport/sport/football`, `/sport/club/edit/psg`, `/sport/competition/ligue1`, `/sport/competition-edition/ligue1-2024-2025`, `/user/william.baskerville`) au lieu de l'identifiant numérique interne. Prise en charge des placeholders `{code}` et `{id}` dans `list_template.php`, enrichissement des méthodes `getByCode` dans les modèles avec toutes les jointures nécessaires, mise à jour de l'ensemble des vues List/Form et des redirections de contrôleurs (Sport, Club, Team, Season, Person, Competition, CompetitionEdition, User).
+- **Description** : Standardisation des URLs pour les fiches individuelles (consultation `view` et édition `edit`) afin d'utiliser le code unique de l'objet métier (ex: `/sport/sport/football`, `/sport/club/edit/psg`, `/sport/competition/ligue1`, `/sport/competition-edition/ligue1-2024-2025`, `/user/william.baskerville`) au lieu de l'identifiant numérique interne. Prise en charge des placeholders `{code}` et `{id}` dans `list_template.php`, enrichissement des méthodes `getByCode` dans les modèles avec toutes les jointures nécessaires, mise à jour de l'ensemble des vues List/Form et des redirections de contrôleurs (Sport, Club, Team, Season, Person, Competition, CompetitionEdition, User), et mise en place d'une redirection canonique HTTP 302 automatique lorsque l'URL est demandée avec un identifiant numérique.
 
 ### `[20261016-2345]` Implémentation des Matchs et Classements (Module Sport)
 - **Type** : Évolution

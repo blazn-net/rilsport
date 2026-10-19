@@ -41,6 +41,11 @@ class User extends Controller
             }
         }
 
+        // Redirige vers le username si appelé avec un identifiant numérique
+        if ($id !== null && is_numeric($id) && !empty($userData['username']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->redirect('user/' . ($action === 'edit' ? 'edit/' : '') . urlencode($userData['username']));
+        }
+
         $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
 
         $userObj = $userData ? (object) $userData : null;

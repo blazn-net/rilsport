@@ -24,6 +24,9 @@ class Sport extends Controller {
         if ($id !== null && $id !== '') {
             if (is_numeric($id)) {
                 $sportData = $this->sportModel->getSportById((int)$id);
+                if ($sportData && !empty($sportData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    return $this->redirect('sport/sport/' . ($action === 'edit' ? 'edit/' : '') . $sportData['code']);
+                }
             } else {
                 $sportData = $this->sportModel->getSportByCode($id);
             }

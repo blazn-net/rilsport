@@ -28,6 +28,9 @@ class Team extends Controller {
         if ($id !== null && $id !== '') {
             if (is_numeric($id)) {
                 $teamData = $this->teamModel->getTeamById((int)$id);
+                if ($teamData && !empty($teamData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    return $this->redirect('sport/team/' . ($action === 'edit' ? 'edit/' : '') . $teamData['code']);
+                }
             } else {
                 $teamData = $this->teamModel->getTeamByCode($id);
             }

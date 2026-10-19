@@ -32,6 +32,9 @@ class Club extends Controller {
         if ($id !== null && $id !== '') {
             if (is_numeric($id)) {
                 $clubData = $this->clubModel->getClubById((int)$id);
+                if ($clubData && !empty($clubData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    return $this->redirect('sport/club/' . ($action === 'edit' ? 'edit/' : '') . $clubData['code']);
+                }
             } else {
                 $clubData = $this->clubModel->getClubByCode($id);
             }

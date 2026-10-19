@@ -33,9 +33,14 @@ class CompetitionEdition extends Controller {
         $preselectedCompetitionId = !empty($_GET['competition_id']) ? (int)$_GET['competition_id'] : null;
 
         if ($id !== null && $id !== '') {
-            $editionData = is_numeric($id)
-                ? $this->editionModel->getEditionById((int)$id)
-                : $this->editionModel->getEditionByCode($id);
+            if (is_numeric($id)) {
+                $editionData = $this->editionModel->getEditionById((int)$id);
+                if ($editionData && !empty($editionData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    return $this->redirect('sport/competition-edition/' . ($action === 'edit' ? 'edit/' : '') . $editionData['code']);
+                }
+            } else {
+                $editionData = $this->editionModel->getEditionByCode($id);
+            }
 
             if (!$editionData) {
                 return $this->redirect('sport/competition-editions');

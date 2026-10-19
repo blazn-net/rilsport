@@ -24,6 +24,9 @@ class Season extends Controller {
         if ($id !== null && $id !== '') {
             if (is_numeric($id)) {
                 $seasonData = $this->seasonModel->getSeasonById((int)$id);
+                if ($seasonData && !empty($seasonData['code']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    return $this->redirect('sport/season/' . ($action === 'edit' ? 'edit/' : '') . $seasonData['code']);
+                }
             } else {
                 $seasonData = $this->seasonModel->getSeasonByCode($id);
             }
