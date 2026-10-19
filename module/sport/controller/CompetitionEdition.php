@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\FormController;
+use Core\EntityController;
 
-class CompetitionEdition extends FormController {
+class CompetitionEdition extends EntityController {
     private $editionModel;
     private $competitionModel;
 
@@ -125,7 +125,7 @@ class CompetitionEdition extends FormController {
             'isAdmin'           => $isAdmin,
         ];
 
-        $this->renderForm('sport/competition-edition', $data);
+        $this->renderEntity('sport/competition-edition', $data);
     }
 
     public function delete($id = null) {

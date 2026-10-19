@@ -19,22 +19,23 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 
 ## 2. Règles d'Architecture, Interface et Navigation
 
-- **1 module = N objets**. Structure standard : `controller/`, `model/`, `view/`, `database/[nom].sql`, `md_dependencies.md`, `test_plan.md`.
-- **1 objet = 1 page List + 1 page Form**.
+- **1 module = N objets**. Structure standard : `controller/` (`[Objets].php` extends `Core\ListController`, `[Objet].php` extends `Core\EntityController`), `model/`, `view/`, `database/[nom].sql`, `md_dependencies.md`, `test_plan.md`.
+- **1 objet = 1 page List + 1 page Entity**.
 - **Liens de navigation (`navview.php`)** :
   - Toute page List impose un lien dans `module/system/view/navview.php`.
   - Intitulé impératif au **pluriel direct** de l'objet (ex: `Sports`, `Clubs`, `Utilisateurs`) et **JAMAIS** la mention « Gestion [Objet] ».
-- **Dualité des Fiches : Consultation (`View`) vs Formulaire (`Form` / `Edit`)** :
+- **Dualité des Fiches Entity : Consultation (`View`) vs Formulaire (`Edit` / `Add`)** :
   - **Consultation (`View`)** : Textes et badges HTML purs, **interdiction formelle** de balises `<input>`, `<select>`, `<textarea>` (même `readonly` ou `disabled`), aucun bouton de soumission.
-  - **Formulaire (`Form` / `Edit`)** : Éléments interactifs réservés aux utilisateurs avec privilèges d'édition (Admins).
+  - **Formulaire (`Edit` / `Add`)** : Éléments interactifs réservés aux utilisateurs avec privilèges d'édition (Admins).
 - **Pages List standardisées (`list_template.php`)** :
   - Toute page List s'appuie de préférence sur le template universel `module/system/view/common/list_template.php`.
   - Le clic sur le nom de l'objet dans la liste ouvre **toujours** la fiche en mode **Consultation (`View`)** pour tous (visiteurs et admins).
   - Le mode Édition (`Edit`) est accessible aux admins via le bouton Modifier (crayon `mif-pencil`) de la colonne Actions ou via le bouton « Modifier » en haut de la fiche `View`.
   - Le **bouton « + Ajouter »**, la colonne **Actions** et la colonne **Statut** sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les non-admins.
   - Libellés de dates : Intitulés concis « Début » et « Fin » (et non « Date de début / fin »).
-- **Pages Form & View standardisées (`form_template.php`)** :
-  - Toute fiche individuelle Form / View s'appuie obligatoirement sur le template universel `module/system/view/common/form_template.php`.
+- **Fiches Individuelles Entity standardisées (`entity_template.php`)** :
+  - Toute fiche individuelle s'appuie obligatoirement sur le template universel `module/system/view/common/entity_template.php`.
+  - Les contrôleurs héritent de `Core\EntityController` avec résolution prioritaire par code métier et redirection 302 pour les IDs.
   - **Mode View (Consultation)** : Zéro balise d'entrée (`<input>`, `<select>`), textes et blocs d'informations stylisés, panneau d'audit déplié par défaut, bouton Modifier (bleu `button info`) visible uniquement pour les administrateurs.
   - **Mode Edit / Add (Formulaire)** : Formulaire dans une card, champ Code `readonly` en mode édition, validation stricte, boutons de pied Enregistrer/Mettre à jour (vert `button success`, `mif-floppy-disk`) et Annuler (neutre `button secondary`, `mif-cancel`).
 - **Règles Mobile First (Point [20260908-2319]) — Viewport étroit ≤ 414px** :
@@ -48,8 +49,8 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 
 ## 3. Conventions de Vocabulaire et Nommage
 
-- **Pluriel = Liste** (ex: `Users`, `Sports`, route `/[module]/[objets]`).
-- **Singulier = Formulaire** (ex: `User`, `Sport`, route création `/[module]/[objet]`, route édition `/[module]/[objet]/[id]`).
+- **Pluriel = Page List** (ex: `Users`, `Sports`, route `/[module]/[objets]`, classe `extends Core\ListController`).
+- **Singulier = Page Entity** (ex: `User`, `Sport`, route consultation `/[module]/[objet]/[code]`, route édition `/[module]/[objet]/edit/[code]`, route création `/[module]/[objet]`, classe `extends Core\EntityController`).
 - Classes PHP en PascalCase, méthodes en camelCase.
 
 ---

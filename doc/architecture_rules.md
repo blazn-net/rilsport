@@ -7,12 +7,12 @@ Ce document définit les règles architecturales impératives relatives à la d�
 ## 1. Principes Fondamentaux de l'Architecture
 
 > **1 module = N objets**  
-> **1 objet = 1 page List + 1 page Form**  
+> **1 objet = 1 page List + 1 page Entity**  
 > **1 page List = 1 lien obligatoire dans `module/system/view/navview.php`**
 
 Chaque module regroupe un ensemble cohérent d'objets métier. Chaque objet métier déclaré au sein d'un module doit **obligatoirement** comporter ses 2 pages dédiées :
-1. **Page List (tableau récapitulatif)** : affichage de tous les enregistrements de l'objet sous forme de grille/tableau.
-2. **Page Form (formulaire unifié)** : création d'un nouvel objet (sans ID) ou modification d'un objet existant (avec ID).
+1. **Page List (tableau récapitulatif)** : affichage de tous les enregistrements de l'objet sous forme de grille/tableau (`Core\ListController`).
+2. **Page Entity (fiche individuelle : View / Edit / Add)** : consultation pure (View) sans input, ou modification/création (Edit/Add) pour les admins (`Core\EntityController`).
 
 ---
 
@@ -41,9 +41,9 @@ module/[nom]/
 └── test_plan.md
 ```
 
-- **Contrôleur** : Étend `Core\Controller`. Réceptionne les requêtes HTTP, vérifie les droits et permissions, appelle le modèle et charge la vue.
+- **Contrôleur** : Étend `Core\ListController` pour les listes (`[Objets].php`) ou `Core\EntityController` pour les fiches individuelles (`[Objet].php`). Réceptionne les requêtes HTTP, vérifie les droits et permissions, appelle le modèle et charge la vue.
 - **Modèle** : Échange avec la base de données via PDO (`Core\Database`). Gère les requêtes de sélection, validation, insertion, mise à jour et suppression.
-- **Vues** : Fichiers PHP de rendu HTML purs, séparés par objet en minuscules (`view/[objet]/list.php` et `view/[objet]/form.php`).
+- **Vues** : Fichiers PHP de rendu HTML purs, s'appuyant sur les templates parents universels `list_template.php` et `entity_template.php`.
 - **Database** : Un unique fichier SQL `[nom].sql` par module, strictement ré-entrant.
 - **Documentation de dépendances** : Un fichier `md_dependencies.md` à la racine du module.
 - **Plan de test et recette** : Un fichier `test_plan.md` à la racine de chaque module consignant la recette fonctionnelle, le respect du mobile first et des règles d'interface.
@@ -69,15 +69,15 @@ Tant que le menu dynamique n'a pas remplacé le système actuel :
 - **Toute création d'une nouvelle page List impose d'ajouter son lien de menu dans [navview.php](file:///c:/wamp64/www/rilsport/module/system/view/navview.php).**
 - Les liens sous la section "Administration" doivent porter directement le nom au pluriel de l'objet (ex: `Utilisateurs`, `Langues`, `Sports`) et **jamais** la mention "Gestion [Objet]".
 
-### B. Dualité des Fiches : Consultation (`View`) vs Formulaire (`Form` / `Edit`)
-Pour l'affichage d'un objet unique :
-- **Mode Consultation (`View`)** (utilisateurs sans droit d'édition) :
+### B. Fiches Individuelles Entity : Consultation (`View`) vs Formulaire (`Edit` / `Add`)
+Pour l'affichage d'un objet unique via `module/system/view/common/entity_template.php` :
+- **Mode Consultation (`View`)** (visiteurs et utilisateurs sans droit d'édition, ou consultation admin) :
   - Affichage propre sous forme de libellés, fiches, cartes, badges HTML.
   - **Interdiction formelle** d'utiliser des champs de formulaire (`<input>`, `<select>`, `<textarea>`) désactivés (`disabled`) ou en lecture seule (`readonly`).
-  - Aucun bouton de validation/soumission affiché.
-- **Mode Édition (`Form` / `Edit`)** (administrateurs ou utilisateurs autorisés) :
+  - Aucun bouton de validation/soumission affiché. Bouton Modifier visible uniquement pour les admins.
+- **Mode Formulaire (`Edit` / `Add`)** (administrateurs ou utilisateurs autorisés) :
   - Composants de saisie interactifs de l'UI (ex: Metro UI `textbox`, `dropdownlist`, `checkbox`, `calendarpicker`).
-  - Boutons de validation ("Enregistrer", "Annuler").
+  - Boutons de validation ("Enregistrer" / "Mettre à jour", "Annuler").
 
 ### C. Colonne Actions et Accès aux Fiches (Point [20260908-2304])
 Sur le tableau d'une page List :

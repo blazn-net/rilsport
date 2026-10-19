@@ -4,29 +4,30 @@ Ces règles sont strictement obligatoires pour la structure du code et des inter
 
 ## 1. Principes des Modules et Objets
 - **1 module = N objets**.
-- **1 objet = 1 page List + 1 page Form**.
-  - Page List : `view/[objet]/list.php` (tableau de tous les enregistrements).
-  - Page Form : `view/[objet]/form.php` (formulaire unifié ajout/édition).
+- **1 objet = 1 page List + 1 page Entity**.
+  - Page List : `view/[objet]/list.php` ou `view/[objets].php` (tableau récapitulatif).
+  - Page Entity : `view/[objet]/[objet].php` (fiche unifiée View / Edit / Add s'appuyant sur `module/system/view/common/entity_template.php`).
 - **1 page List = 1 lien obligatoire dans `module/system/view/navview.php`**.
 
 ## 2. Structure Standard d'un Module
 Tout module sous `module/[nom]/` comprend :
-- `controller/[Objet].php` (classe `[Objet]Controller extends Controller`)
+- `controller/[Objets].php` (classe `[Objets] extends Core\ListController`)
+- `controller/[Objet].php` (classe `[Objet] extends Core\EntityController`)
 - `model/[Objet].php` (classe `[Objet]Model`)
-- `view/[objet]/list.php` et `view/[objet]/form.php`
+- `view/[objets].php` et `view/[objet].php`
 - `database/[nom].sql`
 - `md_dependencies.md`
 - `test_plan.md` (Plan de test et recette fonctionnelle, mobile first et interfaces)
 
-## 3. Modes d'Affichage Fiche
+## 3. Modes d'Affichage Fiche Entity
 - **Mode Consultation (`View`)** :
-  - Destiné aux utilisateurs en lecture seule.
+  - Destiné aux utilisateurs et visiteurs en lecture seule.
   - Textes purs, badges, cartes HTML.
   - **JAMAIS d'éléments `<input>`, `<select>`, `<textarea>` désactivés ou readonly**.
-  - Aucun bouton d'enregistrement.
-- **Mode Formulaire (`Form` / `Edit`)** :
+  - Aucun bouton d'enregistrement. Bouton Modifier visible uniquement pour les administrateurs.
+- **Mode Formulaire (`Edit` / `Add`)** :
   - Destiné aux utilisateurs avec droit de modification (Admins).
-  - Composants interactifs de formulaire et bouton d'enregistrement.
+  - Composants interactifs de formulaire et boutons Enregistrer/Mettre à jour et Annuler.
 
 ## 4. Visibilité des Statuts (Point [20260908-2330])
 - Les statuts des entités ne doivent être visibles **que pour les administrateurs** (`!empty($data['isAdmin'])`), sauf exceptions métier.

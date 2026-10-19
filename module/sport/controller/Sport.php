@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\FormController;
+use Core\EntityController;
 
-class Sport extends FormController {
+class Sport extends EntityController {
     private $sportModel;
 
     public function __construct() {
@@ -85,12 +85,12 @@ class Sport extends FormController {
             }
         }
 
-        $this->renderForm('sport/sport', $data);
+        $this->renderEntity('sport/sport', $data);
     }
 
     public function delete($id = null) {
-        $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'), $this->loadLanguage('sport'));
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         if (!$isAdmin) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');

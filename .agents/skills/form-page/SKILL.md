@@ -1,28 +1,29 @@
 ---
 name: form-page
 description: >
-  Standards complets pour créer ou modifier une page Form/View (fiche individuelle) dans RIL Sport.
-  Lire OBLIGATOIREMENT avant toute création ou modification d'une page Form ou View.
-  Couvre : le template parent universel form_template.php, les 3 modes (add/view/edit), en-tête, mode View sans input, formulaire Edit/Add, boutons, contrôleur, modèle, checklist.
+  Standards complets pour créer ou modifier une page Entity (fiche individuelle View / Edit / Add) dans RIL Sport.
+  Lire OBLIGATOIREMENT avant toute création ou modification d'une fiche d'entité.
+  Couvre : le template parent universel entity_template.php, le contrôleur Core\EntityController, les 3 modes (add/view/edit), en-tête, mode View sans input, formulaire Edit/Add, boutons, contrôleur, modèle, checklist.
 ---
 
-# Skill : Pages Form & View — RIL Sport
+# Skill : Pages Entity (View / Edit / Add) — RIL Sport
 
 ## Quand utiliser ce skill
 
 Activer ce skill dès que la tâche implique :
-- Créer ou modifier une **page Form** (formulaire de création/édition)
-- Créer ou modifier une **page View** (fiche consultation)
-- Gérer un **contrôleur d'objet singulier** (create/read/update)
+- Créer ou modifier une **page Entity** (fiche individuelle View / Edit / Add)
+- Créer ou modifier une **page View** (fiche consultation sans input)
+- Créer ou modifier une **page Form** (formulaire création/édition)
+- Gérer un **contrôleur d'objet singulier** (`extends Core\EntityController`)
 
 > Pour les pages List (tableau), utiliser le skill `list-page`.
 
 ---
 
-## 1. Principe : Template Parent Universel `form_template.php`
+## 1. Principe : Template Parent Universel `entity_template.php`
 
 Toute fiche objet est gérée dans **un seul fichier** `[objet].php` qui hérite du template parent :
-`module/system/view/common/form_template.php`
+`module/system/view/common/entity_template.php`
 
 Ce template centralise et standardise :
 - L'en-tête (titre selon mode, bouton « Modifier » pour admin en view, bouton « Retour » universel).
@@ -122,7 +123,7 @@ $formConfig = [
     <?php }
 ];
 
-require 'module/system/view/common/form_template.php';
+require 'module/system/view/common/entity_template.php';
 ```
 
 ---
@@ -185,86 +186,98 @@ require 'module/system/view/common/form_template.php';
 
 ---
 
-## 8. Contrôleur Form / View
+## 8. Contrôleur d'Entité (`Core\EntityController`)
+
+Tout contrôleur de fiche individuelle hérite de `Core\EntityController` :
 
 ```php
-public function index($id = null, $action = null) {
-    $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('module'));
-    $isAdmin = isset($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+<?php
+namespace Module\MonModule\Controller;
 
-    // Seuls les admins peuvent créer
-    if (!$id && !$isAdmin) {
-        die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+use Core\EntityController;
+
+class MonObjet extends EntityController {
+    private $model;
+
+    public function __construct() {
+        $this->model = $this->model('monmodule/MonObjet');
     }
 
-    $itemData = null;
-    if ($id !== null && $id !== '') {
-        $itemData = $this->model->getObjectById((int)$id);
-        if (!$itemData) {
-            return $this->redirect('module/objets');
-        }
-    }
+    public function index($id = null, $action = null) {
+        $txt     = $this->loadLanguages(['monmodule']);
+        $isAdmin = $this->isAdmin();
 
-    // Détermination robuste du mode (maintient edit en cas d'erreur POST)
-    $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
-    $mode   = $id ? ((($action === 'edit' || $isPost) && $isAdmin) ? 'edit' : 'view') : 'add';
-
-    $data = [
-        'txt'     => $txt,
-        'title'   => ($id ? ($mode === 'edit' ? 'Modifier' : 'Fiche : ' . ($itemData['name'] ?? '')) : 'Ajouter') . ' - ' . SITENAME,
-        'objet'   => $itemData ? (object)$itemData : null,
-        'mode'    => $mode,
-        'isAdmin' => $isAdmin,
-        'error'   => $_SESSION['flash_error'] ?? '',
-        'message' => $_SESSION['flash_message'] ?? '',
-    ];
-
-    if ($isPost) {
-        if (!$isAdmin) {
+        // Seuls les admins peuvent créer
+        if (!$id && !$isAdmin) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
         }
 
-        // Validation...
-        if ($validationError) {
-            $data['error'] = 'Erreur de saisie...';
-            $data['objet'] = (object)$_POST; // préserver la saisie utilisateur
-        } else {
-            // Sauvegarde...
-            if ($id) {
-                $this->model->updateObject($postData);
-                $_SESSION['flash_message'] = 'Modifié avec succès.';
-                return $this->redirect('module/objet/' . $id);
+        // Résolution canonique (priorité code métier, fallback ID avec redirection 302 automatique)
+        $itemData = $this->resolveEntity(
+            [$this->model, 'getObjectByCode'],
+            [$this->model, 'getObjectById'],
+            $id,
+            'monmodule/monobjet',
+            'monmodule/mesobjets',
+            $action
+        );
+
+        $isPost = ($_SERVER['REQUEST_METHOD'] === 'POST');
+        $mode   = $this->resolveMode($id, $action, $isPost);
+
+        $data = [
+            'txt'     => $txt,
+            'title'   => ($id ? ($mode === 'edit' ? 'Modifier' : 'Fiche : ' . ($itemData['name'] ?? '')) : 'Ajouter') . ' - ' . SITENAME,
+            'objet'   => $itemData ? (object)$itemData : null,
+            'mode'    => $mode,
+            'isAdmin' => $isAdmin,
+            'error'   => $_SESSION['flash_error'] ?? '',
+            'message' => $_SESSION['flash_message'] ?? '',
+        ];
+
+        if ($isPost) {
+            if (!$isAdmin) {
+                die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+            }
+
+            // Validation...
+            if ($validationError) {
+                $data['error'] = 'Erreur de saisie...';
+                $data['objet'] = (object)$_POST; // préserver la saisie utilisateur
             } else {
-                $newId = $this->model->addObject($postData);
-                $_SESSION['flash_message'] = 'Créé avec succès.';
-                return $this->redirect('module/objets');
+                // Sauvegarde...
+                if ($id) {
+                    $this->model->updateObject($postData);
+                    $_SESSION['flash_message'] = 'Modifié avec succès.';
+                    return $this->redirect('monmodule/monobjet/' . urlencode($itemData['code'] ?? $id));
+                } else {
+                    $this->model->addObject($postData);
+                    $_SESSION['flash_message'] = 'Créé avec succès.';
+                    return $this->redirect('monmodule/mesobjets');
+                }
             }
         }
+
+        $this->renderEntity('monmodule/monobjet', $data);
     }
-
-    unset($_SESSION['flash_message'], $_SESSION['flash_error']);
-
-    $this->view('system/header', $data);
-    $this->view('system/navview', $data);
-    $this->view('module/objet', $data);
-    $this->view('system/footer', $data);
-}
-
-public function edit($id = null) {
-    return $this->index($id, 'edit');
 }
 ```
+
+> La méthode `edit($id = null)` est **déjà héritée** par défaut de `Core\EntityController` (inutile de la réécrire).
 
 ---
 
 ## 9. Checklist avant livraison
 
-- [ ] `[objet].php` utilise `require 'module/system/view/common/form_template.php'`
+- [ ] `[objet].php` utilise `require 'module/system/view/common/entity_template.php'`
+- [ ] Le contrôleur hérite de `Core\EntityController` et appelle `$this->renderEntity(...)`
+- [ ] Résolution d'entité via `$this->resolveEntity(...)` (code métier prioritaire, redirection 302 pour ID)
 - [ ] En mode **View** : **aucun input**, blocs d'informations propres, panneau d'audit déplié par défaut
 - [ ] En mode **Edit/Add** : champ Code `readonly` en edit, boutons de soumission `button success` (vert)
 - [ ] Bouton d'annulation présent en pied de formulaire (`button secondary`)
 - [ ] Bouton « Modifier » visible uniquement pour les admins en mode View
 - [ ] Bouton « Retour » présent dans tous les modes vers la liste
-- [ ] Redirection après Edit vers `/module/objet/{id}` (mode View) avec flash success
+- [ ] Redirection après Edit vers `/module/objet/{code}` (mode View) avec flash success
 - [ ] En cas d'erreur de validation POST, l'utilisateur reste sur le formulaire `edit`/`add` avec ses saisies préservées
 - [ ] Responsive mobile : boutons avec icônes ergonomiques, cibles tactiles adaptées
+

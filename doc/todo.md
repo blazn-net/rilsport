@@ -389,17 +389,18 @@
 
 ---
 
-### `[20261019-2210]` Contrôleurs parents Core\ListController et Core\FormController & URLs canoniques par code
+### `[20261019-2210]` Contrôleurs parents Core\ListController & Core\EntityController + entity_template.php & URLs canoniques par code
 - **Type** : Refactoring
 - **Priorité** : P2
 - **Statut** : Réalisé
-- **Description** : Factorisation des contrôleurs List et Form/View via `Core\ListController` et `Core\FormController`, avec résolution prioritaire des codes métiers (y compris codes numériques comme les années de saisons 2026/2027) et redirection canonique 302 si un ID numérique est fourni dans l'URL.
+- **Description** : Factorisation des contrôleurs List et Entity via `Core\ListController` et `Core\EntityController`, standardisation du template universel `module/system/view/common/entity_template.php` (remplaçant form_template.php), avec résolution prioritaire des codes métiers (y compris codes numériques comme les années de saisons 2026/2027) et redirection canonique 302 si un ID numérique est fourni dans l'URL.
 - **Sous-tâches** :
     - [x] `[20261019-2211]` Création de `Core\ListController` (`isAdmin`, `loadLanguages`, `prepareListData`, `renderList`)
-    - [x] `[20261019-2212]` Création de `Core\FormController` (`isAdmin`, `loadLanguages`, `resolveEntity`, `resolveMode`, `renderForm`, `edit`)
-    - [x] `[20261019-2213]` Refactorisation des contrôleurs `sport` (Season, Sport, Club, Team, Person, Competition, CompetitionEdition)
-    - [x] `[20261019-2214]` Refactorisation des contrôleurs `user` (Users, User)
-    - [x] `[20261019-2215]` Validation syntaxique CLI et tests HTTP (codes 200 & 302)
+    - [x] `[20261019-2212]` Création de `Core\EntityController` (`isAdmin`, `loadLanguages`, `resolveEntity`, `resolveMode`, `renderEntity`, `edit`)
+    - [x] `[20261019-2213]` Renommage et standardisation de `entity_template.php` (avec alias de compatibilité `form_template.php`)
+    - [x] `[20261019-2214]` Refactorisation de tous les contrôleurs d'entité (`sport` et `user`) vers `Core\EntityController`
+    - [x] `[20261019-2215]` Mise à jour des vues vers `require '.../entity_template.php'`
+    - [x] `[20261019-2216]` Validation syntaxique CLI et tests HTTP (codes 200 & 302)
 
 
 

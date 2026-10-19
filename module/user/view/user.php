@@ -169,4 +169,4 @@ $formConfig = [
     <?php }
 ];
 
-require 'module/system/view/common/form_template.php';
+require 'module/system/view/common/entity_template.php';

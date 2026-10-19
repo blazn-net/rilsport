@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\FormController;
+use Core\EntityController;
 
-class Team extends FormController {
+class Team extends EntityController {
     private $teamModel;
 
     public function __construct() {
@@ -108,15 +108,15 @@ class Team extends FormController {
             'message'     => $_SESSION['flash_message'] ?? ''
         ];
 
-        $this->renderForm('sport/team', $data);
+        $this->renderEntity('sport/team', $data);
     }
 
     /**
      * Suppression / Désactivation d'une équipe
      */
     public function delete($id = null) {
-        $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('sport'));
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         if (!$isAdmin || !$id) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');

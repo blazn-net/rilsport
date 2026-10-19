@@ -1,9 +1,9 @@
 <?php
 namespace Module\Sport\Controller;
 
-use Core\FormController;
+use Core\EntityController;
 
-class Competition extends FormController {
+class Competition extends EntityController {
     private $competitionModel;
     private $sportModel;
     const MAX_FILE_SIZE = 2097152; // 2 Mo
@@ -136,12 +136,12 @@ class Competition extends FormController {
             'message'     => $_SESSION['flash_message'] ?? '',
         ];
 
-        $this->renderForm('sport/competition', $data);
+        $this->renderEntity('sport/competition', $data);
     }
 
     public function delete($id = null) {
-        $txt     = array_merge($this->loadLanguage('system'), $this->loadLanguage('sport'));
-        $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+        $txt     = $this->loadLanguages(['sport']);
+        $isAdmin = $this->isAdmin();
 
         if (!$isAdmin || !$id) {
             die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Acces non autorise.');

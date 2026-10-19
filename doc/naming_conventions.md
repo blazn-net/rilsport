@@ -11,11 +11,14 @@ Ce document recense les règles impératives de vocabulaire, de nommage de fichi
 - Terme employé : **Nom de l'objet au pluriel** (ex: `Users`, `Sports`, `Langs`, `Clubs`).
 - Route URL : `/[module]/[objets]` (ex: `/user/users`, `/sport/sports`).
 
-### B. Pages Form (Fiche / Formulaire) = Singulier
-- Fait référence au formulaire d'un élément unique, utilisé à la fois pour la création et l'édition.
+### B. Pages Entity (Fiche Individuelle : View / Edit / Add) = Singulier
+- Fait référence à la fiche d'une entité unique, gérant la consultation (View) sans champ de saisie, et le formulaire (Edit / Add) pour les administrateurs.
 - Terme employé : **Nom de l'objet au singulier** (ex: `User`, `Sport`, `Lang`, `Club`).
-- Route URL Ajout (sans ID) : `/[module]/[objet]` (ex: `/user/user`).
-- Route URL Édition (avec ID) : `/[module]/[objet]/[id]` (ex: `/user/user/1`).
+- Contrôleur : hérite obligatoirement de `Core\EntityController`.
+- Route URL Consultation : `/[module]/[objet]/[code]` (ex: `/sport/club/psg`, `/sport/season/2027`).
+- Route URL Édition : `/[module]/[objet]/edit/[code]` (ex: `/sport/club/edit/psg`).
+- Route URL Ajout : `/[module]/[objet]` (ex: `/sport/club`).
+- Note canonique : les identifiants numériques sont acceptés mais redirigent automatiquement en 302 vers le code métier (ex: `/sport/season/5` $\rightarrow$ `/sport/season/test`).
 
 ---
 
@@ -127,10 +130,10 @@ Chaque tableau (grid) de page List doit obligatoirement comporter les colonnes o
 
 ---
 
-## 6. Conventions d'Interface Utilisateur (UI) — Pages Form & View
+## 6. Conventions d'Interface Utilisateur (UI) — Pages Entity (View / Edit / Add)
 
 ### A. Héritage obligatoire
-> Toute page de type Form / View **doit** utiliser le template parent universel `module/system/view/common/form_template.php`.  
+> Toute fiche individuelle d'entité **doit** utiliser le template parent universel `module/system/view/common/entity_template.php`.  
 > Ce template gère automatiquement : l'en-tête dynamique selon le mode, les alertes flash, le cadre de la fiche, l'avatar, les boutons d'action (Modifier, Retour, Enregistrer, Annuler) et le panneau d'audit.
 
 ### B. Dualité Consultation (`View`) vs Formulaire (`Edit` / `Add`)

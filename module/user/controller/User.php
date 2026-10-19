@@ -1,9 +1,9 @@
 <?php
 namespace Module\User\Controller;
 
-use Core\FormController;
+use Core\EntityController;
 
-class User extends FormController
+class User extends EntityController
 {
     private $userModel;
 
@@ -121,6 +121,6 @@ class User extends FormController
             }
         }
 
-        $this->renderForm('user/user', $data);
+        $this->renderEntity('user/user', $data);
     }
 }
