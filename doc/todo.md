@@ -1,7 +1,9 @@
 # TODO Liste
 ## Légende
 - **Type** : `Évolution` | `Bug` | `Question / Idées` | `Refactoring` | `Test`
+- **Priorité** : `P1` | `P2` | `P3` | `P4`
 - **Statut** : `Nouveau` | `En cours` | `Réalisé`
+- **Front/Back** : `Front` | `Back`
 - **Sous-tâches** : cases à cocher classiques (`[ ]` à faire, `[-]` en cours, `[x]` réalisé)
 - Chaque tâche est un nœud autonome, identifié par un ID horodaté unique `[AAAAMMJJ-HHMM]`
 
@@ -12,6 +14,7 @@
         - **Type** : liste déroulante (`Évolution`, `Bug`, `Question / Idées`, `Refactoring`, `Test`)
         - **Priorité** : liste déroulante (`P4`, `P1`, `P2`, `P3`)
         - **Statut** : liste déroulante (`Nouveau`, `En cours`, `Réalisé`)
+        - **Front/Back** : liste déroulante (`Front`, `Back`)
         - **Description** : pré-rempli avec `_À compléter_`
         - **Sous-tâches** : section créée avec curseur prêt pour insérer des sous-tâches
     - `todosub` puis `Entrée`/`Tab` : insère une sous-tâche indentée (`    - [ ] [AAAAMMJJ-HHMM]`) avec sélection des 2 chiffres des minutes pour incrémenter manuellement au besoin.
@@ -27,6 +30,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : Faux championnat ou choisir un vrai championnat de HorseBall pour tester les fonctionnalités.
 - **Sous-tâches** :
     - [ ] `[20261005-0205]` Zodiaque HorseBall
@@ -38,6 +42,7 @@
 - **Type** : Bug
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
 - **Sous-tâches** :
     - [ ] `[20260908-2309]` Rechercher les textes en dur
@@ -54,6 +59,7 @@
 - **Type** : Bug
 - **Priorité** : P1
 - **Statut** : En cours
+- **Front/Back** : Back
 - **Description** :
 - MVC Phases, Groupes, Rounds (à faire)
 - MVC Inscriptions / Entries (à faire)
@@ -83,6 +89,7 @@
 - **Type** : Bug
 - **Priorité** : P1
 - **Statut** : En cours
+- **Front/Back** : Back
 - **Description** : _À compléter_
 - **Sous-tâches** :
     - [x] `[20260908-2254]` Monde
@@ -101,6 +108,7 @@
 - **Type** : Bug
 - **Priorité** : P2
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : Où mettre ces modules ? main, system, param, config, séparé ?
 - **Sous-tâches** :
     - [ ] `[20260908-2304]` system
@@ -113,6 +121,7 @@
 - **Type** : Bug
 - **Priorité** : P3
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : 
 -[SPORT_NAME].rilsport.net (ou rilsport.net/[SPORT_NAME])
 -[CHAMPIONNAT_NAME].rilsport.net (ou rilsport.net/[CHAMPIONNAT_NAME])
@@ -130,6 +139,7 @@
 - **Type** : Bug
 - **Priorité** : P4
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -138,6 +148,7 @@
 - **Type** : Bug
 - **Priorité** : P4
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Sous-tâches** :
     - [ ] `[20260908-2315]` Ne pas surligner le texte au survol.
     - [ ] `[20260908-2316]` Harmoniser couleur de survol entre menu principal et langue.
@@ -147,6 +158,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : Vérifier avec tous les profils
 
 ---
@@ -155,6 +167,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : _À compléter_
 
 ---
@@ -163,6 +176,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : _À compléter_
 
 ---
@@ -171,6 +185,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 - **Sous-tâches** :
     - [ ] `[20260908-2322]` Lister les modules, pages, tables, colonnes afin d'avoir une cohérence dans les libellés
@@ -181,6 +196,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -189,6 +205,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -197,6 +214,7 @@
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : En cours
+- **Front/Back** : Back
 - **Description** : 
 Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_status`) et Classements (`t_sport_standing`, `t_sport_standing_rule`).
   - Base de données : Tables ré-entrantes créées et validées (x2), clés de traduction UI et statuts insérés.
@@ -212,6 +230,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Test
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : Recette et tests de conformité des fiches individuelles Entity (`entity_template.php` et `Core\EntityController`) sur l'ensemble des modules :
   - **Mode View (Consultation)** : Zéro balise interactive (`<input>`, `<select>`, `<textarea>`), affichage en texte/badges/cards purs, aucun bouton de soumission.
   - **Mode Edit / Add (Formulaire)** : Accessible uniquement aux administrateurs, contrôles de saisie Metro UI, champ Code `readonly` en édition, validation et boutons Enregistrer/Annuler.
@@ -238,6 +257,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P2
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : _À compléter_
 - **Sous-tâches** :
     - [ ] `[20260908-2326]` Forum = Discord ?
@@ -249,6 +269,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P2
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -257,6 +278,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P2
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -265,6 +287,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P2
 - **Statut** : En cours
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -273,6 +296,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P2
 - **Statut** : En cours
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -281,6 +305,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P3
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -289,6 +314,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P3
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : Bibliothèques d'icônes intégrables (SVG / Font)Lucide Icons : La bibliothèque incontournable du moment, basée sur Feather Icons. Légère, très propre et utilisable en SVG, Web Font ou composants JS.  Tabler Icons : Plus de 5 000 icônes gratuites et open-source au format SVG. Son style épuré s'intègre très bien aux interfaces de type dashboard.  Font Awesome : Le grand classique. La version gratuite propose un large catalogue d'icônes en Police Web ou SVG.  Phosphor Icons : Une bibliothèque très flexible proposant 6 styles différents pour chaque icône (Thin, Light, Regular, Bold, Fill, Duotone).  Remix Icon : Une collection open-source avec des styles Line (contour) et Fill (rempli) très neutres et bien pensés pour le design d'application.  Google Material Symbols : Le système officiel de Google, hautement personnalisable via des variables CSS (épaisseur, remplissage, taille).  Moteurs de recherche et agrégateurs (Recherche & Export)Icônes / Iconify : Un moteur de recherche qui agrège des dizaines de bibliothèques open-source en un seul endroit. Idéal pour copier-coller rapidement le code SVG ou importer la bonne icône.SVG Repo : Des milliers d'icônes et d'illustrations vectorielles libres de droits téléchargeables directement en SVG.  The Noun Project : Une immense base de données d'icônes créées par des designers du monde entier.
 
 ---
@@ -297,6 +323,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P4
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : _À compléter_
 
 ---
@@ -305,6 +332,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P4
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : Pour chaque modification d'objet, il faut stocker : - la date et l'heure - l'user - Les modifications : ancienne et nouvelle valeur - [IMPORTANT] Comment faire pour ne pas surcharger la base de données ? - [IMPORTANT] Comment vérifier la validité des données ?
 
 ---
@@ -313,6 +341,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P4
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 - **Sous-tâches** :
     - [ ] `[20260920-2330]` Audit statique automatique des vues (script PHP/CLI de validation des règles §4 architecture_rules et mobile first sur tous les fichiers PHP)
@@ -325,6 +354,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Question / Idées
 - **Priorité** : P1
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : _À compléter_
 
 ---
@@ -333,6 +363,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Question / Idées
 - **Priorité** : P2
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : _À compléter_
 
 ---
@@ -341,6 +372,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Question / Idées
 - **Priorité** : P3
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 
 ---
@@ -349,6 +381,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Question / Idées
 - **Priorité** : P4
 - **Statut** : Nouveau
+- **Front/Back** : Back
 - **Description** : _À compléter_
 
 ---
@@ -357,6 +390,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P4
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : _À compléter_
 - **Sous-tâches** :
 
@@ -367,6 +401,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 - **Type** : Évolution
 - **Priorité** : P4
 - **Statut** : Nouveau
+- **Front/Back** : Front
 - **Description** : Créer une page d'aide pour chaque module/page
 - **Sous-tâches** :
 

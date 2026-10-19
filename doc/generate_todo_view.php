@@ -19,13 +19,14 @@
 $isCli = (php_sapi_name() === 'cli');
 
 if ($isCli) {
-    $options = getopt('', ['output::', 'status::', 'type::', 'priority::']);
+    $options = getopt('', ['output::', 'status::', 'type::', 'priority::', 'front_back::']);
 } else {
     $options = array_filter([
         'output' => $_GET['output'] ?? null,
         'status' => $_GET['status'] ?? null,
         'type' => $_GET['type'] ?? null,
         'priority' => $_GET['priority'] ?? null,
+        'front_back' => $_GET['front_back'] ?? null,
     ], fn($v) => $v !== null && $v !== '');
 }
 
@@ -74,7 +75,8 @@ for ($i = 0; $i < $count; $i++) {
     preg_match('/\*\*Type\*\*\s*:\s*(.+)/', $block, $mType);
     preg_match('/\*\*Priorité\*\*\s*:\s*(.+)/', $block, $mPrio);
     preg_match('/\*\*Statut\*\*\s*:\s*(.+)/', $block, $mStatus);
-    if (preg_match('/\*\*Description\*\*\s*:(.*?)(?=(?:\n\s*(?:-\s*)?\*\*(?:Sous-t[aâ]ches|Type|Priorit[eé]|Statut)\*\*|\n\s*---|\z))/siu', $block, $mDesc)) {
+    preg_match('/\*\*Front\/Back\*\*\s*:\s*(.+)/i', $block, $mFrontBack);
+    if (preg_match('/\*\*Description\*\*\s*:(.*?)(?=(?:\n\s*(?:-\s*)?\*\*(?:Sous-t[aâ]ches|Type|Priorit[eé]|Statut|Front\/Back)\*\*|\n\s*---|\z))/siu', $block, $mDesc)) {
         $desc = trim($mDesc[1]);
     } else {
         $desc = '';
@@ -133,12 +135,13 @@ for ($i = 0; $i < $count; $i++) {
         'type' => trim($mType[1] ?? ''),
         'priority' => trim($mPrio[1] ?? ''),
         'status' => trim($mStatus[1] ?? ''),
+        'front_back' => trim($mFrontBack[1] ?? ''),
         'desc' => $desc,
         'subtasks' => $subtasks,
     ];
 }
 
-foreach (['status', 'type', 'priority'] as $filterKey) {
+foreach (['status', 'type', 'priority', 'front_back'] as $filterKey) {
     if (!empty($options[$filterKey])) {
         $wanted = array_map('trim', explode(',', $options[$filterKey]));
         $tasks = array_values(array_filter($tasks, fn($t) => in_array($t[$filterKey], $wanted, true)));
@@ -279,7 +282,15 @@ function buildMarkdown(array $grouped, int $total, array $headerSections = []): 
         foreach ($byPrio as $prio => $items) {
             $out[] = "### {$prio}";
             foreach ($items as $t) {
-                $out[] = "- " . statusIcon($t['status']) . " `[{$t['id']}]` **{$t['title']}**" . ($t['status'] ? " _( {$t['status']} )_" : '');
+                $tagParts = [];
+                if ($t['status']) {
+                    $tagParts[] = $t['status'];
+                }
+                if (!empty($t['front_back'])) {
+                    $tagParts[] = $t['front_back'];
+                }
+                $tagStr = !empty($tagParts) ? ' _( ' . implode(' | ', $tagParts) . ' )_' : '';
+                $out[] = "- " . statusIcon($t['status']) . " `[{$t['id']}]` **{$t['title']}**{$tagStr}";
             }
             $out[] = "";
         }
@@ -754,7 +765,30 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
 
         .pill.active {
             color: #fff;
+            background: #555;
             border-color: transparent;
+        }
+
+        .pill.c-fb-Front {
+            color: #d84733;
+            border-color: #f8b8ae;
+            background: #fef2f0;
+        }
+
+        .pill.c-fb-Front.active {
+            background: #F15E4A;
+            color: #fff;
+        }
+
+        .pill.c-fb-Back {
+            color: #5c595a;
+            border-color: #dad8d9;
+            background: #f4f3f3;
+        }
+
+        .pill.c-fb-Back.active {
+            background: #767374;
+            color: #fff;
         }
 
         .pill.c-status-Nouveau {
@@ -927,10 +961,11 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
     $curStatus = $_GET['status'] ?? '';
     $curType = $_GET['type'] ?? '';
     $curPrio = $_GET['priority'] ?? '';
+    $curFb = $_GET['front_back'] ?? '';
     $statusClassMap = ['Nouveau' => 'Nouveau', 'En cours' => 'Encours', 'Réalisé' => 'Réalisé'];
     $typeClassMap = ['Bug' => 'Bug', 'Évolution' => 'Évolution', 'Question / Idées' => 'QuestionIdées', 'Refactoring' => 'Refactoring', 'Test' => 'Test'];
     ?>
-    <?php $activeFilterCount = ($curType !== '' ? 1 : 0) + ($curPrio !== '' ? 1 : 0) + ($curStatus !== '' ? 1 : 0); ?>
+    <?php $activeFilterCount = ($curType !== '' ? 1 : 0) + ($curPrio !== '' ? 1 : 0) + ($curStatus !== '' ? 1 : 0) + ($curFb !== '' ? 1 : 0); ?>
     <details class="filter-section"<?= $activeFilterCount > 0 ? ' open' : '' ?>>
         <summary class="filter-summary">
             Filtres<?= $activeFilterCount > 0 ? ' <span class="filter-active-count">(' . $activeFilterCount . ' actif' . ($activeFilterCount > 1 ? 's' : '') . ')</span>' : '' ?>
@@ -971,6 +1006,15 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
                 <a class="pill <?= $curStatus === 'Réalisé' ? 'active' : '' ?> c-status-Réalisé"
                     href="<?= filterUrl(['status' => 'Réalisé']) ?>">✔ Réalisé</a>
             </div>
+            <div class="filter-group">
+                <span class="filter-label">Front / Back</span>
+                <a class="pill <?= $curFb === '' ? 'active c-tout' : '' ?>"
+                    href="<?= filterUrl(['front_back' => null]) ?>">Tout</a>
+                <a class="pill <?= $curFb === 'Front' ? 'active' : '' ?> c-fb-Front"
+                    href="<?= filterUrl(['front_back' => 'Front']) ?>">🖥 Front</a>
+                <a class="pill <?= $curFb === 'Back' ? 'active' : '' ?> c-fb-Back"
+                    href="<?= filterUrl(['front_back' => 'Back']) ?>">⚙ Back</a>
+            </div>
         </div>
     </details>
 
@@ -1004,6 +1048,10 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
                                             <?php if ($t['status']): ?>
                                                 <span class="badge"
                                                     style="background: <?= $statusColor[$t['status']] ?? '#999' ?>;"><?= htmlspecialchars($t['status']) ?></span>
+                                            <?php endif; ?>
+                                            <?php if (!empty($t['front_back'])): ?>
+                                                <span class="badge"
+                                                    style="background: <?= $t['front_back'] === 'Front' ? '#F15E4A' : '#767374' ?>;"><?= $t['front_back'] === 'Front' ? '🖥 Front' : '⚙ Back' ?></span>
                                             <?php endif; ?>
                                         </summary>
                                         <div class="detail">
