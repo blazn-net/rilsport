@@ -208,6 +208,32 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 
 ---
 
+### `[20261020-0055]` Tester les pages Entity
+- **Type** : Test
+- **Priorité** : P1
+- **Statut** : Nouveau
+- **Description** : Recette et tests de conformité des fiches individuelles Entity (`entity_template.php` et `Core\EntityController`) sur l'ensemble des modules :
+  - **Mode View (Consultation)** : Zéro balise interactive (`<input>`, `<select>`, `<textarea>`), affichage en texte/badges/cards purs, aucun bouton de soumission.
+  - **Mode Edit / Add (Formulaire)** : Accessible uniquement aux administrateurs, contrôles de saisie Metro UI, champ Code `readonly` en édition, validation et boutons Enregistrer/Annuler.
+  - **Parité stricte de visibilité** : ID technique (`#`), badge Statut et bouton Modifier visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les visiteurs.
+  - **Panneau d'audit** : Présence et état (déplié par défaut) des informations d'audit (`created_at`, `created_by`, `modified_at`, `modified_by`).
+  - **Responsive & Mobile First (≤ 414px)** : Boutons icône seule (carré 36×36px), cibles tactiles ≥ 44px, zéro débordement horizontal (`overflow-x: hidden`).
+- **Sous-tâches** :
+    - [ ] `[20261020-0056]` Module Sport : Sport (`/sport/sport/...`)
+    - [ ] `[20261020-0057]` Module Sport : Club (`/sport/club/...`)
+    - [ ] `[20261020-0058]` Module Sport : Équipe (`/sport/team/...`)
+    - [ ] `[20261020-0059]` Module Sport : Personne / Acteur (`/sport/person/...`)
+    - [ ] `[20261020-0060]` Module Sport : Saison (`/sport/season/...`)
+    - [ ] `[20261020-0061]` Module Sport : Compétition & Édition (`/sport/competition/...`, `/sport/competitionedition/...`)
+    - [ ] `[20261020-0062]` Module Sport : Phase, Groupe, Inscription (`/sport/competitionphase/...`, `/sport/competitiongroup/...`, `/sport/competitionentry/...`)
+    - [ ] `[20261020-0063]` Module Sport : Match & Classement (`/sport/match/...`, `/sport/standing/...`)
+    - [ ] `[20261020-0064]` Module Zone : Zone géographique (`/zone/zone/...`)
+    - [ ] `[20261020-0065]` Module User : Utilisateur (`/user/user/...`)
+    - [ ] `[20261020-0066]` Test de parité visiteur vs administrateur (masquage ID, Statut et bouton Modifier)
+    - [ ] `[20261020-0067]` Test sur mobile (≤ 414px) : boutons compacts 36×36px et ergonomie tactile
+
+---
+
 ### `[20260908-2325]` Module blog/news/forum
 - **Type** : Évolution
 - **Priorité** : P2
