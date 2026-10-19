@@ -14,6 +14,7 @@
         - **Description** : pré-rempli avec `_À compléter_`
         - **Sous-tâches** : section créée avec curseur prêt pour insérer des sous-tâches
     - `todosub` puis `Entrée`/`Tab` : insère une sous-tâche indentée (`    - [ ] [AAAAMMJJ-HHMM]`) avec sélection des 2 chiffres des minutes pour incrémenter manuellement au besoin.
+    - `todosubdesc` puis `Entrée`/`Tab` : insère une sous-tâche indentée avec champ Description prêt à être rempli.
 -  **Mémorisation IA** : tape `/learn` dans le chat après une correction ou une nouvelle décision pour la graver durablement dans les règles de l'agent.
 - **Commit & Push** : 
     - Bitbucket : `git push origin main`
@@ -21,11 +22,11 @@
 
 ---
 
-### `[20261005-0205]` Test
+### `[20261005-0205]` Championnat de test
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
-- **Description** : Championnat de test
+- **Description** : Faux championnat ou choisir un vrai championnat de HorseBall pour tester les fonctionnalités.
 - **Sous-tâches** :
     - [ ] `[20261005-0205]` Zodiaque HorseBall
     - [ ] `[20261005-0206]` 8 équipes : bronze, argent, or, asgard, poseidon, hades, noir, etc...
@@ -36,18 +37,25 @@
 - **Type** : Bug
 - **Priorité** : P1
 - **Statut** : Nouveau
-- **Description** : _À compléter_
+- **Description** : ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️
 - **Sous-tâches** :
-    - [x] `[20260908-2237]` Skill/lesson : structurer les fichiers .md pour prendre en compte toutes les règles (doc/architecture_rules.md, doc/naming_conventions.md, doc/database_rules.md et .agents/rules/)
-    - [x] `[20260908-2238]` ‼️<strong><u>REVOIR LES SCRIPT SQL ET LES TESTER 2 FOIS (SCRIPT RÉ-ENTRANT)</u></strong>‼️ — sport.sql validé x2 ✅
+    - [ ] `[20260908-2309]` Rechercher les textes en dur
+    - [ ] `[20260908-2310]` Vérifier les traductions
+    - [ ] `[20260908-2317]` Beaucoup de tables ont des noms non traduits en base de données
+    - [ ] `[20260908-2311]` Vérifier les statuts de chaque table
+    - [ ] `[20260908-2312]` Remplacer les codes par des ids
+    - [ ] `[20260908-2313]` Version des modules et des *.sql
+    - [ ] `[20260908-2318]` Revoir les statuts par table
 
 ---
 
 ### `[20260908-2239]` Module *Sport* : à placer dans un module *sport*.
 - **Type** : Bug
 - **Priorité** : P1
-- **Statut** : Nouveau
-- **Description** : - [ ] MVC Phases, Groupes, Rounds (à faire) - [ ] MVC Inscriptions / Entries (à faire)
+- **Statut** : En cours
+- **Description** :
+- MVC Phases, Groupes, Rounds (à faire)
+- MVC Inscriptions / Entries (à faire)
 - **Sous-tâches** :
     - [x] `[20260908-2240]` sport
     - [-] `[20260908-2241]` clubs, sections, équipes
@@ -70,7 +78,7 @@
 
 ---
 
-### `[20260908-2253]` Module *Zone* : ‼️<strong><u>AVEC CLAUDE</u></strong>‼️.
+### `[20260908-2253]` Module *Zone* : ‼️<strong><u>AVEC CLAUDE</u></strong>‼️
 - **Type** : Bug
 - **Priorité** : P1
 - **Statut** : En cours
@@ -92,41 +100,26 @@
 - **Type** : Bug
 - **Priorité** : P2
 - **Statut** : Nouveau
-- **Description** : - ...
+- **Description** : Où mettre ces modules ? main, system, param, config, séparé ?
 - **Sous-tâches** :
     - [ ] `[20260908-2304]` system
     - [ ] `[20260908-2305]` status
     - [ ] `[20260908-2306]` text
-    - [ ] `[20260908-2307]` Où mettre ces modules ? main, system, param, config, séparé ?
 
 ---
 
-### `[20260908-2308]` BDD (ref : B1-0)
-- **Type** : Bug
-- **Priorité** : P2
-- **Statut** : Nouveau
-- **Description** : _À compléter_
-- **Sous-tâches** :
-    - [ ] `[20260908-2309]` Rechercher les textes en dur
-    - [ ] `[20260908-2310]` Vérifier les traductions
-    - [ ] `[20260908-2311]` Vérifier les statuts de chaque table
-    - [ ] `[20260908-2312]` Remplacer les codes par des ids
-
----
-
-### `[20260908-2313]` Version des modules et des *.sql
-- **Type** : Bug
-- **Priorité** : P2
-- **Statut** : Nouveau
-- **Description** : _À compléter_
-
----
-
-### `[20260908-2314]` Sous-sites :
+### `[20260908-2314]` Sous-sites
 - **Type** : Bug
 - **Priorité** : P3
 - **Statut** : Nouveau
-- **Description** : [SPORT_NAME].rilsport.net (ou rilsport.net/[SPORT_NAME]) [CHAMPIONNAT_NAME].rilsport.net (ou rilsport.net/[CHAMPIONNAT_NAME]) [TEAM_NAME].rilsport.net (ou rilsport.net/[TEAM_NAME]) [CLUB_NAME].rilsport.net (ou rilsport.net/[CLUB_NAME]) [VENUE_NAME].rilsport.net (ou rilsport.net/[VENUE_NAME]) [PERSON_NAME].rilsport.net (ou rilsport.net/[PERSON_NAME])
+- **Description** : 
+-[SPORT_NAME].rilsport.net (ou rilsport.net/[SPORT_NAME])
+-[CHAMPIONNAT_NAME].rilsport.net (ou rilsport.net/[CHAMPIONNAT_NAME])
+-[TEAM_NAME].rilsport.net (ou rilsport.net/[TEAM_NAME])
+-[CLUB_NAME].rilsport.net (ou rilsport.net/[CLUB_NAME])
+-[VENUE_NAME].rilsport.net (ou rilsport.net/[VENUE_NAME])
+-[PERSON_NAME].rilsport.net (ou rilsport.net/[PERSON_NAME])
+- ...
 - **Sous-tâches** :
     - [ ] `[20260908-2315]` Comment gérer les sous domaines avec planethoster ?
 
@@ -140,28 +133,13 @@
 
 ---
 
-### `[20260908-2317]` Beaucoup de tables ont des noms non traduits en base de données
+### `[20260908-2312]` Menu  
 - **Type** : Bug
 - **Priorité** : P4
 - **Statut** : Nouveau
-- **Description** : _À compléter_
-
----
-
-### `[20260908-2318]` Revoir les statuts par table
-- **Type** : Bug
-- **Priorité** : P4
-- **Statut** : Nouveau
-- **Description** : _À compléter_
-
----
-
-### `[20260908-2312]` Menu : ne pas surligner le texte au survol. Harmoniser couleur de survol entre menu principal et langue
-- **Type** : Bug
-- **Priorité** : P4
-- **Statut** : Nouveau
-- **Description** : _À compléter_
-
+- **Sous-tâches** :
+    - [ ] `[20260908-2315]` Ne pas surligner le texte au survol.
+    - [ ] `[20260908-2316]` Harmoniser couleur de survol entre menu principal et langue.
 ---
 
 ### `[20260908-2319]` Mobile first !
@@ -198,7 +176,7 @@
 
 ---
 
-### `[20260908-2324]` Vérifier que chaque objet a ses pages "List" et "Form"
+### `[20260908-2324]` Vérifier que chaque objet a ses pages "List" et "Entity"
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau
@@ -214,25 +192,12 @@
 
 ---
 
-### `[20260920-2318]` Faire une classe/template parente pour les pages list et form (Réalisé : list_template.php et form_template.php généralisés)
-- **Type** : Évolution
-- **Priorité** : P1
-- **Statut** : Terminé
-- **Description** : Standardisation complète des templates universels `module/system/view/common/list_template.php` et `module/system/view/common/form_template.php`. Dualité consultation pure (`view`) vs formulaires d'édition (`edit`/`add`), audit automatique, mobile-first, généralisé sur toutes les entités de RIL Sport (Saisons, Sports, Clubs, Équipes, Personnes, Compétitions, Éditions, Zones, Langues, Utilisateurs).
-
----
-
-### `[20261016-2330]` Pages Form / View : afficher le code de l'objet dans les URLs au lieu de l'ID
-- **Type** : Évolution
-- **Priorité** : P1
-- **Statut** : Terminé
-- **Description** : Standardisation des URLs pour les fiches individuelles (consultation `view` et édition `edit`) afin d'utiliser le code unique de l'objet métier (ex: `/sport/sport/football`, `/sport/club/edit/psg`, `/sport/competition/ligue1`, `/sport/competition-edition/ligue1-2024-2025`, `/user/william.baskerville`) au lieu de l'identifiant numérique interne. Prise en charge des placeholders `{code}` et `{id}` dans `list_template.php`, enrichissement des méthodes `getByCode` dans les modèles avec toutes les jointures nécessaires, mise à jour de l'ensemble des vues List/Form et des redirections de contrôleurs (Sport, Club, Team, Season, Person, Competition, CompetitionEdition, User), et mise en place d'une redirection canonique HTTP 302 automatique lorsque l'URL est demandée avec un identifiant numérique.
-
 ### `[20261016-2345]` Implémentation des Matchs et Classements (Module Sport)
 - **Type** : Évolution
 - **Priorité** : P1
-- **Statut** : Terminé
-- **Description** : Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_status`) et Classements (`t_sport_standing`, `t_sport_standing_rule`).
+- **Statut** : En cours
+- **Description** : 
+Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_status`) et Classements (`t_sport_standing`, `t_sport_standing_rule`).
   - Base de données : Tables ré-entrantes créées et validées (x2), clés de traduction UI et statuts insérés.
   - Modèles : `SportMatch` (CRUD, filtres, saisie de score) et `Standing` (calcul automatique selon règles de tri, gestion des forfaits et ajustements manuels `is_manual`).
   - Contrôleurs : `Matches`, `SportMatch` (avec alias de classe dans `App.php` pour le mot-clé réservé PHP 8 `match`), `Standings` (avec action de recalcul automatique), `Standing` (vue et ajustement manuel).
@@ -359,15 +324,6 @@
 - **Statut** : Nouveau
 - **Description** : _À compléter_
 
-
----
-
-### `[20260929-2318]`  test
-- **Type** : Bug
-- **Priorité** : P1
-- **Statut** : Nouveau
-- **Description** : Test depuis le 30/09
-
 ---
 
 ### `[20261001-0014]` Titre
@@ -386,22 +342,5 @@
 - **Statut** : Nouveau
 - **Description** : Créer une page d'aide pour chaque module/page
 - **Sous-tâches** :
-
----
-
-### `[20261019-2210]` Contrôleurs parents Core\ListController & Core\EntityController + entity_template.php & URLs canoniques par code
-- **Type** : Refactoring
-- **Priorité** : P2
-- **Statut** : Réalisé
-- **Description** : Factorisation des contrôleurs List et Entity via `Core\ListController` et `Core\EntityController`, standardisation du template universel `module/system/view/common/entity_template.php` (remplaçant form_template.php), avec résolution prioritaire des codes métiers (y compris codes numériques comme les années de saisons 2026/2027) et redirection canonique 302 si un ID numérique est fourni dans l'URL.
-- **Sous-tâches** :
-    - [x] `[20261019-2211]` Création de `Core\ListController` (`isAdmin`, `loadLanguages`, `prepareListData`, `renderList`)
-    - [x] `[20261019-2212]` Création de `Core\EntityController` (`isAdmin`, `loadLanguages`, `resolveEntity`, `resolveMode`, `renderEntity`, `edit`)
-    - [x] `[20261019-2213]` Renommage et standardisation de `entity_template.php` (avec alias de compatibilité `form_template.php`)
-    - [x] `[20261019-2214]` Refactorisation de tous les contrôleurs d'entité (`sport` et `user`) vers `Core\EntityController`
-    - [x] `[20261019-2215]` Mise à jour des vues vers `require '.../entity_template.php'`
-    - [x] `[20261019-2216]` Validation syntaxique CLI et tests HTTP (codes 200 & 302)
-
-
 
 ---

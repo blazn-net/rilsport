@@ -49,6 +49,19 @@ $content = str_replace(["\r\n", "\r"], "\n", $content);
 // Repérage de chaque tâche par son titre "### `[ID]` Titre", jusqu'au titre suivant.
 preg_match_all('/^###\s+`\[(\d{8}-\d{4})\]`\s*(.+?)\s*$/m', $content, $matches, PREG_OFFSET_CAPTURE);
 
+// Extraction des sections d'en-tête (Légende, Raccourcis et Commandes...) situées avant la première tâche.
+$firstTaskPos = !empty($matches[0]) ? $matches[0][0][1] : strlen($content);
+$headerContent = substr($content, 0, $firstTaskPos);
+$headerSections = [];
+if (preg_match_all('/^##\s+(.+?)\s*$\n(.*?)(?=\n##\s+|\n---\s*|\z)/ms', $headerContent, $secMatches, PREG_SET_ORDER)) {
+    foreach ($secMatches as $sm) {
+        $headerSections[] = [
+            'title' => trim($sm[1]),
+            'content' => trim($sm[2]),
+        ];
+    }
+}
+
 $tasks = [];
 $count = count($matches[0]);
 for ($i = 0; $i < $count; $i++) {
@@ -61,25 +74,57 @@ for ($i = 0; $i < $count; $i++) {
     preg_match('/\*\*Type\*\*\s*:\s*(.+)/', $block, $mType);
     preg_match('/\*\*Priorité\*\*\s*:\s*(.+)/', $block, $mPrio);
     preg_match('/\*\*Statut\*\*\s*:\s*(.+)/', $block, $mStatus);
-    preg_match('/\*\*Description\*\*\s*:\s*(.+)/', $block, $mDesc);
+    if (preg_match('/\*\*Description\*\*\s*:(.*?)(?=(?:\n\s*(?:-\s*)?\*\*(?:Sous-t[aâ]ches|Type|Priorit[eé]|Statut)\*\*|\n\s*---|\z))/siu', $block, $mDesc)) {
+        $desc = trim($mDesc[1]);
+    } else {
+        $desc = '';
+    }
 
     // Sous-tâches : tout ce qui suit le marqueur "**Sous-tâches** :" dans le bloc.
     $subtasks = [];
     if (preg_match('/\*\*Sous-tâches\*\*\s*:\s*\n(.*)/s', $block, $mSub)) {
-        preg_match_all(
-            '/^(\s*)- (\[[ x\-]?\])\s*(?:`\[(\d{8}-\d{4})\]`)?\s*(.*)$/m',
-            $mSub[1],
-            $subMatches,
-            PREG_SET_ORDER
-        );
-        foreach ($subMatches as $sm) {
-            $subtasks[] = [
-                'level' => (int) floor(strlen($sm[1]) / 4),
-                'status' => $sm[2],
-                'id' => $sm[3] ?? '',
-                'text' => trim($sm[4]),
-            ];
+        $lines = explode("\n", $mSub[1]);
+        $currentIndex = null;
+
+        foreach ($lines as $line) {
+            $trimmedLine = trim($line);
+            if ($trimmedLine === '---' || preg_match('/^\s*-\s*\*\*/', $line)) {
+                if ($currentIndex !== null) {
+                    break;
+                }
+            }
+
+            if (preg_match('/^(\s*)-\s+(\[[ x\-]?\])\s*(?:`\[(\d{8}-\d{4})\]`)?\s*(.*)$/u', $line, $sm)) {
+                $subtasks[] = [
+                    'level' => (int) floor(strlen($sm[1]) / 4),
+                    'status' => $sm[2],
+                    'id' => $sm[3] ?? '',
+                    'text' => trim($sm[4]),
+                    'desc' => '',
+                ];
+                $currentIndex = count($subtasks) - 1;
+            } elseif ($currentIndex !== null) {
+                $descLine = preg_replace('/^\s*>\s?/', '', $line);
+                $trimmedDesc = trim($descLine);
+
+                if ($trimmedDesc === '') {
+                    if ($subtasks[$currentIndex]['desc'] !== '') {
+                        $subtasks[$currentIndex]['desc'] .= "\n";
+                    }
+                } else {
+                    if ($subtasks[$currentIndex]['desc'] !== '') {
+                        $subtasks[$currentIndex]['desc'] .= "\n" . $trimmedDesc;
+                    } else {
+                        $subtasks[$currentIndex]['desc'] = $trimmedDesc;
+                    }
+                }
+            }
         }
+
+        foreach ($subtasks as &$st) {
+            $st['desc'] = trim($st['desc']);
+        }
+        unset($st);
     }
 
     $tasks[] = [
@@ -88,7 +133,7 @@ for ($i = 0; $i < $count; $i++) {
         'type' => trim($mType[1] ?? ''),
         'priority' => trim($mPrio[1] ?? ''),
         'status' => trim($mStatus[1] ?? ''),
-        'desc' => trim($mDesc[1] ?? ''),
+        'desc' => $desc,
         'subtasks' => $subtasks,
     ];
 }
@@ -150,25 +195,85 @@ function statusIconHtml(string $raw): string
 
 /**
  * Échappe tout le HTML SAUF une petite liste blanche de balises de mise en
- * forme déjà utilisées dans todo.md (strong, u, em...), et retire tout
+ * forme déjà utilisées dans todo.md (strong, u, em, code, br, p...), et retire tout
  * attribut éventuel sur ces balises par précaution.
  */
 function safeHtml(string $text): string
 {
-    $allowed = '<strong><b><em><i><u><code>';
+    $allowed = '<strong><b><em><i><u><code><br><p>';
     $text = strip_tags($text, $allowed);
-    $text = preg_replace('/<(strong|b|em|i|u|code)\b[^>]*>/i', '<$1>', $text);
+    $text = preg_replace('/<(strong|b|em|i|u|code|p)\b[^>]*>/i', '<$1>', $text);
+    $text = preg_replace('/<br\b[^>]*\/?>/i', '<br>', $text);
     return $text;
 }
 
+/**
+ * Formate la description pour l'affichage HTML :
+ * - conserve les balises autorisées (strong, u, code, br...)
+ * - convertit les retours à la ligne réels en <br>
+ * - évite les doubles sauts de ligne si un <br> est immédiatement suivi d'un retour à la ligne
+ */
+function formatDesc(string $text): string
+{
+    $html = safeHtml($text);
+    $html = preg_replace('/<br\s*\/?>\s*\n/i', '<br>', $html);
+    return nl2br($html);
+}
+
+/**
+ * Rendu simplifié du Markdown pour les sections documentaires (Légende, Raccourcis...) :
+ * - liste à puces indentées avec niveaux hiérarchiques
+ * - gras, italique, code et touches <kbd>
+ */
+function renderSimpleMarkdown(string $md): string
+{
+    $allowed = '<kbd><strong><b><em><i><u><code><br><p>';
+    $md = strip_tags($md, $allowed);
+    $md = preg_replace('/`([^`]+)`/', '<code>$1</code>', $md);
+    $md = preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $md);
+    $md = preg_replace('/\*([^*]+)\*/', '<em>$1</em>', $md);
+
+    $lines = explode("\n", $md);
+    $html = [];
+
+    foreach ($lines as $line) {
+        $trimmed = trim($line);
+        if ($trimmed === '') {
+            continue;
+        }
+
+        if (preg_match('/^(\s*)-\s+(.*)$/', $line, $m)) {
+            $level = (int) floor(strlen($m[1]) / 4);
+            $content = $m[2];
+            $html[] = '<div class="info-item" style="margin-left: ' . ($level * 20) . 'px;"><span class="bullet">•</span> <span class="info-text">' . $content . '</span></div>';
+        } else {
+            $html[] = '<div class="info-line">' . $trimmed . '</div>';
+        }
+    }
+
+    return implode("\n", $html);
+}
+
 // ---------- Sortie Markdown (CLI, ou écriture fichier --output) ----------
-function buildMarkdown(array $grouped, int $total): string
+function buildMarkdown(array $grouped, int $total, array $headerSections = []): string
 {
     $out = [];
     $out[] = "# Vue groupée — TODO (générée automatiquement, ne pas éditer)";
     $out[] = "> Générée le " . date('Y-m-d H:i') . " à partir de `doc/todo.md`. Toute modification doit se faire dans `doc/todo.md`, pas ici.";
     $out[] = "> {$total} tâche(s) au total.";
     $out[] = "";
+
+    foreach ($headerSections as $sec) {
+        $out[] = "## " . $sec['title'];
+        $out[] = $sec['content'];
+        $out[] = "";
+    }
+
+    if (!empty($headerSections)) {
+        $out[] = "---";
+        $out[] = "";
+    }
+
     foreach ($grouped as $type => $byPrio) {
         $out[] = "## {$type}";
         foreach ($byPrio as $prio => $items) {
@@ -187,13 +292,13 @@ if (!empty($options['output'])) {
     if (!preg_match('#^([A-Za-z]:\\\\|/)#', $outPath)) {
         $outPath = __DIR__ . '/../' . ltrim($outPath, '/');
     }
-    file_put_contents($outPath, buildMarkdown($grouped, count($tasks)));
+    file_put_contents($outPath, buildMarkdown($grouped, count($tasks), $headerSections));
     echo "Vue générée : {$options['output']} (" . count($tasks) . " tâche(s))\n";
     exit;
 }
 
 if ($isCli) {
-    echo buildMarkdown($grouped, count($tasks));
+    echo buildMarkdown($grouped, count($tasks), $headerSections);
     exit;
 }
 
@@ -443,11 +548,15 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
             padding: 0;
         }
 
-        .sub-list div {
+        .sub-item {
+            margin: 2px 0 4px 0;
+        }
+
+        .sub-row {
             display: flex;
             align-items: baseline;
             gap: 8px;
-            padding: 3px 0;
+            padding: 2px 0;
             color: #333;
         }
 
@@ -463,9 +572,105 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
             flex-shrink: 0;
         }
 
+        .sub-text {
+            flex: 1;
+        }
+
+        .sub-desc {
+            margin: 2px 0 4px 24px;
+            padding: 3px 0 3px 8px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.45;
+            border-left: 2px solid #e0e0e0;
+        }
+
         .no-sub {
             color: #aaa;
             font-style: italic;
+        }
+
+        .doc-panels {
+            margin-bottom: 20px;
+        }
+
+        .doc-section {
+            background: #fff;
+            border: 1px solid #e3e3e3;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .doc-summary {
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+        }
+
+        .doc-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .doc-summary::before {
+            content: '▾';
+            font-size: 12px;
+            color: #888;
+            transition: transform .15s;
+        }
+
+        .doc-section:not([open]) .doc-summary::before {
+            content: '▸';
+        }
+
+        .doc-section[open] .doc-summary {
+            border-bottom: 1px solid #eee;
+            background: #fafafa;
+        }
+
+        .doc-body {
+            padding: 12px 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 2px 0;
+        }
+
+        .info-item .bullet {
+            color: #888;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .info-line {
+            padding: 2px 0;
+        }
+
+        kbd {
+            background-color: #f7f7f7;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+            color: #333;
+            display: inline-block;
+            font-size: 11px;
+            font-family: Consolas, monospace;
+            line-height: 1.2;
+            padding: 1px 5px;
+            margin: 0 2px;
         }
 
         .filter-section {
@@ -683,6 +888,19 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
     <div class="meta">Générée le <?= date('d/m/Y à H:i') ?> à partir de <code>doc/todo.md</code> — <?= count($tasks) ?>
         tâche(s). Cette page est <strong>en lecture seule</strong> : toute modification se fait dans
         <code>doc/todo.md</code>.</div>
+
+    <?php if (!empty($headerSections)): ?>
+        <div class="doc-panels">
+            <?php foreach ($headerSections as $sec): ?>
+                <details class="doc-section">
+                    <summary class="doc-summary"><?= htmlspecialchars($sec['title']) ?></summary>
+                    <div class="doc-body">
+                        <?= renderSimpleMarkdown($sec['content']) ?>
+                    </div>
+                </details>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
     <?php
     $curStatus = $_GET['status'] ?? '';
     $curType = $_GET['type'] ?? '';
@@ -691,7 +909,7 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
     $typeClassMap = ['Bug' => 'Bug', 'Évolution' => 'Évolution', 'Question / Idées' => 'QuestionIdées'];
     ?>
     <?php $activeFilterCount = ($curType !== '' ? 1 : 0) + ($curPrio !== '' ? 1 : 0) + ($curStatus !== '' ? 1 : 0); ?>
-    <details class="filter-section" open>
+    <details class="filter-section"<?= $activeFilterCount > 0 ? ' open' : '' ?>>
         <summary class="filter-summary">
             Filtres<?= $activeFilterCount > 0 ? ' <span class="filter-active-count">(' . $activeFilterCount . ' actif' . ($activeFilterCount > 1 ? 's' : '') . ')</span>' : '' ?>
         </summary>
@@ -764,7 +982,7 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
                                         </summary>
                                         <div class="detail">
                                             <?php if ($t['desc'] !== '' && $t['desc'] !== '_À compléter_'): ?>
-                                                <div class="desc"><?= safeHtml($t['desc']) ?></div>
+                                                <div class="desc"><?= formatDesc($t['desc']) ?></div>
                                             <?php else: ?>
                                                 <div class="no-desc">Aucune description renseignée.</div>
                                             <?php endif; ?>
@@ -772,11 +990,16 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
                                             <?php if (!empty($t['subtasks'])): ?>
                                                 <div class="sub-list">
                                                     <?php foreach ($t['subtasks'] as $st): ?>
-                                                        <div style="margin-left: <?= $st['level'] * 18 ?>px;">
-                                                            <span class="sub-check"><?= statusIconHtml($st['status']) ?></span>
-                                                            <?php if ($st['id']): ?><span
-                                                                    class="sub-id">[<?= htmlspecialchars($st['id']) ?>]</span><?php endif; ?>
-                                                            <span><?= safeHtml($st['text']) ?></span>
+                                                        <div class="sub-item" style="margin-left: <?= $st['level'] * 18 ?>px;">
+                                                            <div class="sub-row">
+                                                                <span class="sub-check"><?= statusIconHtml($st['status']) ?></span>
+                                                                <?php if ($st['id']): ?><span
+                                                                        class="sub-id">[<?= htmlspecialchars($st['id']) ?>]</span><?php endif; ?>
+                                                                <span class="sub-text"><?= safeHtml($st['text']) ?></span>
+                                                            </div>
+                                                            <?php if (!empty($st['desc'])): ?>
+                                                                <div class="sub-desc"><?= formatDesc($st['desc']) ?></div>
+                                                            <?php endif; ?>
                                                         </div>
                                                     <?php endforeach; ?>
                                                 </div>
