@@ -89,6 +89,8 @@ if (!empty($pg['breadcrumbs']) && is_array($pg['breadcrumbs'])) {
 }
 
 $headerActionsHtml = $pg['headerActionsHtml'] ?? '';
+$pageTitle         = $pg['pageTitle'] ?? null;
+$pageIcon          = $pg['pageIcon']  ?? null;
 ?>
 <main class="page-container <?php echo htmlspecialchars($pageClass); ?>" style="<?php echo $styleAttr; ?>">
     <!-- En-tête : Fil d'Ariane & Boutons d'action -->
@@ -116,6 +118,15 @@ $headerActionsHtml = $pg['headerActionsHtml'] ?? '';
             </div>
         <?php endif; ?>
     </div>
+
+    <?php if (!empty($pageTitle)): ?>
+    <h1 class="page-title" style="margin: 0 0 16px 0; font-size: 1.45rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+        <?php if (!empty($pageIcon)): ?>
+            <span class="icon <?php echo htmlspecialchars($pageIcon); ?>" style="font-size: 1.3rem;"></span>
+        <?php endif; ?>
+        <?php echo htmlspecialchars($pageTitle); ?>
+    </h1>
+    <?php endif; ?>
 
     <!-- Alertes Flash universelles -->
     <?php if (!empty($data['message'])): ?>

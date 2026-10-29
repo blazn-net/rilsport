@@ -301,6 +301,8 @@ $pageConfig = [
     'listTitle'         => $config['title'] ?? '',
     'listUrl'           => $config['listUrl'] ?? '',
     'listIcon'          => $config['icon'] ?? 'mif-table',
+    'pageTitle'         => $config['title'] ?? null,
+    'pageIcon'          => $config['icon'] ?? null,
     'headerActionsHtml' => $headerActionsHtml,
     'content'           => $listContent,
 ];
