@@ -48,7 +48,7 @@ $content = file_get_contents($sourceFile);
 $content = str_replace(["\r\n", "\r"], "\n", $content);
 
 // Repérage de chaque tâche par son titre "### `[ID]` Titre", jusqu'au titre suivant.
-preg_match_all('/^###\s+`\[(\d{8}-\d{4})\]`\s*(.+?)\s*$/m', $content, $matches, PREG_OFFSET_CAPTURE);
+preg_match_all('/^###\s+(?:\[[\s x\-]?\]\s+)?`\[(\d{8}-\d{4})\]`\s*(.+?)\s*$/m', $content, $matches, PREG_OFFSET_CAPTURE);
 
 // Extraction des sections d'en-tête (Légende, Raccourcis et Commandes...) situées avant la première tâche.
 $firstTaskPos = !empty($matches[0]) ? $matches[0][0][1] : strlen($content);
@@ -211,16 +211,57 @@ function safeHtml(string $text): string
 }
 
 /**
+ * Convertit la mise en forme Markdown inline (bold, italic, code) en balises HTML.
+ * À appliquer APRÈS safeHtml() pour ne pas échapper le HTML généré.
+ */
+function applyInlineMarkdown(string $text): string
+{
+    $text = preg_replace('/`([^`]+)`/', '<code>$1</code>', $text);
+    $text = preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $text);
+    $text = preg_replace('/(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/', '<em>$1</em>', $text);
+    return $text;
+}
+
+/**
  * Formate la description pour l'affichage HTML :
- * - conserve les balises autorisées (strong, u, code, br...)
- * - convertit les retours à la ligne réels en <br>
- * - évite les doubles sauts de ligne si un <br> est immédiatement suivi d'un retour à la ligne
+ * - convertit le Markdown inline (bold, italic, code) et les listes à puces
+ * - conserve les balises HTML autorisées déjà présentes
+ * - convertit les retours à la ligne en <br>
  */
 function formatDesc(string $text): string
 {
-    $html = safeHtml($text);
-    $html = preg_replace('/<br\s*\/?>\s*\n/i', '<br>', $html);
-    return nl2br($html);
+    $lines = explode("\n", $text);
+    $parts = [];
+
+    foreach ($lines as $line) {
+        if (preg_match('/^(\s*)-\s+(.*)$/', $line, $m)) {
+            $level   = (int) floor(strlen($m[1]) / 2);
+            $content = applyInlineMarkdown(safeHtml($m[2]));
+            $parts[] = ['type' => 'item', 'level' => $level, 'content' => $content];
+        } else {
+            $parts[] = ['type' => 'text', 'content' => applyInlineMarkdown(safeHtml($line))];
+        }
+    }
+
+    $result = '';
+    $buf    = [];
+    foreach ($parts as $p) {
+        if ($p['type'] === 'item') {
+            if ($buf) {
+                $result .= nl2br(implode("\n", $buf));
+                $buf = [];
+            }
+            $indent  = $p['level'] * 16;
+            $result .= '<div class="desc-item" style="margin-left:' . $indent . 'px">'
+                     . '&bull;&nbsp;<span class="desc-item-text">' . $p['content'] . '</span></div>';
+        } else {
+            $buf[] = $p['content'];
+        }
+    }
+    if ($buf) {
+        $result .= nl2br(implode("\n", $buf));
+    }
+    return $result;
 }
 
 /**
@@ -232,9 +273,7 @@ function renderSimpleMarkdown(string $md): string
 {
     $allowed = '<kbd><strong><b><em><i><u><code><br><p>';
     $md = strip_tags($md, $allowed);
-    $md = preg_replace('/`([^`]+)`/', '<code>$1</code>', $md);
-    $md = preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $md);
-    $md = preg_replace('/\*([^*]+)\*/', '<em>$1</em>', $md);
+    $md = applyInlineMarkdown($md);
 
     $lines = explode("\n", $md);
     $html = [];
@@ -248,7 +287,7 @@ function renderSimpleMarkdown(string $md): string
         if (preg_match('/^(\s*)-\s+(.*)$/', $line, $m)) {
             $level = (int) floor(strlen($m[1]) / 4);
             $content = $m[2];
-            $html[] = '<div class="info-item" style="margin-left: ' . ($level * 20) . 'px;"><span class="bullet">•</span> <span class="info-text">' . $content . '</span></div>';
+            $html[] = '<div class="info-item" style="margin-left: ' . ($level * 20) . 'px;"><span class="bullet">&bull;</span> <span class="info-text">' . $content . '</span></div>';
         } else {
             $html[] = '<div class="info-line">' . $trimmed . '</div>';
         }
@@ -601,6 +640,20 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
             font-style: italic;
         }
 
+        .desc-item {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            padding: 1px 0;
+            font-size: 13px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .desc-item-text {
+            flex: 1;
+        }
+
         .doc-panels {
             margin-bottom: 20px;
         }
@@ -936,10 +989,63 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
             background: #333;
             color: #fff;
         }
+
+        /* ── Barre d'outils flottante ── */
+        .toolbar {
+            position: sticky;
+            top: 10px;
+            float: right;
+            display: flex;
+            gap: 6px;
+            margin: -4px 0 10px 16px;
+            z-index: 100;
+        }
+
+        .toolbar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: background .15s, box-shadow .15s;
+            box-shadow: 0 1px 4px rgba(0,0,0,.12);
+        }
+
+        .toolbar-btn-reset {
+            background: #fff;
+            color: #555;
+            border-color: #ddd;
+        }
+
+        .toolbar-btn-reset:hover {
+            background: #f0f0f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,.15);
+        }
+
+        .toolbar-btn-collapse {
+            background: #fff;
+            color: #555;
+            border-color: #ddd;
+        }
+
+        .toolbar-btn-collapse:hover {
+            background: #f0f0f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,.15);
+        }
     </style>
 </head>
 
 <body>
+    <div class="toolbar">
+        <a class="toolbar-btn toolbar-btn-reset" href="?" title="Supprimer tous les filtres actifs">✕ Réinitialiser</a>
+        <button class="toolbar-btn toolbar-btn-collapse" id="btn-collapse-all" title="Replier toutes les sections et tâches">⊖ Tout replier</button>
+    </div>
     <h1>📋 TODO rilsport</h1>
     <div class="meta">Générée le <?= date('d/m/Y à H:i') ?> à partir de <code>doc/todo.md</code> — <?= count($tasks) ?>
         tâche(s). Cette page est <strong>en lecture seule</strong> : toute modification se fait dans
@@ -1092,5 +1198,15 @@ $typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées'
     <?php endforeach; ?>
 
 </body>
+
+<script>
+(function () {
+    document.getElementById('btn-collapse-all').addEventListener('click', function () {
+        document.querySelectorAll('details[open]').forEach(function (el) {
+            el.removeAttribute('open');
+        });
+    });
+})();
+</script>
 
 </html>
