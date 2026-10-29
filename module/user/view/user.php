@@ -1,7 +1,7 @@
 <?php
 /**
  * Vue : Utilisateur (Formulaire Profil / Add / Edit)
- * Utilise le template parent universel form_template.php
+ * Utilise le template parent universel entity_template.php
  */
 
 $user      = $data['user'] ?? null;

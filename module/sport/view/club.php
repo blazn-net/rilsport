@@ -1,7 +1,7 @@
 <?php
 /**
  * Vue : Club (Consultation View & Formulaire Add/Edit)
- * Utilise le template parent universel form_template.php
+ * Utilise le template parent universel entity_template.php
  */
 
 $club           = $data['club'] ?? null;

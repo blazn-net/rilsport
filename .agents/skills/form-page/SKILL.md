@@ -23,12 +23,12 @@ Activer ce skill dès que la tâche implique :
 ## 1. Principe : Template Parent Universel `entity_template.php`
 
 Toute fiche objet est gérée dans **un seul fichier** `[objet].php` qui hérite du template parent :
-`module/system/view/common/entity_template.php`
+`module/system/view/common/entity_template.php` (qui s'appuie sur le wrapper universel `page_template.php`).
 
 Ce template centralise et standardise :
-- L'en-tête (titre selon mode, bouton « Modifier » pour admin en view, bouton « Retour » universel).
+- L'en-tête avec fil d'Ariane responsive Metro UI (`Accueil / Module / Entité` en View, complété par `Modifier` ou `Ajouter` en Form) et boutons d'actions.
 - Les alertes flash (`message` et `error`).
-- Le mode **VIEW** : card blanche, avatar/logo circulaire coloré, nom, code monospace, badge statut (vert Actif / gris Inactif), divider, corps de lecture, et panneau d'audit déplié par défaut.
+- Le mode **VIEW** : card blanche, avatar/logo circulaire coloré, nom, code monospace, badge statut (vert Actif / gris Inactif), divider, corps de lecture, et panneau d'audit replié par défaut.
 - Le mode **EDIT / ADD** : card blanche, conteneur `<form>`, panneau d'audit replié par défaut (en `edit`), boutons de validation verts (`button success`) et annulation neutres (`button secondary`).
 
 ---
@@ -160,7 +160,8 @@ require 'module/system/view/common/entity_template.php';
 - **ZÉRO bouton `submit`**.
 - Données présentées sous forme de **blocs d'information stylisés** (`style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;"`), textes avec icônes colorées, et badges.
 - **Données métier protégées** : Toute donnée masquée aux visiteurs sur la liste doit également être conditionnée à `$isAdmin` dans `viewContent`.
-- **Panneau d'audit** : Automatiquement affiché et **déplié par défaut** (`data-collapsed="false"`).
+- **Panneau d'audit** : Automatiquement affiché et **replié par défaut** (`data-collapsed="true"`).
+- **Fil d'Ariane responsive Metro UI** (`<ul class="breadcrumbs">`) : Chaque nœud comporte une icône et son libellé (`Accueil`, `Module`, `Objet au pluriel`). Sur mobile (≤ 414px), seules les icônes sont affichées (libellés `.caption` masqués), avec infobulle `title`.
 
 ---
 
@@ -276,7 +277,7 @@ class MonObjet extends EntityController {
 - [ ] `[objet].php` utilise `require 'module/system/view/common/entity_template.php'`
 - [ ] Le contrôleur hérite de `Core\EntityController` et appelle `$this->renderEntity(...)`
 - [ ] Résolution d'entité via `$this->resolveEntity(...)` (code métier prioritaire, redirection 302 pour ID)
-- [ ] En mode **View** : **aucun input**, blocs d'informations propres, panneau d'audit déplié par défaut
+- [ ] En mode **View** : **aucun input**, blocs d'informations propres, panneau d'audit replié par défaut
 - [ ] Parité List / Entity respectée : ID (#), badge Statut et informations admin sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`)
 - [ ] En mode **Edit/Add** : champ Code `readonly` en edit, boutons de soumission `button success` (vert)
 - [ ] Bouton d'annulation présent en pied de formulaire (`button secondary`)

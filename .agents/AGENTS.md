@@ -33,6 +33,9 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
   - **Statut (`status_id`)** : La colonne « Statut » sur la page List ET le badge « Statut » dans l'en-tête de la fiche Entity (mode View) sont visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les non-admins sur les deux pages.
   - **Actions & Modification** : Le bouton « + Ajouter » et la colonne « Actions » sur la page List, ainsi que le bouton « Modifier » et l'accès aux formulaires interactifs (`Edit` / `Add`) sur la page Entity, sont réservés **uniquement aux administrateurs**.
   - **Données métier** : Tout champ ou donnée restreinte aux administrateurs sur la page List doit l'être également sur la page Entity (et inversement). Zéro fuite d'information d'administration vers les visiteurs sur la fiche Entity.
+- **Template Maître de Page (`page_template.php`)** :
+  - Wrapper universel qui centralise la balise `<main>`, le fil d'Ariane responsive Metro UI (`ul.breadcrumbs`), les boutons d'action d'en-tête et les alertes flash.
+  - `list_template.php` et `entity_template.php` s'appuient dessus pour garantir une cohérence visuelle totale.
 - **Pages List standardisées (`list_template.php`)** :
   - Toute page List s'appuie de préférence sur le template universel `module/system/view/common/list_template.php`.
   - Le clic sur le nom de l'objet dans la liste ouvre **toujours** la fiche en mode **Consultation (`View`)** pour tous (visiteurs et admins).
@@ -42,7 +45,7 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 - **Fiches Individuelles Entity standardisées (`entity_template.php`)** :
   - Toute fiche individuelle s'appuie obligatoirement sur le template universel `module/system/view/common/entity_template.php`.
   - Les contrôleurs héritent de `Core\EntityController` avec résolution prioritaire par code métier et redirection 302 pour les IDs.
-  - **Mode View (Consultation)** : Zéro balise d'entrée (`<input>`, `<select>`), textes et blocs d'informations stylisés, panneau d'audit déplié par défaut, mention de l'ID, badge Statut et bouton Modifier (bleu `button info`) visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`).
+  - **Mode View (Consultation)** : Zéro balise d'entrée (`<input>`, `<select>`), textes et blocs d'informations stylisés, panneau d'audit replié par défaut, mention de l'ID, badge Statut et bouton Modifier (bleu `button info`) visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`).
   - **Mode Edit / Add (Formulaire)** : Formulaire dans une card réservé aux administrateurs, champ Code `readonly` en mode édition, validation stricte, boutons de pied Enregistrer/Mettre à jour (vert `button success`, `mif-floppy-disk`) et Annuler (neutre `button secondary`, `mif-cancel`).
 - **Règles Mobile First (Point [20260908-2319]) — Viewport étroit ≤ 414px** :
   - **Boutons avec icône seule** : Sur mobile (≤ 414px), les boutons n'affichent **que leur icône** (pas de texte, classe `.btn-text` masquée), format carré ergonomique 36×36px avec infobulle `title`.

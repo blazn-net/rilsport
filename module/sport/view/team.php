@@ -1,7 +1,7 @@
 <?php
 /**
  * Vue : Équipe (Consultation View & Formulaire Add/Edit)
- * Utilise le template parent universel form_template.php
+ * Utilise le template parent universel entity_template.php
  */
 
 $team        = $data['team'] ?? null;

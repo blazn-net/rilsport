@@ -1,7 +1,7 @@
 <?php
 /**
  * Vue : Ligne de Classement (Consultation View & Formulaire Edit)
- * Utilise le template parent universel form_template.php
+ * Utilise le template parent universel entity_template.php
  */
 
 $item = $data['standing'] ?? null;

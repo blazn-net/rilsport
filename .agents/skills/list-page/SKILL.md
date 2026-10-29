@@ -21,8 +21,8 @@ Activer ce skill dès que la tâche implique :
 
 ## 1. Principe
 
-Toute page List **DOIT** utiliser `module/system/view/common/list_template.php`.
-Ce template centralise : en-tête, alertes flash, barre de recherche GET, tableau responsive Metro UI,
+Toute page List **DOIT** utiliser `module/system/view/common/list_template.php` (qui s'appuie sur le wrapper universel `page_template.php`).
+Ce template centralise : fil d'Ariane responsive Metro UI, bouton d'ajout, alertes flash, barre de recherche GET, tableau responsive Metro UI,
 colonnes admin-only (Statut, Actions), pagination et contrôles scroll horizontal mobile.
 
 ---

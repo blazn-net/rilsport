@@ -5,7 +5,7 @@
  * Centralise :
  * - L'en-tête (titre selon mode, bouton Modifier pour admin en view, bouton Retour)
  * - Les alertes flash (message / error)
- * - Mode VIEW : card, avatar/icône, titre, code monospace, badge statut, divider, panneau d'audit déplié
+ * - Mode VIEW : card, avatar/icône, titre, code monospace, badge statut, divider, panneau d'audit replié par défaut
  * - Mode EDIT/ADD : balise form, panneau d'audit replié en edit, boutons Enregistrer (success) / Annuler (neutre)
  * 
  * $config (ou $entityConfig, $formConfig, $data['entityConfig']) attendu :
@@ -61,13 +61,21 @@ if ($mode === 'edit') {
 $maxWidth    = $cfg['maxWidth']    ?? '960px';
 $formEnctype = !empty($cfg['enctype']) ? ' enctype="' . htmlspecialchars($cfg['enctype']) . '"' : '';
 
-// URLs
+// URLs & Navigation
 $backUrl   = $cfg['backUrl']   ?? '#';
 $editUrl   = $cfg['editUrl']   ?? null;
 $deleteUrl = $cfg['deleteUrl'] ?? null;
 $deleteConfirm = $cfg['deleteConfirm'] ?? ($data['txt']['SYS_CONFIRM_DELETE'] ?? 'Êtes-vous sûr de vouloir supprimer cet élément ?');
 $cancelUrl = $cfg['cancelUrl'] ?? ($mode === 'edit' && ($itemCode || $itemId) ? str_replace('/edit', '', (string)$editUrl) : $backUrl);
 $formAction = $cfg['formAction'] ?? '';
+
+// Titre de la liste parent (contexte de section pour le fil d'Ariane en mode view)
+$listTitle = $cfg['listTitle'] ?? $cfg['sectionTitle'] ?? null;
+if (empty($listTitle) && !empty($backUrl) && $backUrl !== '#') {
+    $pathParts = explode('/', trim((string)parse_url($backUrl, PHP_URL_PATH), '/'));
+    $lastPart = end($pathParts);
+    $listTitle = !empty($lastPart) ? ucfirst($lastPart) : 'Retour';
+}
 
 // Statut (view)
 $isActive   = ($itemStatus === 1);
@@ -82,47 +90,43 @@ $auditCreatedAt  = !empty($auditObj['created_at']) ? date('d/m/Y H:i', strtotime
 $auditCreatedBy  = !empty($auditObj['created_by_name']) ? htmlspecialchars($auditObj['created_by_name']) : '-';
 $auditModifiedAt = !empty($auditObj['modified_at']) ? date('d/m/Y H:i', strtotime($auditObj['modified_at'])) : '-';
 $auditModifiedBy = !empty($auditObj['modified_by_name']) ? htmlspecialchars($auditObj['modified_by_name']) : '-';
+
+// Actions d'en-tête (alignées à droite du fil d'Ariane)
+ob_start();
+if ($mode === 'view' && $isAdmin && !empty($editUrl)): ?>
+    <a href="<?php echo htmlspecialchars($editUrl); ?>"
+       class="button info"
+       id="btn-edit-main"
+       title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'); ?>">
+        <span class="mif-pencil"></span>
+        <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'); ?></span>
+    </a>
+<?php endif; ?>
+<?php if (!empty($backUrl)): ?>
+    <a href="<?php echo htmlspecialchars($backUrl); ?>"
+       class="button"
+       id="btn-back-main"
+       title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_BACK'] ?? $data['txt']['USER_BTN_BACK'] ?? 'Retour'); ?>">
+        <span class="mif-arrow-left"></span>
+        <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_BACK'] ?? 'Retour'); ?></span>
+    </a>
+<?php endif;
+$headerActionsHtml = ob_get_clean();
+
+// Sous-action courante pour le fil d'Ariane (en mode Edit ou Add)
+$actionTitle = null;
+$actionIcon  = null;
+if ($mode === 'edit') {
+    $actionTitle = $data['txt']['SYS_BTN_EDIT'] ?? $data['txt']['USER_BTN_EDIT'] ?? 'Modifier';
+    $actionIcon  = 'mif-pencil';
+} elseif ($mode === 'add') {
+    $actionTitle = $data['txt']['SYS_BTN_ADD'] ?? $data['txt']['USER_BTN_ADD'] ?? 'Ajouter';
+    $actionIcon  = 'mif-plus';
+}
+
+// Début de la capture du contenu spécifique (Card View ou Card Edit/Add)
+ob_start();
 ?>
-<main class="entity-page form-page p-4" style="padding-top: 68px; max-width: <?php echo htmlspecialchars($maxWidth); ?>; margin: 0 auto;">
-    <!-- En-tête : Titre & Boutons d'action -->
-    <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4" style="gap: 10px;">
-        <h2 class="m-0">
-            <?php if (!empty($cfg['icon'])): ?>
-                <span class="<?php echo htmlspecialchars($cfg['icon']); ?> mr-2"></span>
-            <?php endif; ?>
-            <?php echo htmlspecialchars($pageTitle); ?>
-        </h2>
-        <div class="d-flex flex-align-center" style="gap: 10px;">
-            <?php if ($mode === 'view' && $isAdmin && !empty($editUrl)): ?>
-                <a href="<?php echo htmlspecialchars($editUrl); ?>"
-                   class="button info"
-                   id="btn-edit-main"
-                   title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'); ?>">
-                    <span class="mif-pencil"></span>
-                    <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'); ?></span>
-                </a>
-            <?php endif; ?>
-
-            <?php if (!empty($backUrl)): ?>
-                <a href="<?php echo htmlspecialchars($backUrl); ?>"
-                   class="button"
-                   id="btn-back-main"
-                   title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_BACK'] ?? $data['txt']['USER_BTN_BACK'] ?? 'Retour'); ?>">
-                    <span class="mif-arrow-left"></span>
-                    <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_BACK'] ?? 'Retour'); ?></span>
-                </a>
-            <?php endif; ?>
-        </div>
-    </div>
-
-    <!-- Alertes Flash -->
-    <?php if (!empty($data['message'])): ?>
-        <div class="remark success mb-3"><?php echo htmlspecialchars($data['message']); ?></div>
-    <?php endif; ?>
-
-    <?php if (!empty($data['error'])): ?>
-        <div class="remark alert mb-3"><?php echo htmlspecialchars($data['error']); ?></div>
-    <?php endif; ?>
 
     <?php if ($mode === 'view'): ?>
         <!-- ============================================================== -->
@@ -179,12 +183,12 @@ $auditModifiedBy = !empty($auditObj['modified_by_name']) ? htmlspecialchars($aud
                     ?>
                 </div>
 
-                <!-- Panneau d'audit (déplié par défaut en mode View) -->
+                <!-- Panneau d'audit (replié par défaut) -->
                 <?php if ($showAudit): ?>
                     <div data-role="panel"
                          data-title-caption="&lt;span class='mif-history mr-2'&gt;&lt;/span&gt;<?php echo htmlspecialchars($data['txt']['SYS_AUDIT_PANEL'] ?? $data['txt']['SPORT_INFO_PANEL'] ?? 'Informations d\'audit'); ?>"
                          data-collapsible="true"
-                         data-collapsed="false"
+                         data-collapsed="true"
                          class="mt-4">
                         <div class="row">
                             <div class="cell-md-6">
@@ -275,4 +279,24 @@ $auditModifiedBy = !empty($auditObj['modified_by_name']) ? htmlspecialchars($aud
             </form>
         </div>
     <?php endif; ?>
-</main>
+<?php
+$entityCardContent = ob_get_clean();
+
+// Configuration transmise au template maître de page
+$pageConfig = [
+    'pageClass'         => 'entity-page form-page p-4',
+    'maxWidth'          => $maxWidth,
+    'breadcrumbs'       => $cfg['breadcrumbs'] ?? null,
+    'moduleTitle'       => $cfg['moduleTitle'] ?? null,
+    'moduleUrl'         => $cfg['moduleUrl'] ?? null,
+    'moduleIcon'        => $cfg['moduleIcon'] ?? null,
+    'listTitle'         => $listTitle,
+    'listUrl'           => $backUrl,
+    'listIcon'          => $cfg['icon'] ?? 'mif-file-text',
+    'actionTitle'       => $actionTitle,
+    'actionIcon'        => $actionIcon,
+    'headerActionsHtml' => $headerActionsHtml,
+    'content'           => $entityCardContent,
+];
+
+require __DIR__ . '/page_template.php';

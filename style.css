@@ -255,12 +255,22 @@ table[data-role="table"] {
         gap: 0 !important;
     }
 
-    /* Rétablir la taille de police de l'icône */
+    /* Rétablir la taille de police de l'icône du bouton */
     .button:not(.lang-btn):has([class*="mif-"]) [class*="mif-"],
     .button:not(.lang-btn):has(.fi) .fi {
         font-size: 1.15rem !important;
         margin: 0 !important;
         line-height: 1 !important;
+    }
+
+    /* 3. Fil d'Ariane responsive : seules les icônes sont affichées sur mobile */
+    .breadcrumbs .caption,
+    .breadcrumbs .breadcrumb-text {
+        display: none !important;
+    }
+    .breadcrumbs .icon {
+        margin-right: 0 !important;
+        font-size: 1.1rem !important;
     }
 }
 

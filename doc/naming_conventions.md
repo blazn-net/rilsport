@@ -144,7 +144,8 @@ Chaque tableau (grid) de page List doit obligatoirement comporter les colonnes o
   - **Interdiction formelle** de toute balise d'entrée (`<input>`, `<select>`, `<textarea>`) même `readonly` ou `disabled`.
   - **Zéro bouton `submit`**.
   - Données structurées sous forme de blocs d'informations (`style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;"`), avec icônes colorées et typographie lisible.
-  - Panneau d'audit **déplié par défaut** (`data-collapsed="false"`).
+  - **Fil d'Ariane responsive Metro UI** (`<ul class="breadcrumbs">`) : Chaque nœud comporte une icône et son libellé (`Accueil`, `Module`, `Objet au pluriel`). Sur mobile (≤ 414px), seules les icônes sont affichées (libellés `.caption` masqués), avec infobulle `title`.
+  - Panneau d'audit **replié par défaut** (`data-collapsed="true"`).
   - Bouton **Modifier** (`button info`, bleu, `mif-pencil`) visible uniquement pour les administrateurs dans l'en-tête.
 - **Mode `edit` / `add` (formulaire interactif pour admins)** :
   - Formulaire encapsulé dans une card propre.

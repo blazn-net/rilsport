@@ -36,38 +36,22 @@ if (empty($isAdmin) && !empty($config['columns'])) {
         return empty($col['adminOnly']);
     }));
 }
+// Bouton d'action d'en-tête ("+ Ajouter" pour les administrateurs)
+ob_start();
+if (!empty($isAdmin) && !empty($config['addUrl'])): ?>
+    <a href="<?php echo htmlspecialchars($config['addUrl']); ?>"
+       class="button info mt-2 mt-md-0"
+       id="btn-add-main"
+       title="<?php echo htmlspecialchars($config['addBtnText'] ?? $data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?>">
+        <span class="mif-plus"></span>
+        <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?></span>
+    </a>
+<?php endif;
+$headerActionsHtml = ob_get_clean();
+
+// Début de la capture du contenu de la liste (filtres, tableau, pagination)
+ob_start();
 ?>
-<main class="list-page" style="padding-top: 68px;">
-    <!-- En-tête : Titre & Bouton "+ Ajouter" -->
-    <div class="d-flex flex-justify-between flex-align-center flex-wrap mb-4" style="flex-shrink: 0;">
-        <h2>
-            <?php if (!empty($config['icon'])): ?>
-                <span class="<?php echo htmlspecialchars($config['icon']); ?> mr-2"></span>
-            <?php endif; ?>
-            <?php echo htmlspecialchars($config['title'] ?? ''); ?>
-        </h2>
-
-        <?php if (!empty($isAdmin) && !empty($config['addUrl'])): ?>
-            <a href="<?php echo htmlspecialchars($config['addUrl']); ?>"
-               class="button info mt-2 mt-md-0"
-               id="btn-add-main"
-               title="<?php echo htmlspecialchars($config['addBtnText'] ?? $data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?>">
-                <span class="mif-plus"></span>
-                <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_ADD'] ?? 'Ajouter'); ?></span>
-            </a>
-        <?php endif; ?>
-
-    </div>
-
-    <!-- Alertes Flash -->
-    <?php if (!empty($data['message'])): ?>
-        <div class="remark success mb-3"><?php echo htmlspecialchars($data['message']); ?></div>
-    <?php endif; ?>
-
-    <?php if (!empty($data['error'])): ?>
-        <div class="remark alert mb-3"><?php echo htmlspecialchars($data['error']); ?></div>
-    <?php endif; ?>
-
     <?php
     // ID unique pour cette instance de table (permet plusieurs tables sur une même page sans collision).
     static $listTemplateInstance = 0;
@@ -303,4 +287,22 @@ if (empty($isAdmin) && !empty($config['columns'])) {
 
     <!-- Pagination & infos ("Affichage de X à Y sur Z"), toujours visibles sous le tableau -->
     <div id="<?php echo $paginationWrapperId; ?>" class="list-pagination-wrapper"></div>
-</main>
+<?php
+$listContent = ob_get_clean();
+
+// Délégation au template maître universel de page
+$pageConfig = [
+    'pageClass'         => 'list-page p-4',
+    'maxWidth'          => $config['maxWidth'] ?? 'none',
+    'breadcrumbs'       => $config['breadcrumbs'] ?? null,
+    'moduleTitle'       => $config['moduleTitle'] ?? null,
+    'moduleUrl'         => $config['moduleUrl'] ?? null,
+    'moduleIcon'        => $config['moduleIcon'] ?? null,
+    'listTitle'         => $config['title'] ?? '',
+    'listUrl'           => $config['listUrl'] ?? '',
+    'listIcon'          => $config['icon'] ?? 'mif-table',
+    'headerActionsHtml' => $headerActionsHtml,
+    'content'           => $listContent,
+];
+
+require __DIR__ . '/page_template.php';

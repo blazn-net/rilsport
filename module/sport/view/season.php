@@ -1,7 +1,7 @@
 <?php
 /**
  * Vue : Saison (Consultation View & Formulaire Add/Edit)
- * Utilise le template parent universel form_template.php
+ * Utilise le template parent universel entity_template.php
  */
 
 $season = $data['season'] ?? null;
@@ -10,7 +10,8 @@ $formConfig = [
     'mode'       => $data['mode'] ?? 'view',
     'item'       => $season,
     'icon'       => 'mif-calendar',
-    'viewTitle'  => 'Fiche de la saison : ' . htmlspecialchars($season->name ?? ''),
+    'viewTitle'  => htmlspecialchars($season->name ?? ''),
+    'listTitle'  => $data['txt']['SPORT_SEASONS_MGT'] ?? 'Saisons',
     'editTitle'  => $data['txt']['SPORT_EDIT_SEASON_TITLE'] ?? 'Modifier la saison',
     'addTitle'   => $data['txt']['SPORT_ADD_SEASON_TITLE'] ?? 'Ajouter une saison',
     'backUrl'    => URLROOT . '/sport/seasons',

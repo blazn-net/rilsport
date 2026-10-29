@@ -1,7 +1,7 @@
 <?php
 /**
  * Vue : Sport (Consultation View & Formulaire Add/Edit)
- * Utilise le template parent universel form_template.php
+ * Utilise le template parent universel entity_template.php
  */
 
 $sport = $data['sport'] ?? null;

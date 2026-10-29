@@ -1,7 +1,7 @@
 <?php
 /**
  * Vue : Édition de compétition (Consultation View & Formulaire Add/Edit)
- * Utilise le template parent universel form_template.php
+ * Utilise le template parent universel entity_template.php
  */
 
 $edition     = $data['edition'] ?? null;

@@ -226,16 +226,16 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 
 ---
 
-### `[20261020-0055]` Tester les pages Entity
+### [-] `[20261020-0055]` Tester les pages Entity
 - **Type** : Test
 - **Priorité** : P1
-- **Statut** : Nouveau
+- **Statut** : En cours
 - **Front/Back** : Front
 - **Description** : Recette et tests de conformité des fiches individuelles Entity (`entity_template.php` et `Core\EntityController`) sur l'ensemble des modules :
   - **Mode View (Consultation)** : Zéro balise interactive (`<input>`, `<select>`, `<textarea>`), affichage en texte/badges/cards purs, aucun bouton de soumission.
   - **Mode Edit / Add (Formulaire)** : Accessible uniquement aux administrateurs, contrôles de saisie Metro UI, champ Code `readonly` en édition, validation et boutons Enregistrer/Annuler.
   - **Parité stricte de visibilité** : ID technique (`#`), badge Statut et bouton Modifier visibles **uniquement pour les administrateurs** (`!empty($isAdmin)`), totalement masqués pour les visiteurs.
-  - **Panneau d'audit** : Présence et état (déplié par défaut) des informations d'audit (`created_at`, `created_by`, `modified_at`, `modified_by`).
+  - **Panneau d'audit** : Présence et état (replié par défaut) des informations d'audit (`created_at`, `created_by`, `modified_at`, `modified_by`).
   - **Responsive & Mobile First (≤ 414px)** : Boutons icône seule (carré 36×36px), cibles tactiles ≥ 44px, zéro débordement horizontal (`overflow-x: hidden`).
 - **Sous-tâches** :
     - [ ] `[20261020-0056]` Module Sport : Sport (`/sport/sport/...`)
