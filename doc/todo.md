@@ -226,6 +226,18 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 
 ---
 
+### [ ] `[20261030-0001]` Aligner le fil d'ariane sur la structure de navigation
+- **Type** : Évolution
+- **Priorité** : P1
+- **Statut** : Nouveau
+- **Front/Back** : Front
+- **Description** : Le fil d'ariane (`breadcrumbs`) doit refléter la structure du menu de navigation (`navview.php`) et non la hiérarchie des modules PHP. Actuellement, le nœud intermédiaire (ex: « System ») est déduit du slug de module et pointe vers une URL arbitraire (`/user/users`), alors que « System » n'est qu'une catégorie de menu sans page propre.
+  - **Objectif** : Le fil d'ariane s'adapte automatiquement à l'arborescence du menu (groupes, items, sous-items) définie dans `navview.php`.
+  - **Approche** : Définir une structure de navigation centralisée (ex: tableau PHP ou JSON) décrivant groupes et pages, puis résoudre le fil d'ariane à partir de l'URL courante en parcourant cette structure. Les nœuds de catégorie sans page propre sont affichés non-cliquables.
+  - **Impact** : `page_template.php` (résolution breadcrumb), `navview.php` (source de vérité), tous les templates de liste et d'entité.
+
+---
+
 ### [-] `[20261020-0055]` Tester les pages Entity
 - **Type** : Test
 - **Priorité** : P1
