@@ -2,1211 +2,379 @@
 /**
  * generate_todo_view.php
  *
- * Génère une vue groupée (Type > Priorité) à partir de doc/todo.md
- * (format "nœud par tâche"), sans jamais modifier le fichier source.
- *
- * Navigateur : affiche une page HTML lisible et stylée.
- *   http://localhost/rilsport/doc/generate_todo_view.php
- *   http://localhost/rilsport/doc/generate_todo_view.php?status=Nouveau,En cours
- *   http://localhost/rilsport/doc/generate_todo_view.php?type=Bug&priority=P1
- *
- * Ligne de commande : affiche (ou écrit) du Markdown propre.
- *   php doc/generate_todo_view.php
- *   php doc/generate_todo_view.php --output=doc/todo_view.md
- *   php doc/generate_todo_view.php --status=Nouveau,"En cours"
+ * Vue groupée (Type > Priorité) des issues GitHub du projet rilsport.
+ * Source : https://github.com/blazn-net/rilsport/issues (API GitHub)
  */
 
-$isCli = (php_sapi_name() === 'cli');
+const GH_TOKEN = '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';
+const GH_REPO  = 'blazn-net/rilsport';
+const GH_API   = 'https://api.github.com/repos/' . GH_REPO;
+const CACHE_TTL = 300;
 
-if ($isCli) {
-    $options = getopt('', ['output::', 'status::', 'type::', 'priority::', 'front_back::']);
-} else {
-    $options = array_filter([
-        'output' => $_GET['output'] ?? null,
-        'status' => $_GET['status'] ?? null,
-        'type' => $_GET['type'] ?? null,
-        'priority' => $_GET['priority'] ?? null,
-        'front_back' => $_GET['front_back'] ?? null,
-    ], fn($v) => $v !== null && $v !== '');
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+function ghApiGet(string $url): ?array {
+    $opts = ['http' => ['method' => 'GET', 'header' => implode("\r\n", [
+        'Authorization: token ' . GH_TOKEN,
+        'Accept: application/vnd.github+json',
+        'User-Agent: rilsport-todo/1.0',
+        'X-GitHub-Api-Version: 2022-11-28',
+    ]), 'timeout' => 10]];
+    $json = @file_get_contents($url, false, stream_context_create($opts));
+    return $json !== false ? json_decode($json, true) : null;
 }
 
-$sourceFile = __DIR__ . '/todo.md';
-
-if (!file_exists($sourceFile)) {
-    $msg = "Fichier introuvable : doc/todo.md";
-    if ($isCli) {
-        fwrite(STDERR, $msg . "\n");
-        exit(1);
+function fetchAllIssues(): array {
+    $key = 'gh_issues_' . GH_REPO;
+    $now = time();
+    if (isset($_SESSION[$key], $_SESSION[$key.'_ts']) && ($now - $_SESSION[$key.'_ts']) < CACHE_TTL) {
+        return $_SESSION[$key];
     }
-    header('Content-Type: text/plain; charset=utf-8');
-    echo $msg;
-    exit(1);
-}
-
-// Normalisation des fins de ligne (le fichier peut avoir été ré-enregistré sous Windows).
-$content = file_get_contents($sourceFile);
-$content = str_replace(["\r\n", "\r"], "\n", $content);
-
-// Repérage de chaque tâche par son titre "### `[ID]` Titre", jusqu'au titre suivant.
-preg_match_all('/^###\s+(?:\[[\s x\-]?\]\s+)?`\[(\d{8}-\d{4})\]`\s*(.+?)\s*$/m', $content, $matches, PREG_OFFSET_CAPTURE);
-
-// Extraction des sections d'en-tête (Légende, Raccourcis et Commandes...) situées avant la première tâche.
-$firstTaskPos = !empty($matches[0]) ? $matches[0][0][1] : strlen($content);
-$headerContent = substr($content, 0, $firstTaskPos);
-$headerSections = [];
-if (preg_match_all('/^##\s+(.+?)\s*$\n(.*?)(?=\n##\s+|\n---\s*|\z)/ms', $headerContent, $secMatches, PREG_SET_ORDER)) {
-    foreach ($secMatches as $sm) {
-        $headerSections[] = [
-            'title' => trim($sm[1]),
-            'content' => trim($sm[2]),
-        ];
+    $all = []; $page = 1;
+    while (true) {
+        $data = ghApiGet(GH_API . '/issues?state=all&per_page=100&page=' . $page);
+        if (!is_array($data) || !count($data)) break;
+        foreach ($data as $i) { if (!isset($i['pull_request'])) $all[] = $i; }
+        if (count($data) < 100) break;
+        $page++;
     }
+    $_SESSION[$key] = $all; $_SESSION[$key.'_ts'] = $now;
+    return $all;
 }
 
+function parseLabels(array $labels): array {
+    $type = ''; $priority = ''; $frontBack = ''; $inProgress = false;
+    $typeMap = ['type: bug'=>'Bug','type: evolution'=>'Évolution','type: question'=>'Question / Idées','type: refactoring'=>'Refactoring','type: test'=>'Test'];
+    $prioMap = ['priority: p1'=>'P1','priority: p2'=>'P2','priority: p3'=>'P3','priority: p4'=>'P4'];
+    foreach ($labels as $l) {
+        $n = strtolower($l['name']);
+        if (isset($typeMap[$n])) $type = $typeMap[$n];
+        elseif (isset($prioMap[$n])) $priority = $prioMap[$n];
+        elseif ($n === 'front') $frontBack = 'Front';
+        elseif ($n === 'back') $frontBack = 'Back';
+        elseif ($n === 'in-progress') $inProgress = true;
+    }
+    return compact('type','priority','frontBack','inProgress');
+}
+
+function parseIssueBody(string $body): array {
+    $body = str_replace(["\r\n","\r"],"\n",$body);
+    $desc = ''; $subtasks = [];
+    if (preg_match('/^##\s+Description\s*\n(.*?)(?=\n##\s+|\z)/ms', $body, $m)) {
+        $desc = trim($m[1]);
+        if ($desc === '_À compléter_') $desc = '';
+    }
+    $lines = explode("\n", $body); $inSub = false;
+    foreach ($lines as $line) {
+        if (preg_match('/^##\s+Sous-tâches/i', $line)) { $inSub = true; continue; }
+        if ($inSub && preg_match('/^##\s+/i', $line)) break;
+        if ($inSub && preg_match('/^(\s*)-\s+\[([ x\-]?)\]\s*(?:`\[(\d{8}-\d{4})\]`)?\s*(.*)$/u', $line, $sm)) {
+            $subtasks[] = ['level'=>(int)floor(strlen($sm[1])/2),'status'=>$sm[2]==='x'?'[x]':($sm[2]==='-'?'[-]':'[ ]'),'id'=>$sm[3]??'','text'=>trim($sm[4]),'desc'=>''];
+        }
+    }
+    return ['desc'=>$desc,'subtasks'=>$subtasks];
+}
+
+function extractIdFromTitle(string $title): array {
+    if (preg_match('/^\[(\d{8}-\d{4})\]\s*(.+)$/', $title, $m)) return ['id'=>$m[1],'title'=>trim($m[2])];
+    return ['id'=>'','title'=>$title];
+}
+
+function deriveStatus(string $state, bool $inProgress): string {
+    if ($state === 'closed') return 'Réalisé';
+    return $inProgress ? 'En cours' : 'Nouveau';
+}
+
+// Invalider cache
+if (isset($_GET['refresh'])) {
+    unset($_SESSION['gh_issues_'.GH_REPO], $_SESSION['gh_issues_'.GH_REPO.'_ts']);
+    $qs = http_build_query(array_diff_key($_GET, ['refresh'=>1]));
+    header('Location: ?'.($qs?:''));
+    exit;
+}
+
+$rawIssues = fetchAllIssues();
 $tasks = [];
-$count = count($matches[0]);
-for ($i = 0; $i < $count; $i++) {
-    $id = $matches[1][$i][0];
-    $title = trim($matches[2][$i][0]);
-    $startPos = $matches[0][$i][1] + strlen($matches[0][$i][0]);
-    $endPos = ($i + 1 < $count) ? $matches[0][$i + 1][1] : strlen($content);
-    $block = substr($content, $startPos, $endPos - $startPos);
-
-    preg_match('/\*\*Type\*\*\s*:\s*(.+)/', $block, $mType);
-    preg_match('/\*\*Priorité\*\*\s*:\s*(.+)/', $block, $mPrio);
-    preg_match('/\*\*Statut\*\*\s*:\s*(.+)/', $block, $mStatus);
-    preg_match('/\*\*Front\/Back\*\*\s*:\s*(.+)/i', $block, $mFrontBack);
-    if (preg_match('/\*\*Description\*\*\s*:(.*?)(?=(?:\n\s*(?:-\s*)?\*\*(?:Sous-t[aâ]ches|Type|Priorit[eé]|Statut|Front\/Back)\*\*|\n\s*---|\z))/siu', $block, $mDesc)) {
-        $desc = trim($mDesc[1]);
-    } else {
-        $desc = '';
-    }
-
-    // Sous-tâches : tout ce qui suit le marqueur "**Sous-tâches** :" dans le bloc.
-    $subtasks = [];
-    if (preg_match('/\*\*Sous-tâches\*\*\s*:\s*\n(.*)/s', $block, $mSub)) {
-        $lines = explode("\n", $mSub[1]);
-        $currentIndex = null;
-
-        foreach ($lines as $line) {
-            $trimmedLine = trim($line);
-            if ($trimmedLine === '---' || preg_match('/^\s*-\s*\*\*/', $line)) {
-                if ($currentIndex !== null) {
-                    break;
-                }
-            }
-
-            if (preg_match('/^(\s*)-\s+(\[[ x\-]?\])\s*(?:`\[(\d{8}-\d{4})\]`)?\s*(.*)$/u', $line, $sm)) {
-                $subtasks[] = [
-                    'level' => (int) floor(strlen($sm[1]) / 4),
-                    'status' => $sm[2],
-                    'id' => $sm[3] ?? '',
-                    'text' => trim($sm[4]),
-                    'desc' => '',
-                ];
-                $currentIndex = count($subtasks) - 1;
-            } elseif ($currentIndex !== null) {
-                $descLine = preg_replace('/^\s*>\s?/', '', $line);
-                $trimmedDesc = trim($descLine);
-
-                if ($trimmedDesc === '') {
-                    if ($subtasks[$currentIndex]['desc'] !== '') {
-                        $subtasks[$currentIndex]['desc'] .= "\n";
-                    }
-                } else {
-                    if ($subtasks[$currentIndex]['desc'] !== '') {
-                        $subtasks[$currentIndex]['desc'] .= "\n" . $trimmedDesc;
-                    } else {
-                        $subtasks[$currentIndex]['desc'] = $trimmedDesc;
-                    }
-                }
-            }
-        }
-
-        foreach ($subtasks as &$st) {
-            $st['desc'] = trim($st['desc']);
-        }
-        unset($st);
-    }
-
-    $tasks[] = [
-        'id' => $id,
-        'title' => $title,
-        'type' => trim($mType[1] ?? ''),
-        'priority' => trim($mPrio[1] ?? ''),
-        'status' => trim($mStatus[1] ?? ''),
-        'front_back' => trim($mFrontBack[1] ?? ''),
-        'desc' => $desc,
-        'subtasks' => $subtasks,
-    ];
+foreach ($rawIssues as $issue) {
+    $meta = parseLabels($issue['labels'] ?? []);
+    $parsed = parseIssueBody($issue['body'] ?? '');
+    $td = extractIdFromTitle($issue['title'] ?? '');
+    $tasks[] = ['id'=>$td['id'],'title'=>$td['title'],'type'=>$meta['type'],'priority'=>$meta['priority'],
+        'status'=>deriveStatus($issue['state'],$meta['inProgress']),'front_back'=>$meta['frontBack'],
+        'desc'=>$parsed['desc'],'subtasks'=>$parsed['subtasks'],'gh_number'=>$issue['number'],'gh_url'=>$issue['html_url']];
 }
 
-foreach (['status', 'type', 'priority', 'front_back'] as $filterKey) {
-    if (!empty($options[$filterKey])) {
-        $wanted = array_map('trim', explode(',', $options[$filterKey]));
-        $tasks = array_values(array_filter($tasks, fn($t) => in_array($t[$filterKey], $wanted, true)));
-    }
+$options = array_filter(['status'=>$_GET['status']??null,'type'=>$_GET['type']??null,'priority'=>$_GET['priority']??null,'front_back'=>$_GET['front_back']??null],fn($v)=>$v!==null&&$v!=='');
+foreach (['status','type','priority','front_back'] as $fk) {
+    if (!empty($options[$fk])) { $w=array_map('trim',explode(',',$options[$fk])); $tasks=array_values(array_filter($tasks,fn($t)=>in_array($t[$fk],$w,true))); }
 }
 
 $grouped = [];
-foreach ($tasks as $t) {
-    $type = $t['type'] !== '' ? $t['type'] : '(Type non défini)';
-    $prio = $t['priority'] !== '' ? $t['priority'] : '(Priorité non définie)';
-    $grouped[$type][$prio][] = $t;
-}
-$prioOrder = ['P1' => 1, 'P2' => 2, 'P3' => 3, 'P4' => 4];
-$typeOrder = ['Bug' => 1, 'Évolution' => 2, 'Question / Idées' => 3, 'Refactoring' => 4, 'Test' => 5];
-uksort($grouped, fn($a, $b) => ($typeOrder[$a] ?? 99) <=> ($typeOrder[$b] ?? 99));
-foreach ($grouped as &$byPrio) {
-    uksort($byPrio, fn($a, $b) => ($prioOrder[$a] ?? 99) <=> ($prioOrder[$b] ?? 99));
-}
-unset($byPrio);
+foreach ($tasks as $t) { $grouped[$t['type']!==''?$t['type']:'(Type non défini)'][$t['priority']!==''?$t['priority']:'(Priorité non définie)'][] = $t; }
+$typeOrder=['Bug'=>1,'Évolution'=>2,'Question / Idées'=>3,'Refactoring'=>4,'Test'=>5];
+$prioOrder=['P1'=>1,'P2'=>2,'P3'=>3,'P4'=>4];
+uksort($grouped,fn($a,$b)=>($typeOrder[$a]??99)<=>($typeOrder[$b]??99));
+foreach ($grouped as &$bp) { uksort($bp,fn($a,$b)=>($prioOrder[$a]??99)<=>($prioOrder[$b]??99)); }
+unset($bp);
 
-function filterUrl(array $overrides): string
-{
-    $params = $_GET;
-    foreach ($overrides as $k => $v) {
-        if ($v === null) {
-            unset($params[$k]);
-        } else {
-            $params[$k] = $v;
-        }
+function filterUrl(array $ov): string {
+    $p=$_GET; foreach($ov as $k=>$v){if($v===null)unset($p[$k]);else $p[$k]=$v;} $q=http_build_query($p); return $q===''?'?':'?'.$q;
+}
+function statusIconHtml(string $r): string {
+    return match(trim($r)){'[x]'=>'<span class="ico ico-done" title="Réalisé">✔</span>','[-]'=>'<span class="ico ico-progress" title="En cours">●</span>',default=>'<span class="ico ico-todo" title="À faire">○</span>'};
+}
+function statusIcon(string $s): string { return match($s){'Réalisé'=>'[x]','En cours'=>'[-]',default=>'[ ]'}; }
+function safeHtml(string $t): string {
+    $t=strip_tags($t,'<strong><b><em><i><u><code><br><p>');
+    $t=preg_replace('/<(strong|b|em|i|u|code|p)\b[^>]*>/i','<$1>',$t);
+    return preg_replace('/<br\b[^>]*\/?>/i','<br>',$t);
+}
+function applyInlineMarkdown(string $t): string {
+    $t=preg_replace('/`([^`]+)`/','<code>$1</code>',$t);
+    $t=preg_replace('/\*\*([^*]+)\*\*/','<strong>$1</strong>',$t);
+    return preg_replace('/(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/','<em>$1</em>',$t);
+}
+function formatDesc(string $text): string {
+    $lines=explode("\n",$text); $parts=[]; $result=''; $buf=[];
+    foreach($lines as $line) {
+        if(preg_match('/^(\s*)-\s+(.*)$/',$line,$m)) { $level=(int)floor(strlen($m[1])/2); $parts[]=['type'=>'item','level'=>$level,'content'=>applyInlineMarkdown(safeHtml($m[2]))]; }
+        else $parts[]=['type'=>'text','content'=>applyInlineMarkdown(safeHtml($line))];
     }
-    unset($params['output']);
-    $qs = http_build_query($params);
-    return $qs === '' ? '?' : '?' . $qs;
-}
-
-function statusIcon(string $status): string
-{
-    return match ($status) { 'Réalisé' => '[x]', 'En cours' => '[-]', default => '[ ]'};
-}
-
-/**
- * Convertit une notation "[x]" / "[-]" / "[ ]" / "[]" en icône visuelle colorée
- * (coche verte / orange / vide) pour l'affichage HTML.
- */
-function statusIconHtml(string $raw): string
-{
-    $raw = trim($raw);
-    return match ($raw) {
-        '[x]' => '<span class="ico ico-done" title="Réalisé">✔</span>',
-        '[-]' => '<span class="ico ico-progress" title="En cours">●</span>',
-        default => '<span class="ico ico-todo" title="À faire">○</span>',
-    };
-}
-
-/**
- * Échappe tout le HTML SAUF une petite liste blanche de balises de mise en
- * forme déjà utilisées dans todo.md (strong, u, em, code, br, p...), et retire tout
- * attribut éventuel sur ces balises par précaution.
- */
-function safeHtml(string $text): string
-{
-    $allowed = '<strong><b><em><i><u><code><br><p>';
-    $text = strip_tags($text, $allowed);
-    $text = preg_replace('/<(strong|b|em|i|u|code|p)\b[^>]*>/i', '<$1>', $text);
-    $text = preg_replace('/<br\b[^>]*\/?>/i', '<br>', $text);
-    return $text;
-}
-
-/**
- * Convertit la mise en forme Markdown inline (bold, italic, code) en balises HTML.
- * À appliquer APRÈS safeHtml() pour ne pas échapper le HTML généré.
- */
-function applyInlineMarkdown(string $text): string
-{
-    $text = preg_replace('/`([^`]+)`/', '<code>$1</code>', $text);
-    $text = preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $text);
-    $text = preg_replace('/(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/', '<em>$1</em>', $text);
-    return $text;
-}
-
-/**
- * Formate la description pour l'affichage HTML :
- * - convertit le Markdown inline (bold, italic, code) et les listes à puces
- * - conserve les balises HTML autorisées déjà présentes
- * - convertit les retours à la ligne en <br>
- */
-function formatDesc(string $text): string
-{
-    $lines = explode("\n", $text);
-    $parts = [];
-
-    foreach ($lines as $line) {
-        if (preg_match('/^(\s*)-\s+(.*)$/', $line, $m)) {
-            $level   = (int) floor(strlen($m[1]) / 2);
-            $content = applyInlineMarkdown(safeHtml($m[2]));
-            $parts[] = ['type' => 'item', 'level' => $level, 'content' => $content];
-        } else {
-            $parts[] = ['type' => 'text', 'content' => applyInlineMarkdown(safeHtml($line))];
-        }
+    foreach($parts as $p) {
+        if($p['type']==='item') { if($buf){$result.=nl2br(implode("\n",$buf));$buf=[];} $result.='<div class="desc-item" style="margin-left:'.($p['level']*16).'px">&bull;&nbsp;<span class="desc-item-text">'.$p['content'].'</span></div>'; }
+        else $buf[]=$p['content'];
     }
-
-    $result = '';
-    $buf    = [];
-    foreach ($parts as $p) {
-        if ($p['type'] === 'item') {
-            if ($buf) {
-                $result .= nl2br(implode("\n", $buf));
-                $buf = [];
-            }
-            $indent  = $p['level'] * 16;
-            $result .= '<div class="desc-item" style="margin-left:' . $indent . 'px">'
-                     . '&bull;&nbsp;<span class="desc-item-text">' . $p['content'] . '</span></div>';
-        } else {
-            $buf[] = $p['content'];
-        }
-    }
-    if ($buf) {
-        $result .= nl2br(implode("\n", $buf));
-    }
+    if($buf) $result.=nl2br(implode("\n",$buf));
     return $result;
 }
 
-/**
- * Rendu simplifié du Markdown pour les sections documentaires (Légende, Raccourcis...) :
- * - liste à puces indentées avec niveaux hiérarchiques
- * - gras, italique, code et touches <kbd>
- */
-function renderSimpleMarkdown(string $md): string
-{
-    $allowed = '<kbd><strong><b><em><i><u><code><br><p>';
-    $md = strip_tags($md, $allowed);
-    $md = applyInlineMarkdown($md);
-
-    $lines = explode("\n", $md);
-    $html = [];
-
-    foreach ($lines as $line) {
-        $trimmed = trim($line);
-        if ($trimmed === '') {
-            continue;
-        }
-
-        if (preg_match('/^(\s*)-\s+(.*)$/', $line, $m)) {
-            $level = (int) floor(strlen($m[1]) / 4);
-            $content = $m[2];
-            $html[] = '<div class="info-item" style="margin-left: ' . ($level * 20) . 'px;"><span class="bullet">&bull;</span> <span class="info-text">' . $content . '</span></div>';
-        } else {
-            $html[] = '<div class="info-line">' . $trimmed . '</div>';
-        }
-    }
-
-    return implode("\n", $html);
-}
-
-// ---------- Sortie Markdown (CLI, ou écriture fichier --output) ----------
-function buildMarkdown(array $grouped, int $total, array $headerSections = []): string
-{
-    $out = [];
-    $out[] = "# Vue groupée — TODO (générée automatiquement, ne pas éditer)";
-    $out[] = "> Générée le " . date('Y-m-d H:i') . " à partir de `doc/todo.md`. Toute modification doit se faire dans `doc/todo.md`, pas ici.";
-    $out[] = "> {$total} tâche(s) au total.";
-    $out[] = "";
-
-    foreach ($headerSections as $sec) {
-        $out[] = "## " . $sec['title'];
-        $out[] = $sec['content'];
-        $out[] = "";
-    }
-
-    if (!empty($headerSections)) {
-        $out[] = "---";
-        $out[] = "";
-    }
-
-    foreach ($grouped as $type => $byPrio) {
-        $out[] = "## {$type}";
-        foreach ($byPrio as $prio => $items) {
-            $out[] = "### {$prio}";
-            foreach ($items as $t) {
-                $tagParts = [];
-                if ($t['status']) {
-                    $tagParts[] = $t['status'];
-                }
-                if (!empty($t['front_back'])) {
-                    $tagParts[] = $t['front_back'];
-                }
-                $tagStr = !empty($tagParts) ? ' _( ' . implode(' | ', $tagParts) . ' )_' : '';
-                $out[] = "- " . statusIcon($t['status']) . " `[{$t['id']}]` **{$t['title']}**{$tagStr}";
-            }
-            $out[] = "";
-        }
-    }
-    return implode("\n", $out) . "\n";
-}
-
-if (!empty($options['output'])) {
-    $outPath = $options['output'];
-    if (!preg_match('#^([A-Za-z]:\\\\|/)#', $outPath)) {
-        $outPath = __DIR__ . '/../' . ltrim($outPath, '/');
-    }
-    file_put_contents($outPath, buildMarkdown($grouped, count($tasks), $headerSections));
-    echo "Vue générée : {$options['output']} (" . count($tasks) . " tâche(s))\n";
-    exit;
-}
-
-if ($isCli) {
-    echo buildMarkdown($grouped, count($tasks), $headerSections);
-    exit;
-}
-
-// ---------- Sortie HTML (navigateur) ----------
 header('Content-Type: text/html; charset=utf-8');
-
-$statusColor = ['Nouveau' => '#0072c6', 'En cours' => '#e3a21a', 'Réalisé' => '#4caf50'];
-$typeColor = ['Bug' => '#d9534f', 'Évolution' => '#0072c6', 'Question / Idées' => '#8e44ad', 'Refactoring' => '#f39c12', 'Test' => '#16a085'];
-
+$statusColor=['Nouveau'=>'#0072c6','En cours'=>'#e3a21a','Réalisé'=>'#4caf50'];
+$typeColor=['Bug'=>'#d9534f','Évolution'=>'#0072c6','Question / Idées'=>'#8e44ad','Refactoring'=>'#f39c12','Test'=>'#16a085'];
+$typePlural=['Bug'=>'Bugs','Évolution'=>'Évolutions','Question / Idées'=>'Questions / Idées','Refactoring'=>'Refactoring','Test'=>'Tests'];
+$curStatus=$_GET['status']??''; $curType=$_GET['type']??''; $curPrio=$_GET['priority']??''; $curFb=$_GET['front_back']??'';
+$afc=($curType!==''?1:0)+($curPrio!==''?1:0)+($curStatus!==''?1:0)+($curFb!==''?1:0);
+$cacheAge=isset($_SESSION['gh_issues_'.GH_REPO.'_ts'])?(time()-$_SESSION['gh_issues_'.GH_REPO.'_ts']):null;
 ?><!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <title>TODO rilsport</title>
-    <style>
-        body {
-            font-family: Segoe UI, Arial, sans-serif;
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-            color: #222;
-            background: #f7f7f8;
-        }
-
-        h1 {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-
-        .meta {
-            color: #777;
-            font-size: 13px;
-            margin-bottom: 24px;
-        }
-
-        h2 {
-            margin-top: 34px;
-            padding: 8px 14px;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 17px;
-        }
-
-        .type-section {
-            margin-top: 20px;
-        }
-
-        .type-summary {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            list-style: none;
-        }
-
-        .type-summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .type-summary::before {
-            content: '▾';
-            font-size: 13px;
-            transition: transform .15s;
-        }
-
-        .type-section:not([open]) .type-summary::before {
-            content: '▸';
-        }
-
-        .type-count {
-            font-weight: 400;
-            opacity: .85;
-            font-size: 14px;
-        }
-
-        .type-body {
-            padding-top: 4px;
-        }
-
-        .prio-section {
-            margin-top: 18px;
-        }
-
-        .prio-summary {
-            font-size: 14px;
-            text-transform: uppercase;
-            color: #555;
-            letter-spacing: .5px;
-            font-weight: 600;
-            cursor: pointer;
-            list-style: none;
-            padding: 4px 0;
-        }
-
-        .prio-summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .prio-summary::before {
-            content: '▾ ';
-            font-size: 11px;
-            color: #999;
-        }
-
-        .prio-section:not([open]) .prio-summary::before {
-            content: '▸ ';
-        }
-
-        .prio-count {
-            color: #bbb;
-            font-weight: 400;
-            text-transform: none;
-        }
-
-        ul {
-            list-style: none;
-            padding-left: 0;
-            margin: 0 0 10px 0;
-        }
-
-        li {
-            background: #fff;
-            border: 1px solid #e3e3e3;
-            border-radius: 6px;
-            margin-bottom: 6px;
-            overflow: hidden;
-        }
-
-        details {}
-
-        summary {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            cursor: pointer;
-            list-style: none;
-        }
-
-        summary::-webkit-details-marker {
-            display: none;
-        }
-
-        summary::before {
-            content: '▸';
-            color: #999;
-            font-size: 11px;
-            width: 10px;
-            flex-shrink: 0;
-            transition: transform .15s;
-        }
-
-        details[open] summary::before {
-            transform: rotate(90deg);
-        }
-
-        details[open] summary {
-            border-bottom: 1px solid #eee;
-            background: #fafafa;
-        }
-
-        .id {
-            font-family: Consolas, monospace;
-            font-size: 11px;
-            color: #999;
-            white-space: nowrap;
-        }
-
-        .title {
-            flex: 1;
-            font-size: 14px;
-        }
-
-        .badge {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            color: #fff;
-            white-space: nowrap;
-        }
-
-        .check {
-            width: 20px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .ico {
-            display: inline-block;
-            font-size: 15px;
-            font-weight: bold;
-        }
-
-        .ico-done {
-            color: #2e7d32;
-        }
-
-        .ico-progress {
-            color: #e3a21a;
-        }
-
-        .ico-todo {
-            color: #ccc;
-        }
-
-        .empty {
-            color: #999;
-            font-style: italic;
-            padding: 8px 0;
-        }
-
-        .filters {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .filters a {
-            color: #0072c6;
-        }
-
-        .detail {
-            padding: 10px 14px 12px 32px;
-            font-size: 13px;
-        }
-
-        .detail .desc {
-            color: #444;
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-
-        .detail .no-desc {
-            color: #aaa;
-            font-style: italic;
-            margin-bottom: 8px;
-        }
-
-        .sub-list {
-            margin: 0;
-            padding: 0;
-        }
-
-        .sub-item {
-            margin: 2px 0 4px 0;
-        }
-
-        .sub-row {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-            padding: 2px 0;
-            color: #333;
-        }
-
-        .sub-list .sub-check {
-            width: 16px;
-            flex-shrink: 0;
-        }
-
-        .sub-list .sub-id {
-            font-family: Consolas, monospace;
-            font-size: 10px;
-            color: #bbb;
-            flex-shrink: 0;
-        }
-
-        .sub-text {
-            flex: 1;
-        }
-
-        .sub-desc {
-            margin: 2px 0 4px 24px;
-            padding: 3px 0 3px 8px;
-            font-size: 12px;
-            color: #666;
-            line-height: 1.45;
-            border-left: 2px solid #e0e0e0;
-        }
-
-        .no-sub {
-            color: #aaa;
-            font-style: italic;
-        }
-
-        .desc-item {
-            display: flex;
-            align-items: baseline;
-            gap: 5px;
-            padding: 1px 0;
-            font-size: 13px;
-            color: #444;
-            line-height: 1.5;
-        }
-
-        .desc-item-text {
-            flex: 1;
-        }
-
-        .doc-panels {
-            margin-bottom: 20px;
-        }
-
-        .doc-section {
-            background: #fff;
-            border: 1px solid #e3e3e3;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-
-        .doc-summary {
-            padding: 10px 14px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            cursor: pointer;
-            list-style: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #fff;
-        }
-
-        .doc-summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .doc-summary::before {
-            content: '▾';
-            font-size: 12px;
-            color: #888;
-            transition: transform .15s;
-        }
-
-        .doc-section:not([open]) .doc-summary::before {
-            content: '▸';
-        }
-
-        .doc-section[open] .doc-summary {
-            border-bottom: 1px solid #eee;
-            background: #fafafa;
-        }
-
-        .doc-body {
-            padding: 12px 16px;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #444;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-            padding: 2px 0;
-        }
-
-        .info-item .bullet {
-            color: #888;
-            font-size: 11px;
-            flex-shrink: 0;
-        }
-
-        .info-line {
-            padding: 2px 0;
-        }
-
-        kbd {
-            background-color: #f7f7f7;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-            color: #333;
-            display: inline-block;
-            font-size: 11px;
-            font-family: Consolas, monospace;
-            line-height: 1.2;
-            padding: 1px 5px;
-            margin: 0 2px;
-        }
-
-        .filter-section {
-            background: #fff;
-            border: 1px solid #e3e3e3;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .filter-summary {
-            padding: 10px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #444;
-            cursor: pointer;
-            list-style: none;
-        }
-
-        .filter-summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .filter-summary::before {
-            content: '▾ ';
-            font-size: 11px;
-            color: #999;
-        }
-
-        .filter-section:not([open]) .filter-summary::before {
-            content: '▸ ';
-        }
-
-        .filter-section[open] .filter-summary {
-            border-bottom: 1px solid #eee;
-        }
-
-        .filter-active-count {
-            font-weight: 400;
-            color: #0072c6;
-        }
-
-        .filter-bar {
-            padding: 12px 14px;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
-        }
-
-        .filter-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .filter-label {
-            font-size: 12px;
-            color: #888;
-            width: 70px;
-            flex-shrink: 0;
-            text-transform: uppercase;
-            letter-spacing: .3px;
-        }
-
-        .pill {
-            font-size: 12px;
-            padding: 4px 11px;
-            border-radius: 12px;
-            text-decoration: none;
-            border: 1px solid #ddd;
-            color: #555;
-            background: #fafafa;
-            white-space: nowrap;
-        }
-
-        .pill:hover {
-            border-color: #999;
-        }
-
-        .pill.active {
-            color: #fff;
-            background: #555;
-            border-color: transparent;
-        }
-
-        .pill.c-fb-Front {
-            color: #d84733;
-            border-color: #f8b8ae;
-            background: #fef2f0;
-        }
-
-        .pill.c-fb-Front.active {
-            background: #F15E4A;
-            color: #fff;
-        }
-
-        .pill.c-fb-Back {
-            color: #5c595a;
-            border-color: #dad8d9;
-            background: #f4f3f3;
-        }
-
-        .pill.c-fb-Back.active {
-            background: #767374;
-            color: #fff;
-        }
-
-        .pill.c-status-Nouveau {
-            color: #0072c6;
-            border-color: #b9dcf2;
-            background: #eef7fd;
-        }
-
-        .pill.c-status-Nouveau.active {
-            background: #0072c6;
-            color: #fff;
-        }
-
-        .pill.c-status-Encours {
-            color: #b9791a;
-            border-color: #f2ddb0;
-            background: #fdf6e8;
-        }
-
-        .pill.c-status-Encours.active {
-            background: #e3a21a;
-            color: #fff;
-        }
-
-        .pill.c-status-Réalisé {
-            color: #2e7d32;
-            border-color: #bfe3c1;
-            background: #eef8ef;
-        }
-
-        .pill.c-status-Réalisé.active {
-            background: #4caf50;
-            color: #fff;
-        }
-
-        .pill.c-prio {
-            color: #555;
-        }
-
-        .pill.active.c-prio {
-            background: #555;
-            color: #fff;
-        }
-
-        .pill.c-prio-P1 {
-            color: #c0392b;
-            border-color: #f0c4bf;
-            background: #fdf1f0;
-        }
-
-        .pill.c-prio-P1.active {
-            background: #e74c3c;
-            color: #fff;
-        }
-
-        .pill.c-prio-P2 {
-            color: #c46a12;
-            border-color: #f2d7b9;
-            background: #fdf3ea;
-        }
-
-        .pill.c-prio-P2.active {
-            background: #e67e22;
-            color: #fff;
-        }
-
-        .pill.c-prio-P3 {
-            color: #ab8a0c;
-            border-color: #f0e3ae;
-            background: #fdf9ea;
-        }
-
-        .pill.c-prio-P3.active {
-            background: #d4a017;
-            color: #fff;
-        }
-
-        .pill.c-prio-P4 {
-            color: #6c7a7a;
-            border-color: #d8dede;
-            background: #f4f6f6;
-        }
-
-        .pill.c-prio-P4.active {
-            background: #7f8c8d;
-            color: #fff;
-        }
-
-        .pill.c-type-Bug {
-            color: #c0392b;
-            border-color: #f0c4bf;
-            background: #fdf1f0;
-        }
-
-        .pill.c-type-Bug.active {
-            background: #d9534f;
-            color: #fff;
-        }
-
-        .pill.c-type-Évolution {
-            color: #0072c6;
-            border-color: #b9dcf2;
-            background: #eef7fd;
-        }
-
-        .pill.c-type-Évolution.active {
-            background: #0072c6;
-            color: #fff;
-        }
-
-        .pill.c-type-QuestionIdées {
-            color: #8e44ad;
-            border-color: #ddc2e8;
-            background: #f8f0fa;
-        }
-
-        .pill.c-type-QuestionIdées.active {
-            background: #8e44ad;
-            color: #fff;
-        }
-
-        .pill.c-type-Refactoring {
-            color: #d35400;
-            border-color: #edbb99;
-            background: #fdf2e9;
-        }
-
-        .pill.c-type-Refactoring.active {
-            background: #e67e22;
-            color: #fff;
-        }
-
-        .pill.c-type-Test {
-            color: #16a085;
-            border-color: #a3e4d7;
-            background: #e8f8f5;
-        }
-
-        .pill.c-type-Test.active {
-            background: #16a085;
-            color: #fff;
-        }
-
-        .pill.c-tout.active {
-            background: #333;
-            color: #fff;
-        }
-
-        /* ── Barre d'outils flottante ── */
-        .toolbar {
-            position: sticky;
-            top: 10px;
-            float: right;
-            display: flex;
-            gap: 6px;
-            margin: -4px 0 10px 16px;
-            z-index: 100;
-        }
-
-        .toolbar-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 11px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            text-decoration: none;
-            border: 1px solid transparent;
-            transition: background .15s, box-shadow .15s;
-            box-shadow: 0 1px 4px rgba(0,0,0,.12);
-        }
-
-        .toolbar-btn-reset {
-            background: #fff;
-            color: #555;
-            border-color: #ddd;
-        }
-
-        .toolbar-btn-reset:hover {
-            background: #f0f0f0;
-            box-shadow: 0 2px 6px rgba(0,0,0,.15);
-        }
-
-        .toolbar-btn-collapse {
-            background: #fff;
-            color: #555;
-            border-color: #ddd;
-        }
-
-        .toolbar-btn-collapse:hover {
-            background: #f0f0f0;
-            box-shadow: 0 2px 6px rgba(0,0,0,.15);
-        }
-    </style>
+<meta charset="UTF-8">
+<title>TODO rilsport — GitHub Issues</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;max-width:900px;margin:30px auto;padding:0 20px;color:#222;background:#f7f7f8;}
+h1{font-size:22px;margin-bottom:4px;}
+.meta{color:#777;font-size:13px;margin-bottom:24px;}.meta a{color:#0072c6;}
+.cache-info{font-size:11px;color:#aaa;margin-left:6px;}
+.type-section{margin-top:20px;}
+.type-summary{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:6px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;list-style:none;}
+.type-summary::-webkit-details-marker{display:none;}
+.type-summary::before{content:'▾';font-size:13px;transition:transform .15s;}
+.type-section:not([open]) .type-summary::before{content:'▸';}
+.type-count{font-weight:400;opacity:.85;font-size:14px;}.type-body{padding-top:4px;}
+.prio-section{margin-top:18px;}
+.prio-summary{font-size:14px;text-transform:uppercase;color:#555;letter-spacing:.5px;font-weight:600;cursor:pointer;list-style:none;padding:4px 0;}
+.prio-summary::-webkit-details-marker{display:none;}
+.prio-summary::before{content:'▾ ';font-size:11px;color:#999;}
+.prio-section:not([open]) .prio-summary::before{content:'▸ ';}
+.prio-count{color:#bbb;font-weight:400;text-transform:none;}
+ul{list-style:none;padding-left:0;margin:0 0 10px 0;}
+li{background:#fff;border:1px solid #e3e3e3;border-radius:6px;margin-bottom:6px;overflow:hidden;}
+summary{display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;list-style:none;}
+summary::-webkit-details-marker{display:none;}
+summary::before{content:'▸';color:#999;font-size:11px;width:10px;flex-shrink:0;transition:transform .15s;}
+details[open] summary::before{transform:rotate(90deg);}
+details[open] summary{border-bottom:1px solid #eee;background:#fafafa;}
+.id{font-family:Consolas,monospace;font-size:11px;color:#999;white-space:nowrap;}
+.title{flex:1;font-size:14px;}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;color:#fff;white-space:nowrap;}
+.check{width:20px;text-align:center;flex-shrink:0;}
+.ico{display:inline-block;font-size:15px;font-weight:bold;}
+.ico-done{color:#2e7d32;}.ico-progress{color:#e3a21a;}.ico-todo{color:#ccc;}
+.gh-link{font-size:10px;color:#aaa;text-decoration:none;flex-shrink:0;font-family:Consolas,monospace;}
+.gh-link:hover{color:#0072c6;}
+.empty{color:#999;font-style:italic;padding:8px 0;}
+.detail{padding:10px 14px 12px 32px;font-size:13px;}
+.detail .desc{color:#444;margin-bottom:8px;line-height:1.5;}
+.detail .no-desc{color:#aaa;font-style:italic;margin-bottom:8px;}
+.sub-list{margin:0;padding:0;}.sub-item{margin:2px 0 4px 0;}
+.sub-row{display:flex;align-items:baseline;gap:8px;padding:2px 0;color:#333;}
+.sub-list .sub-check{width:16px;flex-shrink:0;}
+.sub-list .sub-id{font-family:Consolas,monospace;font-size:10px;color:#bbb;flex-shrink:0;}
+.sub-text{flex:1;}.no-sub{color:#aaa;font-style:italic;}
+.desc-item{display:flex;align-items:baseline;gap:5px;padding:1px 0;font-size:13px;color:#444;line-height:1.5;}
+.desc-item-text{flex:1;}
+.filter-section{background:#fff;border:1px solid #e3e3e3;border-radius:6px;margin-bottom:20px;}
+.filter-summary{padding:10px 14px;font-size:13px;font-weight:600;color:#444;cursor:pointer;list-style:none;}
+.filter-summary::-webkit-details-marker{display:none;}
+.filter-summary::before{content:'▾ ';font-size:11px;color:#999;}
+.filter-section:not([open]) .filter-summary::before{content:'▸ ';}
+.filter-section[open] .filter-summary{border-bottom:1px solid #eee;}
+.filter-active-count{font-weight:400;color:#0072c6;}
+.filter-bar{padding:12px 14px;}
+.filter-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.filter-group:last-child{margin-bottom:0;}
+.filter-label{font-size:12px;color:#888;width:70px;flex-shrink:0;text-transform:uppercase;letter-spacing:.3px;}
+.pill{font-size:12px;padding:4px 11px;border-radius:12px;text-decoration:none;border:1px solid #ddd;color:#555;background:#fafafa;white-space:nowrap;}
+.pill:hover{border-color:#999;}.pill.active{color:#fff;background:#555;border-color:transparent;}
+.pill.c-fb-Front{color:#d84733;border-color:#f8b8ae;background:#fef2f0;}
+.pill.c-fb-Front.active{background:#F15E4A;color:#fff;}
+.pill.c-fb-Back{color:#5c595a;border-color:#dad8d9;background:#f4f3f3;}
+.pill.c-fb-Back.active{background:#767374;color:#fff;}
+.pill.c-status-Nouveau{color:#0072c6;border-color:#b9dcf2;background:#eef7fd;}
+.pill.c-status-Nouveau.active{background:#0072c6;color:#fff;}
+.pill.c-status-Encours{color:#b9791a;border-color:#f2ddb0;background:#fdf6e8;}
+.pill.c-status-Encours.active{background:#e3a21a;color:#fff;}
+.pill.c-status-Réalisé{color:#2e7d32;border-color:#bfe3c1;background:#eef8ef;}
+.pill.c-status-Réalisé.active{background:#4caf50;color:#fff;}
+.pill.c-prio-P1{color:#c0392b;border-color:#f0c4bf;background:#fdf1f0;}
+.pill.c-prio-P1.active{background:#e74c3c;color:#fff;}
+.pill.c-prio-P2{color:#c46a12;border-color:#f2d7b9;background:#fdf3ea;}
+.pill.c-prio-P2.active{background:#e67e22;color:#fff;}
+.pill.c-prio-P3{color:#ab8a0c;border-color:#f0e3ae;background:#fdf9ea;}
+.pill.c-prio-P3.active{background:#d4a017;color:#fff;}
+.pill.c-prio-P4{color:#6c7a7a;border-color:#d8dede;background:#f4f6f6;}
+.pill.c-prio-P4.active{background:#7f8c8d;color:#fff;}
+.pill.c-type-Bug{color:#c0392b;border-color:#f0c4bf;background:#fdf1f0;}
+.pill.c-type-Bug.active{background:#d9534f;color:#fff;}
+.pill.c-type-Évolution{color:#0072c6;border-color:#b9dcf2;background:#eef7fd;}
+.pill.c-type-Évolution.active{background:#0072c6;color:#fff;}
+.pill.c-type-QuestionIdées{color:#8e44ad;border-color:#ddc2e8;background:#f8f0fa;}
+.pill.c-type-QuestionIdées.active{background:#8e44ad;color:#fff;}
+.pill.c-type-Refactoring{color:#d35400;border-color:#edbb99;background:#fdf2e9;}
+.pill.c-type-Refactoring.active{background:#e67e22;color:#fff;}
+.pill.c-type-Test{color:#16a085;border-color:#a3e4d7;background:#e8f8f5;}
+.pill.c-type-Test.active{background:#16a085;color:#fff;}
+.pill.c-tout.active{background:#333;color:#fff;}
+.toolbar{position:sticky;top:10px;float:right;display:flex;gap:6px;margin:-4px 0 10px 16px;z-index:100;}
+.toolbar-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;text-decoration:none;border:1px solid transparent;transition:background .15s,box-shadow .15s;box-shadow:0 1px 4px rgba(0,0,0,.12);}
+.toolbar-btn-reset,.toolbar-btn-collapse,.toolbar-btn-refresh{background:#fff;color:#555;border-color:#ddd;}
+.toolbar-btn-reset:hover,.toolbar-btn-collapse:hover,.toolbar-btn-refresh:hover{background:#f0f0f0;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+.toolbar-btn-gh{background:#24292f;color:#fff;}.toolbar-btn-gh:hover{background:#444;}
+</style>
 </head>
-
 <body>
-    <div class="toolbar">
-        <a class="toolbar-btn toolbar-btn-reset" href="?" title="Supprimer tous les filtres actifs">✕ Réinitialiser</a>
-        <button class="toolbar-btn toolbar-btn-collapse" id="btn-collapse-all" title="Replier toutes les sections et tâches">⊖ Tout replier</button>
-    </div>
-    <h1>📋 TODO rilsport</h1>
-    <div class="meta">Générée le <?= date('d/m/Y à H:i') ?> à partir de <code>doc/todo.md</code> — <?= count($tasks) ?>
-        tâche(s). Cette page est <strong>en lecture seule</strong> : toute modification se fait dans
-        <code>doc/todo.md</code>.</div>
+<div class="toolbar">
+    <a class="toolbar-btn toolbar-btn-gh" href="https://github.com/<?= GH_REPO ?>/issues" target="_blank">⬡ GitHub</a>
+    <a class="toolbar-btn toolbar-btn-refresh" href="?refresh=1" title="Vider le cache et recharger">↺ Actualiser</a>
+    <a class="toolbar-btn toolbar-btn-reset" href="?" title="Supprimer tous les filtres">✕ Réinitialiser</a>
+    <button class="toolbar-btn toolbar-btn-collapse" id="btn-collapse-all">⊖ Tout replier</button>
+</div>
 
-    <?php if (!empty($headerSections)): ?>
-        <div class="doc-panels">
-            <?php foreach ($headerSections as $sec): ?>
-                <details class="doc-section">
-                    <summary class="doc-summary"><?= htmlspecialchars($sec['title']) ?></summary>
-                    <div class="doc-body">
-                        <?= renderSimpleMarkdown($sec['content']) ?>
-                    </div>
+<h1>📋 TODO rilsport</h1>
+<div class="meta">
+    Source : <a href="https://github.com/<?= GH_REPO ?>/issues" target="_blank">GitHub Issues</a>
+    — <?= count($tasks) ?> tâche(s) affichée(s).
+    <span class="cache-info">
+        <?php if ($cacheAge !== null): ?>
+            (cache : <?= $cacheAge < 60 ? $cacheAge.'s' : round($cacheAge/60).' min' ?> — <a href="?refresh=1">actualiser</a>)
+        <?php endif; ?>
+    </span>
+</div>
+
+<details class="filter-section"<?= $afc > 0 ? ' open' : '' ?>>
+    <summary class="filter-summary">Filtres<?= $afc > 0 ? ' <span class="filter-active-count">('.$afc.' actif'.($afc>1?'s':'').')</span>' : '' ?></summary>
+    <div class="filter-bar">
+        <div class="filter-group">
+            <span class="filter-label">Type</span>
+            <a class="pill <?= $curType==='' ? 'active c-tout' : '' ?>" href="<?= filterUrl(['type'=>null]) ?>">Tout</a>
+            <a class="pill <?= $curType==='Bug' ? 'active' : '' ?> c-type-Bug" href="<?= filterUrl(['type'=>'Bug']) ?>">Bugs</a>
+            <a class="pill <?= $curType==='Évolution' ? 'active' : '' ?> c-type-Évolution" href="<?= filterUrl(['type'=>'Évolution']) ?>">Évolutions</a>
+            <a class="pill <?= $curType==='Question / Idées' ? 'active' : '' ?> c-type-QuestionIdées" href="<?= filterUrl(['type'=>'Question / Idées']) ?>">Questions / Idées</a>
+            <a class="pill <?= $curType==='Refactoring' ? 'active' : '' ?> c-type-Refactoring" href="<?= filterUrl(['type'=>'Refactoring']) ?>">Refactoring</a>
+            <a class="pill <?= $curType==='Test' ? 'active' : '' ?> c-type-Test" href="<?= filterUrl(['type'=>'Test']) ?>">Tests</a>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Priorité</span>
+            <a class="pill <?= $curPrio==='' ? 'active c-tout' : '' ?>" href="<?= filterUrl(['priority'=>null]) ?>">Tout</a>
+            <?php foreach (['P1','P2','P3','P4'] as $p): ?>
+                <a class="pill <?= $curPrio===$p ? 'active' : '' ?> c-prio-<?= $p ?>" href="<?= filterUrl(['priority'=>$p]) ?>"><?= $p ?></a>
+            <?php endforeach; ?>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Statut</span>
+            <a class="pill <?= $curStatus==='' ? 'active c-tout' : '' ?>" href="<?= filterUrl(['status'=>null]) ?>">Tout</a>
+            <a class="pill <?= $curStatus==='Nouveau' ? 'active' : '' ?> c-status-Nouveau" href="<?= filterUrl(['status'=>'Nouveau']) ?>">○ Nouveau</a>
+            <a class="pill <?= $curStatus==='En cours' ? 'active' : '' ?> c-status-Encours" href="<?= filterUrl(['status'=>'En cours']) ?>">● En cours</a>
+            <a class="pill <?= $curStatus==='Réalisé' ? 'active' : '' ?> c-status-Réalisé" href="<?= filterUrl(['status'=>'Réalisé']) ?>">✔ Réalisé</a>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Front / Back</span>
+            <a class="pill <?= $curFb==='' ? 'active c-tout' : '' ?>" href="<?= filterUrl(['front_back'=>null]) ?>">Tout</a>
+            <a class="pill <?= $curFb==='Front' ? 'active' : '' ?> c-fb-Front" href="<?= filterUrl(['front_back'=>'Front']) ?>">🖥 Front</a>
+            <a class="pill <?= $curFb==='Back' ? 'active' : '' ?> c-fb-Back" href="<?= filterUrl(['front_back'=>'Back']) ?>">⚙ Back</a>
+        </div>
+    </div>
+</details>
+
+<?php if (empty($grouped)): ?>
+    <p class="empty">Aucune tâche ne correspond aux filtres actuels.</p>
+<?php endif; ?>
+
+<?php foreach ($grouped as $type => $byPrio): ?>
+    <?php $typeTotal = array_sum(array_map('count', $byPrio)); ?>
+    <details class="type-section" open>
+        <summary class="type-summary" style="background:<?= $typeColor[$type] ?? '#666' ?>;">
+            <span class="type-name"><?= htmlspecialchars($typePlural[$type] ?? $type) ?></span>
+            <span class="type-count">(<?= $typeTotal ?>)</span>
+        </summary>
+        <div class="type-body">
+            <?php foreach ($byPrio as $prio => $items): ?>
+                <details class="prio-section" open>
+                    <summary class="prio-summary"><?= htmlspecialchars($prio) ?> <span class="prio-count">(<?= count($items) ?>)</span></summary>
+                    <ul>
+                        <?php foreach ($items as $t): ?>
+                            <li>
+                                <details>
+                                    <summary>
+                                        <span class="check"><?= statusIconHtml(statusIcon($t['status'])) ?></span>
+                                        <?php if ($t['id']): ?><span class="id">[<?= htmlspecialchars($t['id']) ?>]</span><?php endif; ?>
+                                        <span class="title"><?= safeHtml($t['title']) ?></span>
+                                        <?php if ($t['status']): ?>
+                                            <span class="badge" style="background:<?= $statusColor[$t['status']] ?? '#999' ?>;"><?= htmlspecialchars($t['status']) ?></span>
+                                        <?php endif; ?>
+                                        <?php if (!empty($t['front_back'])): ?>
+                                            <span class="badge" style="background:<?= $t['front_back']==='Front'?'#F15E4A':'#767374' ?>;"><?= $t['front_back']==='Front'?'🖥 Front':'⚙ Back' ?></span>
+                                        <?php endif; ?>
+                                        <a class="gh-link" href="<?= htmlspecialchars($t['gh_url']) ?>" target="_blank" title="Issue #<?= $t['gh_number'] ?> sur GitHub" onclick="event.stopPropagation()">#<?= $t['gh_number'] ?></a>
+                                    </summary>
+                                    <div class="detail">
+                                        <?php if ($t['desc'] !== ''): ?>
+                                            <div class="desc"><?= formatDesc($t['desc']) ?></div>
+                                        <?php else: ?>
+                                            <div class="no-desc">Aucune description renseignée.</div>
+                                        <?php endif; ?>
+                                        <?php if (!empty($t['subtasks'])): ?>
+                                            <div class="sub-list">
+                                                <?php foreach ($t['subtasks'] as $st): ?>
+                                                    <div class="sub-item" style="margin-left:<?= $st['level']*18 ?>px;">
+                                                        <div class="sub-row">
+                                                            <span class="sub-check"><?= statusIconHtml($st['status']) ?></span>
+                                                            <?php if ($st['id']): ?><span class="sub-id">[<?= htmlspecialchars($st['id']) ?>]</span><?php endif; ?>
+                                                            <span class="sub-text"><?= safeHtml($st['text']) ?></span>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="no-sub">Aucune sous-tâche.</div>
+                                        <?php endif; ?>
+                                    </div>
+                                </details>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </details>
             <?php endforeach; ?>
         </div>
-    <?php endif; ?>
-    <?php
-    $curStatus = $_GET['status'] ?? '';
-    $curType = $_GET['type'] ?? '';
-    $curPrio = $_GET['priority'] ?? '';
-    $curFb = $_GET['front_back'] ?? '';
-    $statusClassMap = ['Nouveau' => 'Nouveau', 'En cours' => 'Encours', 'Réalisé' => 'Réalisé'];
-    $typeClassMap = ['Bug' => 'Bug', 'Évolution' => 'Évolution', 'Question / Idées' => 'QuestionIdées', 'Refactoring' => 'Refactoring', 'Test' => 'Test'];
-    ?>
-    <?php $activeFilterCount = ($curType !== '' ? 1 : 0) + ($curPrio !== '' ? 1 : 0) + ($curStatus !== '' ? 1 : 0) + ($curFb !== '' ? 1 : 0); ?>
-    <details class="filter-section"<?= $activeFilterCount > 0 ? ' open' : '' ?>>
-        <summary class="filter-summary">
-            Filtres<?= $activeFilterCount > 0 ? ' <span class="filter-active-count">(' . $activeFilterCount . ' actif' . ($activeFilterCount > 1 ? 's' : '') . ')</span>' : '' ?>
-        </summary>
-        <div class="filter-bar">
-            <div class="filter-group">
-                <span class="filter-label">Type</span>
-                <a class="pill <?= $curType === '' ? 'active c-tout' : '' ?>"
-                    href="<?= filterUrl(['type' => null]) ?>">Tout</a>
-                <a class="pill <?= $curType === 'Bug' ? 'active' : '' ?> c-type-Bug"
-                    href="<?= filterUrl(['type' => 'Bug']) ?>">Bugs</a>
-                <a class="pill <?= $curType === 'Évolution' ? 'active' : '' ?> c-type-Évolution"
-                    href="<?= filterUrl(['type' => 'Évolution']) ?>">Évolutions</a>
-                <a class="pill <?= $curType === 'Question / Idées' ? 'active' : '' ?> c-type-QuestionIdées"
-                    href="<?= filterUrl(['type' => 'Question / Idées']) ?>">Questions / Idées</a>
-                <a class="pill <?= $curType === 'Refactoring' ? 'active' : '' ?> c-type-Refactoring"
-                    href="<?= filterUrl(['type' => 'Refactoring']) ?>">Refactoring</a>
-                <a class="pill <?= $curType === 'Test' ? 'active' : '' ?> c-type-Test"
-                    href="<?= filterUrl(['type' => 'Test']) ?>">Tests</a>
-            </div>
-            <div class="filter-group">
-                <span class="filter-label">Priorité</span>
-                <a class="pill <?= $curPrio === '' ? 'active c-tout' : '' ?>"
-                    href="<?= filterUrl(['priority' => null]) ?>">Tout</a>
-                <?php foreach (['P1', 'P2', 'P3', 'P4'] as $p): ?>
-                    <a class="pill <?= $curPrio === $p ? 'active' : '' ?> c-prio-<?= $p ?>"
-                        href="<?= filterUrl(['priority' => $p]) ?>"><?= $p ?></a>
-                <?php endforeach; ?>
-            </div>
-            <div class="filter-group">
-                <span class="filter-label">Statut</span>
-                <a class="pill <?= $curStatus === '' ? 'active c-tout' : '' ?>"
-                    href="<?= filterUrl(['status' => null]) ?>">Tout</a>
-                <a class="pill <?= $curStatus === 'Nouveau' ? 'active' : '' ?> c-status-Nouveau"
-                    href="<?= filterUrl(['status' => 'Nouveau']) ?>">○ Nouveau</a>
-                <a class="pill <?= $curStatus === 'En cours' ? 'active' : '' ?> c-status-Encours"
-                    href="<?= filterUrl(['status' => 'En cours']) ?>">● En cours</a>
-                <a class="pill <?= $curStatus === 'Réalisé' ? 'active' : '' ?> c-status-Réalisé"
-                    href="<?= filterUrl(['status' => 'Réalisé']) ?>">✔ Réalisé</a>
-            </div>
-            <div class="filter-group">
-                <span class="filter-label">Front / Back</span>
-                <a class="pill <?= $curFb === '' ? 'active c-tout' : '' ?>"
-                    href="<?= filterUrl(['front_back' => null]) ?>">Tout</a>
-                <a class="pill <?= $curFb === 'Front' ? 'active' : '' ?> c-fb-Front"
-                    href="<?= filterUrl(['front_back' => 'Front']) ?>">🖥 Front</a>
-                <a class="pill <?= $curFb === 'Back' ? 'active' : '' ?> c-fb-Back"
-                    href="<?= filterUrl(['front_back' => 'Back']) ?>">⚙ Back</a>
-            </div>
-        </div>
     </details>
-
-    <?php if (empty($grouped)): ?>
-        <p class="empty">Aucune tâche ne correspond aux filtres actuels.</p>
-    <?php endif; ?>
-
-    <?php
-    $typePlural = ['Bug' => 'Bugs', 'Évolution' => 'Évolutions', 'Question / Idées' => 'Questions / Idées', 'Refactoring' => 'Refactoring', 'Test' => 'Tests'];
-    ?>
-    <?php foreach ($grouped as $type => $byPrio): ?>
-        <?php $typeTotal = array_sum(array_map('count', $byPrio)); ?>
-        <details class="type-section" open>
-            <summary class="type-summary" style="background: <?= $typeColor[$type] ?? '#666' ?>;">
-                <span class="type-name"><?= htmlspecialchars($typePlural[$type] ?? $type) ?></span>
-                <span class="type-count">(<?= $typeTotal ?>)</span>
-            </summary>
-            <div class="type-body">
-                <?php foreach ($byPrio as $prio => $items): ?>
-                    <details class="prio-section" open>
-                        <summary class="prio-summary"><?= htmlspecialchars($prio) ?> <span
-                                class="prio-count">(<?= count($items) ?>)</span></summary>
-                        <ul>
-                            <?php foreach ($items as $t): ?>
-                                <li>
-                                    <details>
-                                        <summary>
-                                            <span class="check"><?= statusIconHtml(statusIcon($t['status'])) ?></span>
-                                            <span class="id">[<?= htmlspecialchars($t['id']) ?>]</span>
-                                            <span class="title"><?= safeHtml($t['title']) ?></span>
-                                            <?php if ($t['status']): ?>
-                                                <span class="badge"
-                                                    style="background: <?= $statusColor[$t['status']] ?? '#999' ?>;"><?= htmlspecialchars($t['status']) ?></span>
-                                            <?php endif; ?>
-                                            <?php if (!empty($t['front_back'])): ?>
-                                                <span class="badge"
-                                                    style="background: <?= $t['front_back'] === 'Front' ? '#F15E4A' : '#767374' ?>;"><?= $t['front_back'] === 'Front' ? '🖥 Front' : '⚙ Back' ?></span>
-                                            <?php endif; ?>
-                                        </summary>
-                                        <div class="detail">
-                                            <?php if ($t['desc'] !== '' && $t['desc'] !== '_À compléter_'): ?>
-                                                <div class="desc"><?= formatDesc($t['desc']) ?></div>
-                                            <?php else: ?>
-                                                <div class="no-desc">Aucune description renseignée.</div>
-                                            <?php endif; ?>
-
-                                            <?php if (!empty($t['subtasks'])): ?>
-                                                <div class="sub-list">
-                                                    <?php foreach ($t['subtasks'] as $st): ?>
-                                                        <div class="sub-item" style="margin-left: <?= $st['level'] * 18 ?>px;">
-                                                            <div class="sub-row">
-                                                                <span class="sub-check"><?= statusIconHtml($st['status']) ?></span>
-                                                                <?php if ($st['id']): ?><span
-                                                                        class="sub-id">[<?= htmlspecialchars($st['id']) ?>]</span><?php endif; ?>
-                                                                <span class="sub-text"><?= safeHtml($st['text']) ?></span>
-                                                            </div>
-                                                            <?php if (!empty($st['desc'])): ?>
-                                                                <div class="sub-desc"><?= formatDesc($st['desc']) ?></div>
-                                                            <?php endif; ?>
-                                                        </div>
-                                                    <?php endforeach; ?>
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="no-sub">Aucune sous-tâche.</div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </details>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </details>
-                <?php endforeach; ?>
-            </div>
-        </details>
-    <?php endforeach; ?>
+<?php endforeach; ?>
 
 </body>
-
 <script>
-(function () {
-    document.getElementById('btn-collapse-all').addEventListener('click', function () {
-        document.querySelectorAll('details[open]').forEach(function (el) {
-            el.removeAttribute('open');
-        });
+(function(){
+    document.getElementById('btn-collapse-all').addEventListener('click',function(){
+        document.querySelectorAll('details[open]').forEach(function(el){el.removeAttribute('open');});
     });
 })();
 </script>
-
 </html>
