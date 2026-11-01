@@ -122,7 +122,8 @@ class Competition
         $this->db->query("
             SELECT e.*,
                    cs.text_code AS status_text_code,
-                   se.name      AS season_name
+                   se.name      AS season_name,
+                   (SELECT COUNT(*) FROM t_sport_competition_edition sub WHERE sub.parent_edition_id = e.id) AS sub_editions_count
             FROM t_sport_competition_edition e
             LEFT JOIN t_sport_competition_status cs ON e.status_id = cs.id
             LEFT JOIN t_sport_season             se ON e.season_id = se.id

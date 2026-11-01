@@ -45,8 +45,12 @@ $renderEditionName = function ($val, $row) {
     $codeOrId = !empty($row['code']) ? $row['code'] : $row['id'];
     $html = '<a href="' . URLROOT . '/sport/competition-edition/' . htmlspecialchars((string)$codeOrId) . '" class="text-bold fg-primary">'
           . htmlspecialchars($row['name']) . '</a>';
+    if (!empty($row['is_container'])) {
+        $subCount = (int)($row['sub_editions_count'] ?? 0);
+        $html .= ' <span class="badge inline ml-1" style="background:#7c3aed; color:#fff; font-size:11px; padding:2px 6px;"><span class="mif-apps mr-1"></span>Multi-tournois (' . $subCount . ')</span>';
+    }
     if (!empty($row['parent_edition_name'])) {
-        $html .= '<br><small class="fg-gray">' . htmlspecialchars($row['parent_edition_name']) . '</small>';
+        $html .= '<br><small class="fg-gray"><span class="mif-arrow-right mr-1"></span>' . htmlspecialchars($row['parent_edition_name']) . '</small>';
     }
     return $html;
 };
@@ -87,7 +91,10 @@ $listConfig = [
             'label'       => $data['txt']['SYS_COL_ICON'] ?? 'Icône',
             'headerStyle' => 'width:60px;text-align:center;',
             'cellStyle'   => 'text-align:center;',
-            'render'      => function () {
+            'render'      => function ($val, $row) {
+                if (!empty($row['is_container'])) {
+                    return '<span class="mif-apps mif-2x" style="color:#7c3aed;" title="Événement multi-tournois"></span>';
+                }
                 return '<span class="mif-calendar mif-2x fg-darkOrange"></span>';
             },
         ],
@@ -124,16 +131,27 @@ $listConfig = [
         [
             'field'       => 'phases_count',
             'label'       => $data['txt']['COMPETITION_EDITION_PHASES'] ?? 'Phases',
-            'type'        => 'text',
             'headerStyle' => 'text-align:center;',
             'cellStyle'   => 'text-align:center;',
+            'render'      => function ($val, $row) {
+                if (!empty($row['is_container'])) {
+                    return '<span class="text-muted">—</span>';
+                }
+                return (int)$val;
+            },
         ],
         [
             'field'       => 'entries_count',
             'label'       => $data['txt']['COMPETITION_EDITION_ENTRIES'] ?? 'Équipes',
-            'type'        => 'text',
             'headerStyle' => 'text-align:center;',
             'cellStyle'   => 'text-align:center;',
+            'render'      => function ($val, $row) {
+                if (!empty($row['is_container'])) {
+                    $subCount = (int)($row['sub_editions_count'] ?? 0);
+                    return '<span class="badge inline" style="background:#ede9fe; color:#6d28d9; font-weight:bold;">' . $subCount . ' tournoi' . ($subCount > 1 ? 's' : '') . '</span>';
+                }
+                return (int)$val;
+            },
         ],
     ],
     'actions' => [

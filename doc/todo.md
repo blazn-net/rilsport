@@ -76,6 +76,7 @@
         - [x] `[20260918-1800]` Modèle BDD : 9 tables `t_sport_competition*` (type, status, competition, i18n, edition, phase, group, round, entry)
         - [x] `[20260918-1810]` MVC Compétitions : Model + Controllers + Vues (list + fiche)
         - [x] `[20260918-1820]` MVC Éditions : Model + Controllers + Vues (list + fiche avec phases/équipes/sous-éditions)
+        - [x] `[20261101-1805]` Multi-compétitions / Événements conteneurs : champ `is_container` sur les éditions, vue arborescente des sous-tournois (ex: Roland Garros -> Simple H, Simple F), formulaire de création dédié et badges visuels
         - [x] `[20260918-1830]` Navigation + fix routeur kebab-case (App.php)
     - [ ] `[20260908-2248]` matches : triangulaires (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)
     - [ ] `[20260908-2249]` classements (‼️<strong><u>AVEC CLAUDE</u></strong>‼️)

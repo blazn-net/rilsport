@@ -30,7 +30,7 @@
 | `t_sport_competition_status`  | Statuts des compétitions et éditions (active, inactive, archived) |
 | `t_sport_competition`         | Compétition intemporelle (id, code, name, short_name, acronym, sport_id, type_code, logo, country_code, description, status_id, audit) |
 | `t_sport_competition_i18n`    | Traductions des noms de compétitions (competition_id, lang_code, name, description) |
-| `t_sport_competition_edition` | Édition / Saison d'une compétition (id, competition_id, parent_edition_id, season_id, code, name, edition_number, date_start, date_end, status_id, audit) |
+| `t_sport_competition_edition` | Édition / Saison d'une compétition (id, competition_id, parent_edition_id, season_id, code, name, edition_number, is_container, date_start, date_end, status_id, audit) |
 | `t_sport_competition_phase`   | Phases d'une édition (id, edition_id, code, name, phase_type, phase_order, date_start, date_end, status_id, audit) |
 | `t_sport_competition_group`   | Groupes / Poules / Conférences / Divisions (id, phase_id, parent_group_id, code, name, group_order, status_id, audit) |
 | `t_sport_competition_round`   | Journées / Tours / Étapes (id, phase_id, group_id, code, name, round_order, round_type, venue_name, venue_id, date_start, date_end, status_id, audit) |

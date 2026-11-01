@@ -24,7 +24,8 @@ class CompetitionEdition {
                    sp.name       AS sport_name,
                    pe.name       AS parent_edition_name,
                    (SELECT COUNT(*) FROM t_sport_competition_phase ph WHERE ph.edition_id = e.id) AS phases_count,
-                   (SELECT COUNT(*) FROM t_sport_competition_entry en WHERE en.edition_id = e.id) AS entries_count
+                   (SELECT COUNT(*) FROM t_sport_competition_entry en WHERE en.edition_id = e.id) AS entries_count,
+                   (SELECT COUNT(*) FROM t_sport_competition_edition sub WHERE sub.parent_edition_id = e.id) AS sub_editions_count
             FROM t_sport_competition_edition e
             LEFT JOIN t_sport_competition_status cs ON e.status_id      = cs.id
             LEFT JOIN t_sport_season             se ON e.season_id      = se.id
@@ -202,10 +203,10 @@ class CompetitionEdition {
         $this->db->query("
             INSERT INTO t_sport_competition_edition (
                 competition_id, parent_edition_id, season_id, code, name,
-                edition_number, date_start, date_end, status_id, created_by, created_at
+                edition_number, is_container, date_start, date_end, status_id, created_by, created_at
             ) VALUES (
                 :competition_id, :parent_edition_id, :season_id, :code, :name,
-                :edition_number, :date_start, :date_end, :status_id, :created_by, CURRENT_TIMESTAMP
+                :edition_number, :is_container, :date_start, :date_end, :status_id, :created_by, CURRENT_TIMESTAMP
             ) RETURNING id
         ");
         $this->bindParams($data);
@@ -225,6 +226,7 @@ class CompetitionEdition {
                 season_id         = :season_id,
                 name              = :name,
                 edition_number    = :edition_number,
+                is_container      = :is_container,
                 date_start        = :date_start,
                 date_end          = :date_end,
                 status_id         = :status_id,
@@ -271,6 +273,7 @@ class CompetitionEdition {
         $this->db->bind(':season_id',         !empty($data['season_id'])         ? (int)$data['season_id']         : null);
         $this->db->bind(':name',              trim($data['name']));
         $this->db->bind(':edition_number',    !empty($data['edition_number'])     ? (int)$data['edition_number']    : null);
+        $this->db->bind(':is_container',      !empty($data['is_container'])       ? true                            : false);
         $this->db->bind(':date_start',        !empty($data['date_start'])         ? $data['date_start']             : null);
         $this->db->bind(':date_end',          !empty($data['date_end'])           ? $data['date_end']               : null);
         $this->db->bind(':status_id',         !empty($data['status_id'])          ? (int)$data['status_id']         : 1);

@@ -1434,6 +1434,7 @@ CREATE TABLE IF NOT EXISTS t_sport_competition_edition (
     code              VARCHAR(50)  NOT NULL UNIQUE,
     name              VARCHAR(150) NOT NULL,
     edition_number    INT          DEFAULT NULL,
+    is_container      BOOLEAN      NOT NULL DEFAULT FALSE,
     date_start        DATE         DEFAULT NULL,
     date_end          DATE         DEFAULT NULL,
     status_id         INT          NOT NULL DEFAULT 1,
@@ -1448,6 +1449,17 @@ CREATE TABLE IF NOT EXISTS t_sport_competition_edition (
     FOREIGN KEY (created_by)        REFERENCES t_user_user(id)                 ON DELETE SET NULL,
     FOREIGN KEY (modified_by)       REFERENCES t_user_user(id)                 ON DELETE SET NULL
 );
+
+-- Migration ré-entrante : ajouter is_container si absent
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 't_sport_competition_edition' AND column_name = 'is_container'
+    ) THEN
+        ALTER TABLE t_sport_competition_edition ADD COLUMN is_container BOOLEAN NOT NULL DEFAULT FALSE;
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_sport_competition_edition_competition ON t_sport_competition_edition(competition_id);
 CREATE INDEX IF NOT EXISTS idx_sport_competition_edition_parent      ON t_sport_competition_edition(parent_edition_id);
@@ -1650,7 +1662,13 @@ INSERT INTO t_sport_text_key (text_code) VALUES
 ('COMPETITION_EDITION_MSG_DELETED'),
 ('COMPETITION_EDITION_ERR_MISSING_FIELDS'),
 ('COMPETITION_EDITION_ERR_CODE_EXISTS'),
-('COMPETITION_EDITION_DELETE_CONFIRM')
+('COMPETITION_EDITION_DELETE_CONFIRM'),
+('COMPETITION_EDITION_TYPE'),
+('COMPETITION_EDITION_TYPE_SINGLE'),
+('COMPETITION_EDITION_TYPE_CONTAINER'),
+('COMPETITION_EDITION_SUB_TOURNAMENTS'),
+('COMPETITION_EDITION_NEW_SUB_TOURNAMENT'),
+('COMPETITION_EDITION_MULTI_TOURNAMENTS')
 ON CONFLICT (text_code) DO NOTHING;
 
 
@@ -2104,7 +2122,31 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 
 ('COMPETITION_EDITION_DELETE_CONFIRM',  'fr', 'Voulez-vous vraiment désactiver cette édition ?'),
 ('COMPETITION_EDITION_DELETE_CONFIRM',  'en', 'Are you sure you want to deactivate this edition?'),
-('COMPETITION_EDITION_DELETE_CONFIRM',  'es', '¿Está seguro de que desea desactivar esta edición?')
+('COMPETITION_EDITION_DELETE_CONFIRM',  'es', '¿Está seguro de que desea desactivar esta edición?'),
+
+('COMPETITION_EDITION_TYPE',            'fr', 'Type d''édition'),
+('COMPETITION_EDITION_TYPE',            'en', 'Edition type'),
+('COMPETITION_EDITION_TYPE',            'es', 'Tipo de edición'),
+
+('COMPETITION_EDITION_TYPE_SINGLE',     'fr', 'Édition simple'),
+('COMPETITION_EDITION_TYPE_SINGLE',     'en', 'Single edition'),
+('COMPETITION_EDITION_TYPE_SINGLE',     'es', 'Edición simple'),
+
+('COMPETITION_EDITION_TYPE_CONTAINER',  'fr', 'Événement multi-tournois'),
+('COMPETITION_EDITION_TYPE_CONTAINER',  'en', 'Multi-tournament event'),
+('COMPETITION_EDITION_TYPE_CONTAINER',  'es', 'Evento multi-torneo'),
+
+('COMPETITION_EDITION_SUB_TOURNAMENTS', 'fr', 'Tournois de cet événement'),
+('COMPETITION_EDITION_SUB_TOURNAMENTS', 'en', 'Tournaments in this event'),
+('COMPETITION_EDITION_SUB_TOURNAMENTS', 'es', 'Torneos de este evento'),
+
+('COMPETITION_EDITION_NEW_SUB_TOURNAMENT','fr', 'Nouveau tournoi'),
+('COMPETITION_EDITION_NEW_SUB_TOURNAMENT','en', 'New tournament'),
+('COMPETITION_EDITION_NEW_SUB_TOURNAMENT','es', 'Nuevo torneo'),
+
+('COMPETITION_EDITION_MULTI_TOURNAMENTS','fr', 'Multi-tournois'),
+('COMPETITION_EDITION_MULTI_TOURNAMENTS','en', 'Multi-tournaments'),
+('COMPETITION_EDITION_MULTI_TOURNAMENTS','es', 'Multi-torneos')
 
 ON CONFLICT (text_code, lang_code) DO UPDATE
     SET text_label = EXCLUDED.text_label;

@@ -109,6 +109,7 @@ $formConfig = [
                 <tbody>
                     <?php foreach ($editions as $e):
                             $edCodeOrId = !empty($e['code']) ? $e['code'] : $e['id'];
+                            $isContainer = !empty($e['is_container']);
                             ?>
                         <tr>
                             <td>
@@ -116,6 +117,11 @@ $formConfig = [
                                     class="text-bold">
                                     <?php echo htmlspecialchars($e['name']); ?>
                                 </a>
+                                <?php if ($isContainer): ?>
+                                    <span class="badge inline ml-2" style="background:#7c3aed; color:#fff; font-size:11px; padding:2px 6px;">
+                                        <span class="mif-apps mr-1"></span> Multi-tournois (<?php echo (int)($e['sub_editions_count'] ?? 0); ?>)
+                                    </span>
+                                <?php endif; ?>
                             </td>
                             <td><?php echo htmlspecialchars($e['season_name'] ?? '—'); ?></td>
                             <td><?php echo !empty($e['date_start']) ? date('d/m/Y', strtotime($e['date_start'])) : '—'; ?></td>

@@ -21,7 +21,9 @@ class CompetitionEdition extends EntityController {
         }
 
         // Preselection competition via GET (creation depuis la fiche competition)
-        $preselectedCompetitionId = !empty($_GET['competition_id']) ? (int)$_GET['competition_id'] : null;
+        $preselectedCompetitionId = !empty($_GET['competition_id'])   ? (int)$_GET['competition_id']   : null;
+        // Preselection edition parente via GET (creation d'un sous-tournoi depuis une edition conteneur)
+        $preselectedParentEditionId = !empty($_GET['parent_edition_id']) ? (int)$_GET['parent_edition_id'] : null;
 
         $editionData = $this->resolveEntity(
             [$this->editionModel, 'getEditionByCode'],
@@ -69,6 +71,7 @@ class CompetitionEdition extends EntityController {
                 'parent_edition_id' => !empty($_POST['parent_edition_id']) ? (int)$_POST['parent_edition_id'] : null,
                 'season_id'         => !empty($_POST['season_id'])         ? (int)$_POST['season_id']         : null,
                 'edition_number'    => !empty($_POST['edition_number'])     ? (int)$_POST['edition_number']    : null,
+                'is_container'      => !empty($_POST['is_container'])       ? true                             : false,
                 'date_start'        => !empty($_POST['date_start'])         ? $_POST['date_start']             : null,
                 'date_end'          => !empty($_POST['date_end'])           ? $_POST['date_end']               : null,
                 'status_id'         => !empty($_POST['status_id'])          ? (int)$_POST['status_id']         : 1,
@@ -99,6 +102,14 @@ class CompetitionEdition extends EntityController {
         $statuses          = $this->editionModel->getAllStatuses();
         $parentCandidates  = [];
         $competitionIdUsed = $editionData['competition_id'] ?? $preselectedCompetitionId ?? 0;
+        // Si parent_edition_id pré-sélectionné via GET, récupérer la compétition de cette édition parente
+        if (empty($competitionIdUsed) && !empty($preselectedParentEditionId)) {
+            $parentEditionData = $this->editionModel->getEditionById($preselectedParentEditionId);
+            $competitionIdUsed = $parentEditionData['competition_id'] ?? 0;
+            if (empty($preselectedCompetitionId) && !empty($competitionIdUsed)) {
+                $preselectedCompetitionId = $competitionIdUsed;
+            }
+        }
         if ($competitionIdUsed) {
             $parentCandidates = $this->editionModel->getParentEditionCandidates($competitionIdUsed, $editionData ? $editionData['id'] : null);
         }
@@ -120,7 +131,8 @@ class CompetitionEdition extends EntityController {
             'allSeasons'        => $allSeasons,
             'statuses'          => $statuses,
             'parentCandidates'  => $parentCandidates,
-            'preselectedCompetitionId' => $preselectedCompetitionId,
+            'preselectedCompetitionId'  => $preselectedCompetitionId,
+            'preselectedParentEditionId' => $preselectedParentEditionId ?? null,
             'mode'              => $mode,
             'isAdmin'           => $isAdmin,
         ];
