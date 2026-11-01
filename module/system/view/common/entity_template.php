@@ -102,6 +102,24 @@ if ($mode === 'view' && $isAdmin && !empty($editUrl)): ?>
         <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_EDIT'] ?? 'Modifier'); ?></span>
     </a>
 <?php endif; ?>
+<?php if (in_array($mode, ['edit', 'add'])): ?>
+    <button class="button success" type="submit" form="entity-form-main" id="btn-save-header"
+            title="<?php echo htmlspecialchars($mode === 'edit' ? ($data['txt']['SYS_BTN_UPDATE'] ?? 'Mettre à jour') : ($data['txt']['SYS_BTN_SAVE'] ?? 'Enregistrer')); ?>">
+        <span class="mif-floppy-disk"></span>
+        <span class="btn-text">
+            <?php echo htmlspecialchars($mode === 'edit'
+                ? ($data['txt']['SYS_BTN_UPDATE'] ?? $data['txt']['USER_BTN_UPDATE'] ?? 'Mettre à jour')
+                : ($data['txt']['SYS_BTN_SAVE']   ?? $data['txt']['USER_BTN_SAVE']   ?? 'Enregistrer')); ?>
+        </span>
+    </button>
+    <?php if (!empty($cancelUrl)): ?>
+    <a href="<?php echo htmlspecialchars($cancelUrl); ?>" class="button secondary" id="btn-cancel-header"
+       title="<?php echo htmlspecialchars($data['txt']['SYS_BTN_CANCEL'] ?? 'Annuler'); ?>">
+        <span class="mif-cancel"></span>
+        <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_CANCEL'] ?? 'Annuler'); ?></span>
+    </a>
+    <?php endif; ?>
+<?php endif; ?>
 <?php if (!empty($backUrl)): ?>
     <a href="<?php echo htmlspecialchars($backUrl); ?>"
        class="button"
@@ -210,7 +228,7 @@ ob_start();
         <!-- MODE EDIT / ADD : Formulaire interactif pour Administrateurs    -->
         <!-- ============================================================== -->
         <div class="card p-4">
-            <form method="POST" action="<?php echo htmlspecialchars($formAction); ?>"<?php echo $formEnctype; ?> class="form-container">
+            <form method="POST" action="<?php echo htmlspecialchars($formAction); ?>"<?php echo $formEnctype; ?> class="form-container" id="entity-form-main">
                 <!-- Corps du formulaire spécifique -->
                 <div class="form-body">
                     <?php 
@@ -244,38 +262,18 @@ ob_start();
                     </div>
                 <?php endif; ?>
 
-                <!-- Barre de boutons du formulaire -->
-                <div class="form-group mt-4 d-flex flex-align-center flex-wrap" style="gap: 10px;">
-                    <button class="button success" type="submit" id="btn-save-main">
-                        <span class="mif-floppy-disk mr-1"></span>
-                        <span class="btn-text">
-                            <?php 
-                            if ($mode === 'edit') {
-                                echo htmlspecialchars($data['txt']['SYS_BTN_UPDATE'] ?? $data['txt']['USER_BTN_UPDATE'] ?? 'Mettre à jour');
-                            } else {
-                                echo htmlspecialchars($data['txt']['SYS_BTN_SAVE'] ?? $data['txt']['USER_BTN_SAVE'] ?? 'Enregistrer');
-                            }
-                            ?>
-                        </span>
-                    </button>
-
-                    <?php if (!empty($cancelUrl)): ?>
-                        <a href="<?php echo htmlspecialchars($cancelUrl); ?>" class="button secondary" id="btn-cancel-main">
-                            <span class="mif-cancel mr-1"></span>
-                            <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_CANCEL'] ?? 'Annuler'); ?></span>
-                        </a>
-                    <?php endif; ?>
-
-                    <?php if ($mode === 'edit' && !empty($deleteUrl)): ?>
-                        <a href="<?php echo htmlspecialchars($deleteUrl); ?>"
-                           class="button alert ml-auto"
-                           id="btn-delete-main"
-                           onclick="return confirm('<?php echo addslashes($deleteConfirm); ?>');">
-                            <span class="mif-bin mr-1"></span>
-                            <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_DELETE'] ?? 'Supprimer'); ?></span>
-                        </a>
-                    <?php endif; ?>
+                <!-- Barre de boutons bas : Supprimer uniquement (boutons Save/Cancel déplacés en en-tête) -->
+                <?php if ($mode === 'edit' && !empty($deleteUrl)): ?>
+                <div class="form-group mt-4 d-flex flex-justify-end flex-wrap" style="gap: 10px;">
+                    <a href="<?php echo htmlspecialchars($deleteUrl); ?>"
+                       class="button alert"
+                       id="btn-delete-main"
+                       onclick="return confirm('<?php echo addslashes($deleteConfirm); ?>');">
+                        <span class="mif-bin mr-1"></span>
+                        <span class="btn-text"><?php echo htmlspecialchars($data['txt']['SYS_BTN_DELETE'] ?? 'Supprimer'); ?></span>
+                    </a>
                 </div>
+                <?php endif; ?>
             </form>
         </div>
     <?php endif; ?>
