@@ -312,9 +312,9 @@ INSERT INTO t_lang_text (text_code, lang_code, text_label) VALUES
 ('LANG_UNKNOWN',                 'en', 'Unknown'),
 ('LANG_UNKNOWN',                 'es', 'Desconocido'),
 
-('LANG_INFO_PANEL',              'fr', 'Informations'),
-('LANG_INFO_PANEL',              'en', 'Information'),
-('LANG_INFO_PANEL',              'es', 'Información'),
+('LANG_INFO_PANEL',              'fr', 'Audit'),
+('LANG_INFO_PANEL',              'en', 'Audit'),
+('LANG_INFO_PANEL',              'es', 'Auditoría'),
 
 ('LANG_CREATED_AT',              'fr', 'Créé le :'),
 ('LANG_CREATED_AT',              'en', 'Created at:'),

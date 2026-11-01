@@ -204,7 +204,7 @@ ob_start();
                 <!-- Panneau d'audit (replié par défaut) -->
                 <?php if ($showAudit): ?>
                     <div data-role="panel"
-                         data-title-caption="&lt;span class='mif-history mr-2'&gt;&lt;/span&gt;<?php echo htmlspecialchars($data['txt']['SYS_AUDIT_PANEL'] ?? $data['txt']['SPORT_INFO_PANEL'] ?? 'Informations d\'audit'); ?>"
+                         data-title-caption="&lt;span class='mif-history mr-2'&gt;&lt;/span&gt;<?php echo htmlspecialchars($data['txt']['SYS_AUDIT_PANEL'] ?? $data['txt']['SPORT_INFO_PANEL'] ?? 'Audit'); ?>"
                          data-collapsible="true"
                          data-collapsed="true"
                          class="mt-4">
@@ -245,7 +245,7 @@ ob_start();
                 <!-- Panneau d'audit (replié par défaut en mode Edit, masqué en Add) -->
                 <?php if ($showAudit && $mode === 'edit'): ?>
                     <div data-role="panel"
-                         data-title-caption="&lt;span class='mif-history mr-2'&gt;&lt;/span&gt;<?php echo htmlspecialchars($data['txt']['SYS_AUDIT_PANEL'] ?? $data['txt']['SPORT_INFO_PANEL'] ?? 'Informations d\'audit'); ?>"
+                         data-title-caption="&lt;span class='mif-history mr-2'&gt;&lt;/span&gt;<?php echo htmlspecialchars($data['txt']['SYS_AUDIT_PANEL'] ?? $data['txt']['SPORT_INFO_PANEL'] ?? 'Audit'); ?>"
                          data-collapsible="true"
                          data-collapsed="true"
                          class="mt-4">

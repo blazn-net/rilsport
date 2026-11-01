@@ -226,7 +226,7 @@ Implémentation complète des entités Matchs (`t_sport_match`, `t_sport_match_s
 
 ---
 
-### [ ] `[20261030-0001]` Aligner le fil d'ariane sur la structure de navigation
+### [ ] `[20261030-0001]` Aligner le fil d'ariane sur la structure de navigationu
 - **Type** : Évolution
 - **Priorité** : P1
 - **Statut** : Nouveau

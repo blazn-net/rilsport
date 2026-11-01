@@ -894,6 +894,10 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('SPORT_INACTIVE',            'en', 'Inactive'),
 ('SPORT_INACTIVE',            'es', 'Inactivo'),
 
+('SPORT_INFO_PANEL',          'fr', 'Audit'),
+('SPORT_INFO_PANEL',          'en', 'Audit'),
+('SPORT_INFO_PANEL',          'es', 'Auditoría'),
+
 ('SPORT_SEASON_DATE_START',    'fr', 'Début'),
 ('SPORT_SEASON_DATE_START',    'en', 'Start'),
 ('SPORT_SEASON_DATE_START',    'es', 'Inicio'),
