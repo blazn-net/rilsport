@@ -64,12 +64,10 @@ Les directives complètes sont détaillées dans le dossier [doc/](file:///c:/wa
 
 ---
 
-## 4. Suivi des Tâches (`doc/todo.md`)
+## 4. Suivi des Tâches & Issues
 
-Lors de la lecture ou de la mise à jour de [doc/todo.md](file:///c:/wamp64/www/rilsport/doc/todo.md) :
-- `[ ]` ou `[]` : Tâche à faire
-- `[-]` : Tâche en cours
-- `[x]` : Tâche réalisée
+Le suivi des tâches s'effectue via les **GitHub Issues** (`blazn-net/rilsport/issues`) et le **GitHub Project** (`https://github.com/users/blazn-net/projects/2`).
+Pour les sous-tâches, elles sont gérées comme de vraies Sub-issues GitHub liées hiérarchiquement à leur tâche parente.
 
 ---
 
