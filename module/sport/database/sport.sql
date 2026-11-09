@@ -661,6 +661,7 @@ INSERT INTO t_sport_text_key (text_code) VALUES
 ('SPORT_EDIT_TEAM_TITLE'),
 ('SPORT_ADD_TEAM_TITLE'),
 ('SPORT_VIEW_TEAM_TITLE'),
+('SPORT_NAV_SPORT'),
 ('SPORT_NAV_CLUBS'),
 ('SPORT_NAV_TEAMS'),
 ('TEAM_CODE'),
@@ -826,9 +827,9 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('SPORT_SEASONS_MGT',         'en', 'Seasons'),
 ('SPORT_SEASONS_MGT',         'es', 'Temporadas'),
 
-('SPORT_PERSONS_MGT',         'fr', 'Personnes / Acteurs'),
-('SPORT_PERSONS_MGT',         'en', 'Persons / Actors'),
-('SPORT_PERSONS_MGT',         'es', 'Personas / Actores'),
+('SPORT_PERSONS_MGT',         'fr', 'Effectif'),
+('SPORT_PERSONS_MGT',         'en', 'Roster'),
+('SPORT_PERSONS_MGT',         'es', 'Plantilla'),
 
 ('SPORT_ADD_SPORT_BTN',       'fr', 'Ajouter un sport'),
 ('SPORT_ADD_SPORT_BTN',       'en', 'Add Sport'),
@@ -1038,6 +1039,10 @@ INSERT INTO t_sport_text (text_code, lang_code, text_label) VALUES
 ('SPORT_CLUBS_MGT',            'fr', 'Clubs'),
 ('SPORT_CLUBS_MGT',            'en', 'Clubs'),
 ('SPORT_CLUBS_MGT',            'es', 'Clubes'),
+
+('SPORT_NAV_SPORT',            'fr', 'Sport'),
+('SPORT_NAV_SPORT',            'en', 'Sport'),
+('SPORT_NAV_SPORT',            'es', 'Deporte'),
 
 ('SPORT_NAV_CLUBS',            'fr', 'Clubs'),
 ('SPORT_NAV_CLUBS',            'en', 'Clubs'),

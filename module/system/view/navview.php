@@ -84,6 +84,9 @@
 
     <ul class="navview-menu pad-second-level" id="side-menu">
 
+        <!-- Groupe : Sport -->
+        <li class="item-header"><?php echo $sportTxt['SPORT_NAV_SPORT'] ?? 'Sport'; ?></li>
+
         <!-- Compétitions -->
         <li class="<?php echo $isCompetitionsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/competitions">
@@ -106,7 +109,7 @@
         <li class="<?php echo $isStandingsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/standings">
                 <span class="icon"><span class="mif-table"></span></span>
-                <span class="caption"><?php echo $sportTxt['STANDING_LBL_STANDINGS'] ?? 'Classements'; ?></span>
+                <span class="caption"><?php echo $sportTxt['STANDING_LBL_STANDINGS'] ?? 'Classement'; ?></span>
             </a>
         </li>
 
@@ -126,11 +129,11 @@
             </a>
         </li>
 
-        <!-- Personnes / Acteurs -->
+        <!-- Effectif -->
         <li class="<?php echo $isPersonsActive ? 'active' : ''; ?>">
             <a href="<?php echo URLROOT; ?>/sport/persons">
                 <span class="icon"><span class="mif-contacts"></span></span>
-                <span class="caption"><?php echo $sportTxt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs'; ?></span>
+                <span class="caption"><?php echo $sportTxt['SPORT_PERSONS_MGT'] ?? 'Effectif'; ?></span>
             </a>
         </li>
 

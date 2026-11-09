@@ -17,7 +17,7 @@ class Persons extends ListController {
 
         $data = $this->prepareListData(
             $txt,
-            $txt['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs',
+            $txt['SPORT_PERSONS_MGT'] ?? 'Effectif',
             ['persons' => $persons]
         );
 

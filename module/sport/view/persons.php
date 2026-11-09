@@ -1,6 +1,6 @@
 <?php
 /**
- * Vue : Liste des Personnes / Acteurs
+ * Vue : Liste de l'Effectif
  * Utilise le template parent universel list_template.php
  */
 
@@ -36,7 +36,7 @@ $renderPersonPhoto = function ($val, $row) {
 };
 
 $listConfig = [
-    'title'          => $data['txt']['SPORT_PERSONS_MGT'] ?? 'Personnes / Acteurs',
+    'title'          => $data['txt']['SPORT_PERSONS_MGT'] ?? 'Effectif',
     'icon'           => 'mif-contacts',
     'addUrl'         => URLROOT . '/sport/person',
     'addBtnText'     => $data['txt']['SPORT_ADD_PERSON_BTN'] ?? 'Ajouter une personne',

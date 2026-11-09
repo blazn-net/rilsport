@@ -33,8 +33,8 @@ Il intègre les exigences impératives :
 Ces 4 règles fondamentales s'appliquent à **toutes les entités du module Sport** :
 
 - [ ] **4.A — Liens de navigation du module Sport (`navview.php`)**
-  - [ ] Les 6 pages List du module possèdent leur lien : `Sports`, `Saisons`, `Clubs`, `Équipes`, `Personnes / Acteurs`, `Compétitions`.
-  - [ ] Nommage au **pluriel direct** : `Sports`, `Saisons`, `Clubs`, `Équipes`, `Personnes / Acteurs`, `Compétitions`.
+  - [ ] Les 6 pages List du module possèdent leur lien : `Sports`, `Saisons`, `Clubs`, `Équipes`, `Effectif`, `Compétitions`.
+  - [ ] Nommage clair et direct : `Sports`, `Saisons`, `Clubs`, `Équipes`, `Effectif`, `Compétitions`.
   - [ ] **Interdiction** des intitulés du type « Gestion [Objet] ».
   - [ ] Marqueur d'état actif (`class="active"`) surbrillé en rouge lors de la consultation des routes sport.
 
@@ -101,7 +101,7 @@ Ces 4 règles fondamentales s'appliquent à **toutes les entités du module Spor
 
 | ID | Test | Profil | Étapes | Résultat attendu | Statut |
 |---|---|---|---|---|:---:|
-| **CLB-01** | Menu NavView | Tous | Vérifier le menu de niveau 1. | Lien `Clubs` présent avec l'icône `mif-security`. | [ ] |
+| **CLB-01** | Menu NavView | Tous | Vérifier le menu Sport > Clubs. | Lien `Clubs` présent avec l'icône `mif-security`. | [ ] |
 | **CLB-02** | Liste des clubs | P1 vs P3 | Consulter `/sport/clubs`. | Tableau avec logo, code, nom, ville, pays. Non-admin : pas de colonne Statut ni Actions. Clic nom -> `View`. | [ ] |
 | **CLB-03** | Fiche Club (`View`) | P1 / P3 | Consulter la fiche d'un club. | Affichage complet : informations, logo, liste des sections rattachées sous forme de badges. Pas d'input éditable. Bouton « Modifier » pour Admin seul. | [ ] |
 | **CLB-04** | Rapprochement Sections | P3 | Éditer un club et cocher/décocher des sections sportives. | Mise à jour correcte de `t_sport_section` sans orphelins. Affichage mis à jour en consultation. | [ ] |
@@ -114,7 +114,7 @@ Ces 4 règles fondamentales s'appliquent à **toutes les entités du module Spor
 
 | ID | Test | Profil | Étapes | Résultat attendu | Statut |
 |---|---|---|---|---|:---:|
-| **TEM-01** | Menu NavView | Tous | Vérifier le lien au menu. | Libellé au pluriel « Équipes », icône `mif-groups`. | [ ] |
+| **TEM-01** | Menu NavView | Tous | Vérifier le menu Sport > Équipes. | Libellé au pluriel « Équipes », icône `mif-groups`. | [ ] |
 | **TEM-02** | Données et Badges | Tous | Consulter `/sport/teams`. | Affichage clair de la section de rattachement, genre (M/F/Mixte), catégorie d'âge. Colonnes Statut et Actions visibles uniquement pour P3. | [ ] |
 | **TEM-03** | Consultation vs Formulaire | P1 vs P3 | Ouvrir une équipe. | P1 : Fiche en mode `View` propre. P3 : Accès au formulaire de saisie pour rattacher au club/section. | [ ] |
 
@@ -125,7 +125,7 @@ Ces 4 règles fondamentales s'appliquent à **toutes les entités du module Spor
 
 | ID | Test | Profil | Étapes | Résultat attendu | Statut |
 |---|---|---|---|---|:---:|
-| **PER-01** | Menu NavView | Tous | Vérifier le lien dans le menu. | Libellé « Personnes / Acteurs », icône `mif-contacts`. | [ ] |
+| **PER-01** | Menu NavView | Tous | Vérifier le lien dans le menu. | Libellé « Effectif », icône `mif-contacts`. | [ ] |
 | **PER-02** | Rôles multiples | Tous | Consulter un acteur ayant plusieurs fonctions (joueur, arbitre, dirigeant). | Les rôles s'affichent correctement sous forme de badges en mode `View`. | [ ] |
 | **PER-03** | Règle 4.C | P1 vs P3 | Clic sur le nom d'une personne dans la liste. | Ouvre systématiquement la fiche en mode `View`. Colonne Actions masquée pour non-admin. | [ ] |
 
@@ -136,7 +136,7 @@ Ces 4 règles fondamentales s'appliquent à **toutes les entités du module Spor
 
 | ID | Test | Profil | Étapes | Résultat attendu | Statut |
 |---|---|---|---|---|:---:|
-| **CPT-01** | Menu NavView | Tous | Cliquer sur `Compétitions`. | Redirection `/sport/competitions`, icône `mif-trophy`. | [ ] |
+| **CPT-01** | Menu NavView | Tous | Vérifier le menu Sport > Compétitions. | Redirection `/sport/competitions`, icône `mif-trophy`. | [ ] |
 | **CPT-02** | Arborescence Métier | Tous | Naviguer : Compétition → Éditions → Phases → Groupes / Poules. | Enchaînement fluide sans perte de contexte ni erreur 404. | [ ] |
 | **CPT-03** | Inscriptions (`Entries`) | P3 | Inscrire une équipe dans un groupe/poule. | Données enregistrées dans `t_sport_competition_entry`, visibilité immédiate dans l'édition. | [ ] |
 | **CPT-04** | Responsive Poules | Mobile | Consulter une édition / phase sur mobile. | Affichage lisible des classements et poules sans débordement horizontal tronqué. | [ ] |
