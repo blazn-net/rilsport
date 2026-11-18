@@ -25,7 +25,7 @@ class CompetitionEntry extends Controller {
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
 
         if (!$isAdmin) {
-            $_SESSION['flash_error'] = $txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.';
+            $_SESSION['flash_error'] = $txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.';
             return $this->redirect('');
         }
 

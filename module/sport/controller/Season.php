@@ -18,7 +18,7 @@ class Season extends EntityController {
 
         // Seuls les admins peuvent créer une nouvelle saison
         if (!$id && !$isAdmin) {
-            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.');
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
         }
 
         $seasonData = $this->resolveEntity(

@@ -25,7 +25,7 @@ abstract class EntityController extends Controller {
     protected function requireAdmin(): void {
         if (!$this->isAdmin()) {
             $txt = $this->loadLanguages();
-            $_SESSION['flash_error'] = $txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.';
+            $_SESSION['flash_error'] = $txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.';
             $this->redirect('');
         }
     }

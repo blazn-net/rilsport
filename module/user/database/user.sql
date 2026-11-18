@@ -427,7 +427,7 @@ INSERT INTO t_user_text (text_code, lang_code, text_label) VALUES
 ('USER_ERR_DELETE_SELF',       'en', 'You cannot delete your own account.'),
 ('USER_ERR_DELETE_SELF',       'es', 'No puede eliminar su propia cuenta.'),
 
-('USER_ERR_UNAUTHORIZED',      'fr', 'Accès non autorisé. Vous devez être administrateur.'),
+('USER_ERR_UNAUTHORIZED',      'fr', 'Accès non autorisé.'),
 ('USER_ERR_UNAUTHORIZED',      'en', 'Unauthorized access. You must be an administrator.'),
 ('USER_ERR_UNAUTHORIZED',      'es', 'Acceso no autorizado. Debe ser administrador.'),
 

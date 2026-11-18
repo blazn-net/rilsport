@@ -16,7 +16,7 @@ class Team extends EntityController {
 
         // Seuls les admins peuvent créer une nouvelle équipe
         if (!$id && !$isAdmin) {
-            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.');
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
         }
 
         $teamData = $this->resolveEntity(

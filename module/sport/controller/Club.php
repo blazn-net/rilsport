@@ -19,7 +19,7 @@ class Club extends EntityController {
 
         // Seuls les admins peuvent créer un nouveau club
         if (!$id && !$isAdmin) {
-            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.');
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
         }
 
         $clubData = $this->resolveEntity(
