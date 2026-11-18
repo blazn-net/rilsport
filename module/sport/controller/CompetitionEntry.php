@@ -24,7 +24,10 @@ class CompetitionEntry extends Controller {
         );
         $isAdmin = isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
 
-        if (!$isAdmin) { die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Acces non autorise.'); }
+        if (!$isAdmin) {
+            $_SESSION['flash_error'] = $txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.';
+            return $this->redirect('');
+        }
 
         if (!$editionId) {
             return $this->redirect('sport/competition-editions');

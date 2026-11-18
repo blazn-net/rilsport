@@ -14,8 +14,13 @@ class Main extends Controller {
         $data = [
             'txt' => $txt,
             'title' => ($txt['SYS_HOME'] ?? 'SYS_HOME') . ' - ' . SITENAME,
-            'description' => $txt['SYS_HOME'] ?? 'SYS_HOME'
+            'description' => $txt['SYS_HOME'] ?? 'SYS_HOME',
+            'message' => $_SESSION['flash_message'] ?? '',
+            'error' => $_SESSION['flash_error'] ?? '',
         ];
+
+        unset($_SESSION['flash_message']);
+        unset($_SESSION['flash_error']);
 
         $this->view('system/header', $data);
         $this->view('system/navview', $data);

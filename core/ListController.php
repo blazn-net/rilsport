@@ -20,12 +20,13 @@ abstract class ListController extends Controller {
     }
 
     /**
-     * Exige le rôle admin pour accéder au contrôleur (bloque l'accès si non-admin)
+     * Exige le rôle admin pour accéder au contrôleur (bloque l'accès si non-admin et redirige vers l'accueil avec message d'erreur)
      */
     protected function requireAdmin(): void {
         if (!$this->isAdmin()) {
             $txt = $this->loadLanguages();
-            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+            $_SESSION['flash_error'] = $txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.';
+            $this->redirect('');
         }
     }
 

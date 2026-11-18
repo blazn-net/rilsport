@@ -9,7 +9,8 @@ class Lang extends Controller {
     public function __construct() {
         if (!isset($_SESSION['user_id']) || !isset($_SESSION['roles']) || !in_array('admin', $_SESSION['roles'])) {
             $txt = array_merge($this->loadLanguage('system'), $this->loadLanguage('user'));
-            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
+            $_SESSION['flash_error'] = $txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.';
+            $this->redirect('');
         }
 
         $this->langModel = $this->model('lang/Lang');

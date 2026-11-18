@@ -25,7 +25,8 @@ class Zone extends Controller {
                 echo json_encode(['error' => $txt['USER_ERR_UNAUTHORIZED'] ?? 'Unauthorized']);
                 exit;
             }
-            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+            $_SESSION['flash_error'] = $txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé. Vous devez être administrateur.';
+            $this->redirect('');
         }
 
         $this->zoneModel = $this->model('zone/Zone');

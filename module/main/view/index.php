@@ -1,5 +1,12 @@
     <!-- Contenu principal -->
     <main class="p-4" style="margin-top: 60px;">
+        <?php if (!empty($data['message'])): ?>
+            <div class="remark success mb-3"><span class="mif-checkmark mr-1"></span> <?php echo htmlspecialchars($data['message']); ?></div>
+        <?php endif; ?>
+        <?php if (!empty($data['error'])): ?>
+            <div class="remark alert mb-3"><span class="mif-warning mr-1"></span> <?php echo htmlspecialchars($data['error']); ?></div>
+        <?php endif; ?>
+
         <h1><span class="mif-home mr-2"></span><?php echo htmlspecialchars($data['description']); ?></h1>
         <p><?php echo $data['txt']['SYS_MVC_DESC'] ?? 'SYS_MVC_DESC'; ?></p>
         
