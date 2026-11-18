@@ -16,14 +16,11 @@ Le suivi des développements, bugs et évolutions est centralisé sur GitHub :
 
 ### Synchronisation Git (Push)
 
-- **GitHub (Principal)** :
+- **Push simultané (GitHub + Bitbucket)** :
   ```bash
   git push
   ```
-- **Bitbucket (Miroir optionnel)** :
-  ```bash
-  git push bitbucket main
-  ```
+  *(Une seule commande synchronise automatiquement les deux dépôts à la fois).*
 
 ### Assistant IA (Antigravity)
 
