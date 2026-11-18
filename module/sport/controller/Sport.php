@@ -4,9 +4,11 @@ namespace Module\Sport\Controller;
 use Core\EntityController;
 
 class Sport extends EntityController {
+    protected bool $requireAdmin = true;
     private $sportModel;
 
     public function __construct() {
+        $this->requireAdmin();
         $this->sportModel = $this->model('sport/Sport');
     }
 

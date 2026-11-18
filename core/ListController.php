@@ -8,10 +8,25 @@ namespace Core;
 abstract class ListController extends Controller {
 
     /**
+     * Si true, l'accès à la liste est strictement réservé aux administrateurs
+     */
+    protected bool $requireAdmin = false;
+
+    /**
      * Vérifie si l'utilisateur actuellement connecté possède le rôle admin
      */
     protected function isAdmin(): bool {
         return isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+    }
+
+    /**
+     * Exige le rôle admin pour accéder au contrôleur (bloque l'accès si non-admin)
+     */
+    protected function requireAdmin(): void {
+        if (!$this->isAdmin()) {
+            $txt = $this->loadLanguages();
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+        }
     }
 
     /**
@@ -31,6 +46,10 @@ abstract class ListController extends Controller {
      * Prépare le tableau standard de données pour les vues List
      */
     protected function prepareListData(array $txt, string $title, array $extraData = []): array {
+        if ($this->requireAdmin) {
+            $this->requireAdmin();
+        }
+
         $search = trim($_GET['search'] ?? '');
         $data = array_merge([
             'txt'     => $txt,

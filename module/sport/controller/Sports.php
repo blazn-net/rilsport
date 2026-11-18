@@ -4,9 +4,11 @@ namespace Module\Sport\Controller;
 use Core\ListController;
 
 class Sports extends ListController {
+    protected bool $requireAdmin = true;
     private $sportModel;
 
     public function __construct() {
+        $this->requireAdmin();
         $this->sportModel = $this->model('sport/Sport');
     }
 

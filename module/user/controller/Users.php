@@ -5,14 +5,12 @@ use Core\ListController;
 
 class Users extends ListController
 {
+    protected bool $requireAdmin = true;
     private $userModel;
 
     public function __construct()
     {
-        if (!$this->isAdmin()) {
-            $txt = $this->loadLanguages();
-            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'USER_ERR_UNAUTHORIZED');
-        }
+        $this->requireAdmin();
         $this->userModel = $this->model('user/User');
     }
 

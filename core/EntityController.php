@@ -8,10 +8,25 @@ namespace Core;
 abstract class EntityController extends Controller {
 
     /**
+     * Si true, l'accès à la fiche (consultation et modification) est strictement réservé aux administrateurs
+     */
+    protected bool $requireAdmin = false;
+
+    /**
      * Vérifie si l'utilisateur actuellement connecté possède le rôle admin
      */
     protected function isAdmin(): bool {
         return isset($_SESSION['roles']) && is_array($_SESSION['roles']) && in_array('admin', $_SESSION['roles']);
+    }
+
+    /**
+     * Exige le rôle admin pour accéder au contrôleur (bloque l'accès si non-admin)
+     */
+    protected function requireAdmin(): void {
+        if (!$this->isAdmin()) {
+            $txt = $this->loadLanguages();
+            die($txt['USER_ERR_UNAUTHORIZED'] ?? 'Accès non autorisé.');
+        }
     }
 
     /**
@@ -48,6 +63,10 @@ abstract class EntityController extends Controller {
         ?string $action = null,
         string $codeKey = 'code'
     ) {
+        if ($this->requireAdmin) {
+            $this->requireAdmin();
+        }
+
         if ($id === null || $id === '') {
             return null;
         }
