@@ -1,10 +1,10 @@
     <!-- Contenu principal -->
     <main class="p-4" style="margin-top: 60px;">
         <?php if (!empty($data['message'])): ?>
-            <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;color:#155724;margin-bottom:1rem;"><span class="mif-checkmark" style="font-size:1.2em;line-height:1;flex-shrink:0;"></span><span><?php echo htmlspecialchars($data['message']); ?></span></div>
+            <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;color:#155724;margin-bottom:1rem;"><span class="mif-checkmark" style="display:inline-block;font-size:1.2em;line-height:1;flex-shrink:0;"></span><span><?php echo htmlspecialchars($data['message']); ?></span></div>
         <?php endif; ?>
         <?php if (!empty($data['error'])): ?>
-            <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;color:#721c24;margin-bottom:1rem;"><span class="mif-warning" style="font-size:1.2em;line-height:1;flex-shrink:0;"></span><span><?php echo htmlspecialchars($data['error']); ?></span></div>
+            <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;color:#721c24;margin-bottom:1rem;"><span class="mif-warning" style="display:inline-block;font-size:1.2em;line-height:1;flex-shrink:0;"></span><span><?php echo htmlspecialchars($data['error']); ?></span></div>
         <?php endif; ?>
 
         <h1><span class="mif-home mr-2"></span><?php echo htmlspecialchars($data['description']); ?></h1>
